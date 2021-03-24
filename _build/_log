@@ -1,0 +1,42 @@
+### Starting build.
+# Target: board.mli.depends, tags: { extension:mli, file:board.mli, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules board.mli > board.mli.depends # cached
+# Target: board.cmi, tags: { byte, compile, extension:mli, file:board.mli, interf, ocaml, quiet }
+ocamlfind ocamlc -c -o board.cmi board.mli # cached
+# Target: board.ml.depends, tags: { extension:ml, file:board.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules board.ml > board.ml.depends # cached
+# Target: board.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:board.cmo, file:board.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o board.cmo board.ml # cached
+# Target: state.mli.depends, tags: { extension:mli, file:state.mli, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules state.mli > state.mli.depends # cached
+# Target: state.cmi, tags: { byte, compile, extension:mli, file:state.mli, interf, ocaml, quiet }
+ocamlfind ocamlc -c -o state.cmi state.mli # cached
+# Target: state.ml.depends, tags: { extension:ml, file:state.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules state.ml > state.ml.depends # cached
+# Target: state.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o state.cmo state.ml # cached
+# Target: main.mli.depends, tags: { extension:mli, file:main.mli, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules main.mli > main.mli.depends # cached
+# Target: main.cmi, tags: { byte, compile, extension:mli, file:main.mli, interf, ocaml, quiet }
+ocamlfind ocamlc -c -o main.cmi main.mli # cached
+# Target: main.ml.depends, tags: { extension:ml, file:main.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules main.ml > main.ml.depends # cached
+# Target: main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o main.cmo main.ml # cached
+# Target: command.mli.depends, tags: { extension:mli, file:command.mli, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules command.mli > command.mli.depends
+# Target: command.cmi, tags: { byte, compile, extension:mli, file:command.mli, interf, ocaml, quiet }
+ocamlfind ocamlc -c -o command.cmi command.mli
+# Target: command.ml.depends, tags: { extension:ml, file:command.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules command.ml > command.ml.depends # cached
+# Target: command.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:command.cmo, file:command.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o command.cmo command.ml
+# Target: author.mli.depends, tags: { extension:mli, file:author.mli, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules author.mli > author.mli.depends # cached
+# Target: author.cmi, tags: { byte, compile, extension:mli, file:author.mli, interf, ocaml, quiet }
+ocamlfind ocamlc -c -o author.cmi author.mli # cached
+# Target: author.ml.depends, tags: { extension:ml, file:author.ml, ocaml, ocamldep, quiet }
+ocamlfind ocamldep -modules author.ml > author.ml.depends # cached
+# Target: author.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:author.cmo, file:author.ml, implem, ocaml, quiet }
+ocamlfind ocamlc -c -o author.cmo author.ml # cached
+# Compilation successful.
