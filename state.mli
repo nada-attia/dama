@@ -1,6 +1,6 @@
 type state
 
-val update_state : Board.t -> Command.command -> state
+(* val update_state : Board.t -> Command.command -> state *)
 
 val where_move : Board.t -> Board.square -> Board.square list
 
