@@ -1,11 +1,15 @@
-type squares_move = Board.square * Board.square
+(** The abstract data type that represents two squares on the board: the
+    starting square and the ending square in a move *)
+type squares_move
 
-type command =
-  | Move of squares_move
-  | Undo
-  | Forfeit
-  | Hint
+(** The abstract data type representing a command *)
+type command
 
-exception Illegal
+(** *)
+exception IllegalCommand
 
+(** *)
+exception NoCommand
+
+(** *)
 val parse : string -> command
