@@ -10,13 +10,16 @@ type command =
   | Forfeit
   | Hint
 
+(* [get_positions lst] converts a list containing two elements into a
+   tuple. if the list has more or less than two elements, an
+   IllegalCommand exception will be thrown *)
 let get_positions = function
-  | [] -> raise IllegalCommand
-  | h :: t ->
-      let end_pos = List.hd t in
-      (h, end_pos)
+  | start_pos :: end_pos :: t ->
+      if List.length t = 0 then (start_pos, end_pos)
+      else raise IllegalCommand
+  | _ -> raise IllegalCommand
 
-let perform_action action remaining_command =
+let return_command action remaining_command =
   if action = "move" && List.length remaining_command = 2 then
     Move (get_positions remaining_command)
   else if action = "forfeit" && List.length remaining_command = 0 then
@@ -33,4 +36,4 @@ let parse s =
   | [] -> raise NoCommand
   | h :: t ->
       let action = String.trim h in
-      perform_action action t
+      return_command action t
