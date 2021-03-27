@@ -1,11 +1,7 @@
-type squares_move = Board.square * Board.square
+(* type squares_move = Board.square * Board.square
 
-type command =
-  | Move of squares_move
-  | Undo
-  | Forfeit
-  | Hint
+   type command = | Move of squares_move | Undo | Forfeit | Hint
 
-exception Illegal
+   exception Illegal
 
-val parse : string -> command
+   val parse : string -> command *)
