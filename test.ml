@@ -1,7 +1,7 @@
 open OUnit2
 open Board
-open Command
-open State
+
+(* open Command open State *)
 
 let print_command = function
   | Move t -> "Move"
