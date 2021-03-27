@@ -1,5 +1,6 @@
 open OUnit2
 open Board
+open Command
 
 (* open Command open State *)
 
