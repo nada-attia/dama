@@ -111,7 +111,16 @@ let game_init n =
 
 let get_board t = t.board
 
-let count_inactive curr_board p_color = failwith "Unimplemented"
+let count_inactive curr_board p_color =
+  match p_color with
+  | Black ->
+      (2 * curr_board.size)
+      - (curr_board.b_side_board.lady_count
+       + curr_board.b_side_board.man_count)
+  | White ->
+      (2 * curr_board.size)
+      - (curr_board.w_side_board.lady_count
+       + curr_board.w_side_board.man_count)
 
 let square_to_string (square : square) : string =
   match square.color with
