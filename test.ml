@@ -9,7 +9,9 @@ let print_command = function
   | Forfeit -> "Forfeit"
   | Hint -> "Hint"
 
-let print_tuple (a, b) = "(" ^ a ^ ", " ^ b ^ ")"
+let print_tuple ((a1, b1), (a2, b2)) =
+  "((" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ "), ("
+  ^ Char.escaped a2 ^ ", " ^ string_of_int b2 ^ "))"
 
 let parse_test
     (name : string)
@@ -39,9 +41,11 @@ let command_tests =
     parse_test "parse forfeit" "forfeit" Forfeit;
     parse_test "parse forfeit with extra spaces" "   forfeit    "
       Forfeit;
-    parse_move_test "parse move from A6 to A7" "move A6 A7" ("A6", "A7");
+    parse_move_test "parse move from A6 to A7" "move A6 A7"
+      (('a', 6), ('a', 7));
     parse_move_test "parse move from A6 to A7 with extra spaces"
-      "   move A6 A7" ("A6", "A7");
+      "   move A6 A7"
+      (('a', 6), ('a', 7));
   ]
 
 let state_tests = []

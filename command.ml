@@ -1,6 +1,10 @@
-type squares_move = string * string
+type square_label = char * int
+
+type squares_move = square_label * square_label
 
 exception IllegalCommand
+
+exception IllegalSquare
 
 exception NoCommand
 
@@ -10,12 +14,25 @@ type command =
   | Forfeit
   | Hint
 
+let string_to_tuple s =
+  if String.length s < 2 then raise IllegalSquare
+  else
+    let nums = String.sub s 1 (String.length s - 1) in
+    (s.[0], int_of_string nums)
+
+let get_label (start_pos, end_pos) =
+  let start_label = string_to_tuple start_pos in
+  let end_label = string_to_tuple end_pos in
+  (start_label, end_label)
+
 (* [get_positions lst] converts a list containing two elements into a
    tuple. if the list has more or less than two elements, an
    IllegalCommand exception will be thrown *)
 let get_positions = function
   | start_pos :: end_pos :: t ->
-      if List.length t = 0 then (start_pos, end_pos)
+      let s_pos_lower = String.lowercase_ascii start_pos in
+      let e_pos_lower = String.lowercase_ascii end_pos in
+      if List.length t = 0 then get_label (s_pos_lower, e_pos_lower)
       else raise IllegalCommand
   | _ -> raise IllegalCommand
 
