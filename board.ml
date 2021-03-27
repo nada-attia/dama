@@ -50,15 +50,16 @@ type state = {
 
 let update_state board command = failwith "Unimplemented"
 
+(* Auxillary helper function to handle each item of the list. *)
 let de_opt_aux = function None -> [] | Some s -> [ s ]
 
 (*Helper function to remove options from list. *)
 let deoptional_lst lst = List.concat @@ List.map de_opt_aux lst
 
-(* Helper function to get the head of the label. *)
+(* Helper function to get the head of the label tuple. *)
 let label_hd = function hd, _ -> hd
 
-(* Helper function to get the tail of the label. *)
+(* Helper function to get the tail of the label tuple. *)
 let label_tl = function _, tl -> tl
 
 (* Helper function to get the square given the label it corresponds to
@@ -94,7 +95,8 @@ let square_right sq board =
     [ get_square right1_label board ]
   else []
 
-(* Helper function to get square above of [square] if exists, else None. *)
+(* Helper function to get list of square above of [square] if exists,
+   else []. *)
 let square_above sq board =
   let labl = sq.label in
   let ltr_pos = label_hd labl in
@@ -183,6 +185,9 @@ let get_jumps_d sq brd clr func =
     else []
   else []
 
+(* [get_all_jumps sq brd clr] describes the list of squares that
+   represent all possible jumps avalible for the piece of color [clrf]
+   on square [sq] on board [brd] *)
 let get_all_jumps sq brd clr =
   let above = get_jumps_d sq brd clr square_above in
   let left = get_jumps_d sq brd clr square_left in
