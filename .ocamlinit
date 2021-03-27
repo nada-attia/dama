@@ -1,0 +1,6 @@
+#require "ounit2";;
+#require "ANSITerminal";;
+#directory "_build";;
+#load "board.cmo";;
+#load "state.cmo";;
+#load "command.cmo";;
