@@ -35,6 +35,7 @@ type t = {
   board : square list list;
   w_side_board : side_board;
   b_side_board : side_board;
+  size : int;
 }
 
 let terminal_rep_string =
@@ -57,7 +58,15 @@ let rec init_row n row piece_opt acc =
         match acc with
         | [] ->
             let color = if row mod 2 = 1 then Black else White in
-            { color; occupant = piece_opt; label = ('H', row) }
+            {
+              color;
+              occupant = piece_opt;
+              label =
+                (let last_col_char =
+                   char_of_int (int_of_char 'A' + n - 1)
+                 in
+                 (last_col_char, row));
+            }
         | h :: t ->
             let color = if h.color = Black then White else Black in
             let prev_letter =
@@ -69,18 +78,17 @@ let rec init_row n row piece_opt acc =
       init_row (n - 1) row piece_opt (square :: acc)
 
 (** [board_init_helper n row row_end piece_opt acc] initializes rows of
-    length [n] starting at [row] and ending at [row_end] with
-    [piece_opt]*)
-let rec board_init_helper n row row_end piece_opt acc =
+    length [n] starting at [row] for [count] rows with [piece_opt]*)
+let rec board_init_helper n row count piece_opt acc =
   match n with
   | 0 -> acc
   | _ -> (
       match row with
       | 0 -> acc
       | _ ->
-          if row = row_end then acc
+          if count = 0 then acc
           else
-            board_init_helper n (row - 1) row_end piece_opt
+            board_init_helper n (row - 1) (count - 1) piece_opt
               (init_row n row piece_opt [] :: acc))
 
 let board_init n =
@@ -91,6 +99,17 @@ let board_init n =
   @ [ init_row n (n - 2) (Some { color = Black; role = Man }) [] ]
   @ [ init_row n (n - 1) (Some { color = Black; role = Man }) [] ]
   @ [ init_row n n None [] ]
+
+let game_init n =
+  let side_board = { man_count = 2 * n; lady_count = 0 } in
+  {
+    board = board_init n;
+    w_side_board = side_board;
+    b_side_board = side_board;
+    size = n;
+  }
+
+let get_board t = t.board
 
 let count_inactive curr_board p_color = failwith "Unimplemented"
 
@@ -113,12 +132,26 @@ let square_to_string (square : square) : string =
           | White -> Char.escaped terminal_rep_string.black_square_white
           ))
 
-let string_of_row r =
+let string_of_row r row =
   List.fold_left
     (fun acc square -> "| " ^ square_to_string square ^ " " ^ acc)
-    "|" r
+    ("|" ^ string_of_int row)
+    r
 
-let rec terminal_rep_string t =
-  match t with
+let rec terminal_rep_string_helper t count =
+  match t.board with
   | [] -> ""
-  | h :: t -> string_of_row h ^ "\n" ^ terminal_rep_string t
+  | h :: _ ->
+      string_of_row h count ^ "\n"
+      ^ terminal_rep_string_helper t (count + 1)
+
+let rec col_label_string count n =
+  if count <= n then
+    let str =
+      char_of_int (int_of_char 'A' - 1 + count) |> Char.escaped
+    in
+    "  " ^ str ^ " " ^ col_label_string (count + 1) n
+  else " \n"
+
+let terminal_rep_string t count =
+  col_label_string count t.size ^ terminal_rep_string_helper t count

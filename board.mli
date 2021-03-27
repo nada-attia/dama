@@ -7,9 +7,9 @@ type color
 (** A square on an n * n board *)
 type square
 
-(** [board_init n] is a board of size n x n with all Men pieces set up
-    (* in their correct starting positions. Requires: n is at least 8 *)
-    val board_init : int -> t *)
+(** [game_init n] is a board of size n x n with all Men pieces set up (*
+    in their correct starting positions. Requires: n is between 8 and 26
+    inclusive*) val board_init : int -> t *)
 
 (* (** [terminal_rep_string board] is a string representation of the
    board [board]*) val terminal_rep_string : t -> string
