@@ -48,6 +48,8 @@ type state = {
   current : current;
 }
 
+exception EmptyStartSquare
+
 let update_state board command = failwith "Unimplemented"
 
 (* Auxillary helper function to handle each item of the list. *)
@@ -56,28 +58,20 @@ let de_opt_aux = function None -> [] | Some s -> [ s ]
 (*Helper function to remove options from list. *)
 let deoptional_lst lst = List.concat @@ List.map de_opt_aux lst
 
-(* Helper function to get the head of the label tuple. *)
-let label_hd = function hd, _ -> hd
-
-(* Helper function to get the tail of the label tuple. *)
-let label_tl = function _, tl -> tl
-
 (* Helper function to get the square given the label it corresponds to
    and the board it is in. *)
 let get_square labl (brd : t) =
-  let row = label_tl labl - 1 in
+  let col_ltr, num_pos = labl in
+  let row = num_pos - 1 in
   let row_lst = List.nth brd.board row in
-  let col_ltr = label_hd labl in
   let col = Char.code col_ltr - 97 in
   List.nth row_lst col
 
 (* Helper function to get list of left square to [square] if exists,
    else []. *)
 let square_left sq board =
-  let labl = sq.label in
-  let ltr_pos = label_hd labl in
+  let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
-  let num_pos = label_tl labl in
   if ltr_pos_num - 1 >= 97 then
     let left1_label = (Char.chr (ltr_pos_num - 1), num_pos) in
     [ get_square left1_label board ]
@@ -86,10 +80,8 @@ let square_left sq board =
 (* Helper function to get list of right square to [square] if exists,
    else []. *)
 let square_right sq board =
-  let labl = sq.label in
-  let ltr_pos = label_hd labl in
+  let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
-  let num_pos = label_tl labl in
   if ltr_pos_num + 1 <= 104 then
     let right1_label = (Char.chr (ltr_pos_num + 1), num_pos) in
     [ get_square right1_label board ]
@@ -98,9 +90,7 @@ let square_right sq board =
 (* Helper function to get list of square above of [square] if exists,
    else []. *)
 let square_above sq board =
-  let labl = sq.label in
-  let ltr_pos = label_hd labl in
-  let num_pos = label_tl labl in
+  let ltr_pos, num_pos = sq.label in
   if num_pos + 1 <= 8 then
     let above1_label = (ltr_pos, num_pos + 1) in
     [ get_square above1_label board ]
@@ -111,8 +101,9 @@ let check_if_occupied square =
   if square.occupant = None then false else true
 
 let is_valid_label lbl =
-  if Char.code (label_hd lbl) > 96 && Char.code (label_hd lbl) < 105
-  then if label_tl lbl < 9 && label_tl lbl > 0 then true else false
+  let ltr_pos, num_pos = lbl in
+  if Char.code ltr_pos > 96 && Char.code ltr_pos < 105 then
+    if num_pos < 9 && num_pos > 0 then true else false
   else false
 
 (* Helper function [get_vacant func square board] is the square option
@@ -147,10 +138,6 @@ let get_movable_squares_reg square color board =
     else squares
   in
   squares
-
-let un_option = function
-  | Some s -> s
-  | None -> failwith "non-existent square"
 
 (* [get_jumps sq brd clr func] describes all possible locations the
    occupant of square [square] can jump as a list of squares going in
@@ -207,9 +194,7 @@ let where_move brd sq st =
         deoptional_lst (get_movable_squares_reg sq pc.color brd)
       else get_all_jumps sq brd pc.color (* If lady piece *)
     else []
-  with _ ->
-    print_endline "Sorry, no piece is there.";
-    []
+  with _ -> raise EmptyStartSquare
 
 (* [can_move square board st] describes if a piece on square [square]
    can move on board [board] for state [st]. Ensures the square is not
