@@ -17,8 +17,9 @@ type command =
 (* [string_to_tuple s] converts a list of strings in the form [["a",
    "9"]] to [("a", 9)]
 
-   Precondition: the first element is one lowercase letter and the
-   second element is a string that contains an int and no characters *)
+   If the first element is not one lowercase letter and the second
+   element is not a string that contains only an int (and no characters)
+   an IllegalSquare is raised *)
 let string_to_tuple s =
   if String.length s < 2 then raise IllegalSquare
   else
