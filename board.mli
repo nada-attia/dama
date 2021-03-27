@@ -1,4 +1,4 @@
-(** The abstract type of values representing the board. *)
+(* The abstract type of values representing the board. *)
 type t
 
 type color
