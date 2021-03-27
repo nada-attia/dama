@@ -1,28 +1,30 @@
 (* The abstract type of values representing the board. *)
-type t
+(* type t
 
-type color
+   type color
 
-type square
+   type role
 
-(** [game_init n] is a board of size n x n with all Men pieces set up in
-    their correct starting positions *)
-val game_init : int -> t
+   type piece
 
-val get_square : char * int -> t -> square
+   type square
 
-val label_tl : char * int -> int
+   (** [game_init n] is a board of size n x n with all Men pieces set up
+   in their correct starting positions *) val game_init : int -> t
 
-val label_hd : char * int -> char
+   val get_square : char * int -> t -> square
 
-(** [terminal_rep_string board] is a string representation of the board
-    [board]*)
-val terminal_rep_string : t -> string
+   val label_tl : char * int -> int
 
-(** [count_piece p_color] is the total number of pieces which have color
-    [p_color] and are active on the board *)
-val count_active : t -> color -> int
+   val label_hd : char * int -> char
 
-(** [count_piece p_color] is the total number of pieces which have color
-    [p_color] and are active on the board *)
-val count_inactive : t -> color -> int
+   (** [terminal_rep_string board] is a string representation of the
+   board [board]*) val terminal_rep_string : t -> string
+
+   (** [count_piece p_color] is the total number of pieces which have
+   color [p_color] and are active on the board *) val count_active : t
+   -> color -> int
+
+   (** [count_piece p_color] is the total number of pieces which have
+   color [p_color] and are active on the board *) val count_inactive : t
+   -> color -> int *)
