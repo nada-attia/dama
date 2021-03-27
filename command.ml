@@ -14,11 +14,22 @@ type command =
   | Forfeit
   | Hint
 
+(* [string_to_tuple s] converts a list of strings in the form [["a",
+   "9"]] to [("a", 9)]
+
+   If the first element is not one lowercase letter and the second
+   element is not a string that contains only an int (and no characters)
+   an IllegalSquare is raised *)
 let string_to_tuple s =
   if String.length s < 2 then raise IllegalSquare
   else
     let nums = String.sub s 1 (String.length s - 1) in
-    (s.[0], int_of_string nums)
+    let first_char_code = Char.code s.[0] in
+    try
+      if first_char_code < 97 || first_char_code > 104 then
+        raise IllegalSquare
+      else (s.[0], int_of_string nums)
+    with exn -> raise IllegalSquare
 
 let get_label (start_pos, end_pos) =
   let start_label = string_to_tuple start_pos in

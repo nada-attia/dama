@@ -21,6 +21,10 @@ let parse_test
   assert_equal expected_output (Command.parse str)
     ~printer:print_command
 
+let parse_illegalsq_test (name : string) (str : string) : test =
+  name >:: fun _ ->
+  assert_raises Command.IllegalSquare (fun () -> Command.parse str)
+
 let parse_move_test
     (name : string)
     (str : string)
@@ -46,6 +50,10 @@ let command_tests =
     parse_move_test "parse move from A6 to A7 with extra spaces"
       "   move A6 A7"
       (('a', 6), ('a', 7));
+    parse_illegalsq_test "parse square ER8 (contains two chars)"
+      "move ER8 E9";
+    parse_illegalsq_test "parse square 67 (contains only numbers)"
+      "move 67 E9";
   ]
 
 let state_tests = []
