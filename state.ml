@@ -65,19 +65,59 @@ let get_movable_squares_reg square color board =
   in
   squares
 
-(* [get_jumps square board color] describes all possible locations the
-   occupant of square [square] can jump as a list of squares. (Recall
-   that possible jumps are required to be taken in Dama, but 2 jumps
-   could be an option.) *)
-let get_jumps square board color =
-  let label = square.label in
+(* [get_jumps sq brd clr] describes all possible locations the occupant
+   of square [square] can jump as a list of squares. (Recall that
+   possible jumps are required to be taken in Dama, but 2 jumps could be
+   an option.) *)
+let get_jumps sq brd clr st =
+  let label = sq.label in
   let ltr_pos = Board.label_hd label in
   let num_pos = Board.label_tl label in
-  
+  (* Check for jumps above square. *)
+  let above_sq = Board.square_above sq brd in
+  let above_2 = Board.square_above above_sq brd in
+  let squares =
+    if
+      get_vacant_above sq brd = None
+      && above_sq.occupant.color <> clr
+      && above_2 <> None && above_2.occupant = None
+    then [ above_2 ]
+    else []
+  in
+  (* Check for jumps left of square. *)
+  let left_sq = Board.square_left sq brd in
+  let left_2 = Board.square_left left_sq brd in
+  let squares =
+    if
+      get_vacant_left sq brd = None
+      && left_sq.occupant.color <> clr
+      && left_2 <> None && left_2.occupant = None
+    then left_2 :: squares
+    else squares
+  in
+  (* Check for jumps right of square. *)
+  let right_sq = Board.square_right sq brd in
+  let right_2 = Board.square_right right_sq brd in
+  if
+    get_vacant_right sq brd = None
+    && right_sq.occupant.color <> clr
+    && right_2 <> None && right_2.occupant = None
+  then right_2 :: squares
+  else squares
 
 (* [where_move board square] describes all of the legal locations the
    occupant of square [square] can move to. *)
-let where_move board square = failwith "Unimplemented"
+let where_move brd sq st =
+  let pc_typ = sq.occupant.role in
+  (* If man piece *)
+  if pc_typ = Board.Man then
+    (* If jump is avalible, it must be taken. *)
+    if get_jumps sq brd sq.occupant.color st = [] then
+      get_movable_squares_reg sq sq.occupant.color brd
+    else get_jumps sq brd sq.occupant.color st (* If lady piece *)
+  else []
+
+(* If jump is avalible must be taken. *)
 
 (* [can_move square board st] describes if a piece on square [square]
    can move on board [board] for state [st]. Ensures the square is not
