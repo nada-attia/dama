@@ -50,9 +50,9 @@ let command_tests =
     parse_move_test "parse move from A6 to A7 with extra spaces"
       "   move A6 A7"
       (('a', 6), ('a', 7));
-    parse_illegalsq_test "pare square ER8 (contains two chars)"
+    parse_illegalsq_test "parse square ER8 (contains two chars)"
       "move ER8 E9";
-    parse_illegalsq_test "pare square 67 (contains only numbers)"
+    parse_illegalsq_test "parse square 67 (contains only numbers)"
       "move 67 E9";
   ]
 
