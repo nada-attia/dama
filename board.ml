@@ -140,12 +140,7 @@ let get_movable_squares_reg square color board =
   in
   squares
 
-(* [get_jumps sq brd clr func] describes all possible locations the
-   occupant of square [square] can jump as a list of squares going in
-   the direction helper function [func] describes. (Recall that possible
-   jumps are required to be taken in Dama, but 2 jumps could be an
-   option.) *)
-let get_jumps_d sq brd clr func =
+let get_jumps_d sq (brd : t) clr func =
   (* Get next square in direction *)
   let nxt_sq = func sq brd in
   (* If we got something... *)
@@ -182,9 +177,7 @@ let get_all_jumps sq brd clr =
   let right = get_jumps_d sq brd clr square_right in
   above @ left @ right
 
-(* [where_move board square] describes all of the legal locations the
-   occupant of square [square] can move to. *)
-let where_move brd sq st =
+let where_move brd sq (st : State.state) =
   try
     let pc = Option.get sq.occupant in
     let pc_typ = pc.role in
@@ -197,15 +190,11 @@ let where_move brd sq st =
     else []
   with _ -> raise EmptyStartSquare
 
-(* [can_move square board st] describes if a piece on square [square]
-   can move on board [board] for state [st]. Ensures the square is not
-   empty and occupied, that the current occupant has the turn in the
-   state, and that there are squares it can legally move to. *)
-let can_move square board (st : state) =
+let can_move square board (st : State.state) =
   let condition1 = not (check_if_occupied square) in
   if square.occupant <> None then
     let pc = Option.get square.occupant in
-    let condition2 = pc.color = st.turn in
+    let condition2 = pc.color = State.get_turn st in
     let condition3 = where_move board square st <> [] in
     condition1 && condition2 && condition3
   else false
