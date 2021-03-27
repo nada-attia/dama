@@ -139,7 +139,8 @@ let get_movable_squares_reg square color board =
     else squares
   in
   squares
-glet get_jumps_d sq (brd: t) clr func =
+
+let get_jumps_d sq (brd : t) clr func =
   (* Get next square in direction *)
   let nxt_sq = func sq brd in
   (* If we got something... *)
