@@ -32,7 +32,8 @@ let parse s =
   let trimmed = String.trim s in
   let split_lst = String.split_on_char ' ' trimmed in
   let s_lst = if String.length trimmed != 0 then split_lst else [] in
-  match s_lst with
+  let s_lst_clean = List.filter (fun x -> x <> "") s_lst in
+  match s_lst_clean with
   | [] -> raise NoCommand
   | h :: t ->
       let action = String.trim h in
