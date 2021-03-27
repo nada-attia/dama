@@ -319,10 +319,10 @@ let string_of_row r row =
     ("|" ^ string_of_int row)
     r
 
-let rec terminal_rep_string_helper (t : t) count =
-  match t.board with
+let rec terminal_rep_string_helper t count =
+  match t with
   | [] -> ""
-  | h :: _ ->
+  | h :: t ->
       string_of_row h count ^ "\n"
       ^ terminal_rep_string_helper t (count + 1)
 
@@ -335,4 +335,5 @@ let rec col_label_string count n =
   else " \n"
 
 let terminal_rep_string t count =
-  col_label_string count t.size ^ terminal_rep_string_helper t count
+  col_label_string count t.size
+  ^ terminal_rep_string_helper t.board count
