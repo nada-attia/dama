@@ -26,7 +26,7 @@ let string_to_tuple s =
     let nums = String.sub s 1 (String.length s - 1) in
     let first_char_code = Char.code s.[0] in
     try
-      if first_char_code < 97 || first_char_code > 122 then
+      if first_char_code < 97 || first_char_code > 104 then
         raise IllegalSquare
       else (s.[0], int_of_string nums)
     with exn -> raise IllegalSquare
