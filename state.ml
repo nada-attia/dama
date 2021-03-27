@@ -16,20 +16,32 @@ let where_move board square = failwith "Unimplemented"
 (* Helper function to check to see if a given square is occupied or not.*)
 let check_if_occupied square = if square.occupant = None then false else true
 
+let is_valid_label lbl = 
+  if Char.code (Board.label_hd lbl) > 96 and Char.code (Board.label_hd lbl) < 105 then 
+    if Board.label_tl < 9 and Board.label_hd > 0 then true 
+    else false 
+  else false
+
 (* Helper function to get the neighbor squares that can theoretically be moved 
   to from a given square noting the color of the piece on said square, assuming 
   it is a regular non-Lady piece. *)
-let get_movable_squares_reg square color = 
-  let square_pos = square.label in
-  let letter_pos = match square_pos with 
-  | (h, t) -> h  in 
-  let num_pos = match square_pos with 
-  | (g,j) -> j in
+let get_movable_squares_reg square color board = 
+  let labl = square.label in
+  let ltr_pos = Board.label_hd labl in
+  let num_pos = Board.label_tl labl in 
+
   let squares = [] in
+  let upper_bound = if 8 <= (Board.label_tl labl) + 2 then 8 else (Board.label_tl labl) + 2 in 
+  
   (*if white...*)
-  for i=num_pos to 8 do 
-    if 
-  end
+  let ahead
+  let square_ahead1 = Board.get_square labl board
+
+  
+  
+  for i = (Board.label_tl labl) + 1 to upper_bound do 
+    if check_if_occupied (Board.get_square labl board) then () else squares
+  done
 
 
 let can_move (square: Board.square) (board : Board.t) (st : state) = 

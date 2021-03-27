@@ -9,7 +9,11 @@ type square
     their correct starting positions *)
 val game_init : int -> t
 
-val get_square : square.label -> t -> square
+val get_square : char * int -> t -> square
+
+val label_tl : char * int -> int
+
+val label_hd : char * int -> char
 
 (** [terminal_rep_string board] is a string representation of the board
     [board]*)

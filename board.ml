@@ -37,11 +37,19 @@ type t = {
   b_side_board : side_board;
 }
 
-let label_hd = function () -> failwith "Empty label." | hd, _ -> hd
+(* Helper function to get the head of the label. *)
+let label_hd = function hd, _ -> hd
 
-let label_tl = function () -> failwith "Empty label." | _, tl -> tl
+(* Helper function to get the tail of the label. *)
+let label_tl = function _, tl -> tl
 
-let get_square labl brd = brd.board
+(* Helper function to get the square given the label it corresponds to
+   and the board it is in. *)
+let get_square labl brd =
+  let row = label_tl labl in
+  let row_lst = List.nth brd.board row in
+  let col = label_hd labl in
+  List.nth row_lst col
 
 let terminal_rep_string t =
   {
