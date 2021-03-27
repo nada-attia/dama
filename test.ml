@@ -1,12 +1,13 @@
 open OUnit2
 open Board
-open Command
-open State
+
+(* open Command open State *)
 
 let board_tests = []
-let command_tests = []
-let state_tests = []
 
+let command_tests = []
+
+let state_tests = []
 
 let suite =
   "test suite for A2"

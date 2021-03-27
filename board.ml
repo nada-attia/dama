@@ -37,6 +37,12 @@ type t = {
   b_side_board : side_board;
 }
 
+let label_hd = function () -> failwith "Empty label." | hd, _ -> hd
+
+let label_tl = function () -> failwith "Empty label." | _, tl -> tl
+
+let get_square labl brd = brd.board
+
 let terminal_rep_string t =
   {
     white_square_empty = ' ';
