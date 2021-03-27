@@ -1,4 +1,4 @@
-(** The abstract type of values representing the board. *)
+(* The abstract type of values representing the board. *)
 type t
 
 (** The colors of the 2 kinds of pieces *)
@@ -22,3 +22,9 @@ val terminal_rep_string : t -> int -> string
 (** [count_inactive p_color] is the total number of pieces which have
     color [p_color] and are not on the board *)
 val count_inactive : t -> color -> int
+
+(** [game_init n] is a board of size n x n with all Men pieces set up in
+    their correct starting positions *)
+val game_init : int -> t
+
+val get_square : char * int -> t -> square
