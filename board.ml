@@ -40,6 +40,8 @@ type t = {
 
 exception EmptyStartSquare
 
+let get_init_player = White
+
 (* Auxillary helper function to handle each item of the list. *)
 let de_opt_aux = function None -> [] | Some s -> [ s ]
 
