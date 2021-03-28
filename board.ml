@@ -158,9 +158,9 @@ let get_movable_squares_reg square color board =
   in
   squares
 
-(* [get_jumps_dir sq brd clr fun] gets the jump in a given direction
-   guided by function [func] for a piece of color [clr] on square [sq]
-   on board [brd]*)
+(* [get_jumps_dir sq brd clr fun] gets the square to jump to in a given
+   direction guided by function [func] for a piece of color [clr] on
+   square [sq] on board [brd]*)
 let get_jumps_dir sq (brd : t) clr func =
   (* Get next square in direction *)
   let nxt_sq = func sq clr brd in
@@ -182,7 +182,7 @@ let get_jumps_dir sq (brd : t) clr func =
       then
         let pc_abv = Option.get nxt_sq.occupant in
         (* ensure that the piece color is enemy color*)
-        if pc_abv.color <> clr then [ nxt_sq ] else []
+        if pc_abv.color <> clr then [ nxt_2 ] else []
         (* conditions for jump not met. *)
       else []
       (* Did not find next square or 2nd next in given direction. *)
@@ -190,8 +190,8 @@ let get_jumps_dir sq (brd : t) clr func =
   else []
 
 (* [get_all_jumps sq brd clr] describes the list of squares that
-   represent all possible jumps avalible for the piece of color [clrf]
-   on square [sq] on board [brd] *)
+   represent all possible jump destination avalible for the piece of
+   color [clrf] on square [sq] on board [brd] *)
 let get_all_jumps sq brd clr =
   let above = get_jumps_dir sq brd clr square_above in
   let left = get_jumps_dir sq brd clr square_left in
@@ -209,19 +209,61 @@ let rec get_all_vac_sq_dir acc sq (clr : color) (brd : t) func =
   | Some n_sqr -> get_all_vac_sq_dir (n_sqr :: acc) n_sqr clr brd func
   | None -> acc
 
-let get_all_jumps_lady sq brd clr = failwith "f"
+(* Returns list of single square in given direction that can be jumped
+   to for lady piece else [].*)
+let get_all_jumps_dir_lady sq brd clr func =
+  let vacants = get_all_vac_sq_dir [] sq clr brd func in
+  (* First of the list is, is the last vacant in given direction, so
+     jumps of last vacant square. *)
+  if vacants <> [] then get_jumps_dir (List.nth vacants 0) brd clr func
+  else []
 
+(* [get_all_jumps_lady sq brd clr] describes all of the squares the lady
+   piece occupying square [sq] of color [clr] on board [brd] has
+   avalible to it.*)
+let get_all_jumps_lady sq brd clr =
+  let above = get_all_jumps_dir_lady sq brd clr square_above in
+  let below = get_all_jumps_dir_lady sq brd clr square_below in
+  let right = get_all_jumps_dir_lady sq brd clr square_right in
+  let left = get_all_jumps_dir_lady sq brd clr square_left in
+  above @ below @ right @ left
+
+let get_movable_squares_lady square color board =
+  let squares = [] in
+  let squares =
+    if get_all_vac_sq_dir [] square color board square_above <> [] then
+      get_all_vac_sq_dir [] square color board square_above @ squares
+    else squares
+  in
+  let squares =
+    if get_all_vac_sq_dir [] square color board square_right <> [] then
+      get_all_vac_sq_dir [] square color board square_right @ squares
+    else squares
+  in
+  let squares =
+    if get_all_vac_sq_dir [] square color board square_left <> [] then
+      get_all_vac_sq_dir [] square color board square_left @ squares
+    else squares
+  in
+  squares
+
+(* Returns a list of squares a piece on square [sq] can move to on board
+   [brd]*)
 let where_move brd sq =
   try
     let pc = Option.get sq.occupant in
     let pc_typ = pc.role in
     (* If man piece *)
     if pc_typ = Man then
-      (* If jump is avalible, it must be taken. *)
+      (* If jump is avalible, it must be taken. But if not... *)
       if get_all_jumps sq brd pc.color = [] then
         deoptional_lst (get_movable_squares_reg sq pc.color brd)
       else get_all_jumps sq brd pc.color (* If lady piece *)
-    else []
+    else if
+      (* If jump is avalible, it must be taken. But if not... *)
+      get_all_jumps_lady sq brd pc.color = []
+    then get_all_jumps_lady sq brd pc.color
+    else get_movable_squares_lady sq pc.color brd
   with _ -> raise EmptyStartSquare
 
 let can_move square board turn =
