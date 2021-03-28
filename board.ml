@@ -65,8 +65,8 @@ let square_left sq color board =
   let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
   let c_vals =
-    if color = White then [| ltr_pos_num - 1; 97; -1 |]
-    else [| 104; ltr_pos_num + 1; 1 |]
+    if color = White then [| ltr_pos_num - 1; Char.code 'a'; -1 |]
+    else [| Char.code 'h'; ltr_pos_num + 1; 1 |]
   in
   if c_vals.(0) >= c_vals.(1) then
     let left1_label = (Char.chr (ltr_pos_num - c_vals.(2)), num_pos) in
@@ -81,8 +81,8 @@ let square_right sq color board =
   let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
   let c_vals =
-    if color = White then [| ltr_pos_num + 1; 104; 1 |]
-    else [| 97; ltr_pos_num - 1; -1 |]
+    if color = White then [| ltr_pos_num + 1; Char.code 'h'; 1 |]
+    else [| Char.code 'a'; ltr_pos_num - 1; -1 |]
   in
   if c_vals.(0) <= c_vals.(1) then
     let right1_label = (Char.chr (ltr_pos_num + c_vals.(2)), num_pos) in
@@ -123,12 +123,6 @@ let square_below sq color board =
 let check_if_occupied square =
   if square.occupant = None then false else true
 
-let is_valid_label lbl =
-  let ltr_pos, num_pos = lbl in
-  if Char.code ltr_pos > 96 && Char.code ltr_pos < 105 then
-    if num_pos < 9 && num_pos > 0 then true else false
-  else false
-
 (* Helper function [get_vacant func square board] is the square option
    on top of, left of, or right of square [square] from board [board],
    depending on which helper function [func] is passed in. If the square
@@ -140,9 +134,9 @@ let get_vacant func square color board =
     if check_if_occupied res_sqr then None else Some res_sqr
   with _ -> None
 
-(* Helper function to get the neighbor squares that can theoretically be
-   moved to from a given square noting the color of the piece on said
-   square, assuming it is a regular non-Lady piece. *)
+(* Helper function to get the neighbor squares that can be moved to from
+   a given square noting the color of the piece on said square, assuming
+   it is a regular non-Lady piece. *)
 let get_movable_squares_reg square color board =
   let squares = [] in
   let squares =
@@ -207,7 +201,7 @@ let get_all_jumps sq brd clr =
    square [sq] given a piece of color [clr] occupying said sqaure [sq]
    on board [brd]. Function is tail recursive with accumulator list
    [acc]*)
-let rec get_all_vac_sq_dir acc sq clr brd func =
+let rec get_all_vac_sq_dir acc sq (clr : color) (brd : t) func =
   let next = get_vacant func sq clr brd in
   match next with
   | Some n_sqr -> get_all_vac_sq_dir (n_sqr :: acc) n_sqr clr brd func
@@ -229,13 +223,11 @@ let where_move brd sq =
   with _ -> raise EmptyStartSquare
 
 let can_move square board turn =
-  let condition1 = not (check_if_occupied square) in
-  if square.occupant <> None then
-    let pc = Option.get square.occupant in
-    let condition2 = pc.color = turn in
-    let condition3 = where_move board square <> [] in
-    condition1 && condition2 && condition3
-  else false
+  let condition1 = check_if_occupied square in
+  let pc = Option.get square.occupant in
+  let condition2 = pc.color = turn in
+  let condition3 = where_move board square <> [] in
+  condition1 && condition2 && condition3
 
 let terminal_rep_string =
   {
