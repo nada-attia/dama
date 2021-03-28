@@ -32,7 +32,7 @@ val get_square : char * int -> t -> square
 (** [where_move board square] describes the squares where any given
     piece is allowed to move to, from its current position. This depends
     on it's piece type and current position, [square]. *)
-val where_move : t -> square -> color -> square list
+val where_move : t -> square -> square list
 
 (** [can_move square board] describes whether or not a given piece
     occupying [square] is allowed to move based off of th rules of Dama.
@@ -45,5 +45,9 @@ val can_move : square -> t -> color -> bool
    the direction helper function [func] describes. (Recall that possible
    jumps are required to be taken in Dama, but 2 jumps could be an
    option.) *)
-val get_jumps_d :
-  square -> t -> color -> (square -> t -> square list) -> square list
+val get_jumps_dir :
+  square ->
+  t ->
+  color ->
+  (square -> color -> t -> square list) ->
+  square list
