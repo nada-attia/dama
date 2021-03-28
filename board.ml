@@ -22,7 +22,7 @@ type piece = {
 
 type square = {
   color : color;
-  occupant : piece option;
+  mutable occupant : piece option;
   mutable label : char * int;
 }
 
@@ -39,6 +39,8 @@ type t = {
 }
 
 exception EmptyStartSquare
+
+exception NoPiece
 
 let get_init_player = White
 
@@ -359,15 +361,26 @@ let terminal_rep_string t count =
   col_label_string count t.size
   ^ terminal_rep_string_helper t.board count
 
-let find_square board label =
-  match board.board with
-  | [] -> None
-  | row :: remaining_rows ->
-      let rec get_square r =
-        match r with
-        | [] -> None
-        | square :: remaining_squares ->
-            if square.label = label then Some square
-            else get_square remaining_squares
-      in
-      get_square row
+let get_piece (sq : square) =
+  let piece = sq.occupant in
+  match piece with None -> raise NoPiece | Some piece -> piece
+
+let rec update_board board start_pos end_pos =
+  let rec update_rem_rows rows =
+    match rows with
+    | [] -> ()
+    | row :: remaining_rows ->
+        let rec update_row r =
+          match r with
+          | [] -> ()
+          | square :: remaining_squares ->
+              let p = get_piece square in
+              let lbl = square.label in
+              if lbl = start_pos then square.occupant <- None
+              else if lbl = end_pos then square.occupant <- Some p
+              else update_row remaining_squares
+        in
+        update_row row;
+        update_rem_rows remaining_rows
+  in
+  update_rem_rows board.board
