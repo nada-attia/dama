@@ -67,8 +67,8 @@ let square_left sq color board =
   let c_vals =
     if color = White then [| ltr_pos_num - 1; Char.code 'a'; -1 |]
     else [| Char.code 'h'; ltr_pos_num + 1; 1 |]
-
   in
+
   if c_vals.(0) >= c_vals.(1) then
     let left1_label = (Char.chr (ltr_pos_num - c_vals.(2)), num_pos) in
     [ get_square left1_label board ]
@@ -82,11 +82,10 @@ let square_right sq color board =
   let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
   let c_vals =
-
     if color = White then [| ltr_pos_num + 1; Char.code 'h'; 1 |]
     else [| Char.code 'a'; ltr_pos_num - 1; -1 |]
-
   in
+
   if c_vals.(0) <= c_vals.(1) then
     let right1_label = (Char.chr (ltr_pos_num + c_vals.(2)), num_pos) in
     [ get_square right1_label board ]
@@ -97,7 +96,6 @@ let square_right sq color board =
    board changes. Uses list c_val determined by color [color] to perform
    operations. *)
 let square_above sq color board =
-
   let ltr_pos, num_pos = sq.label in
   let c_vals =
     if color = White then [| num_pos + 1; 8; 1 |]
@@ -115,7 +113,6 @@ let square_above sq color board =
 let square_below sq color board =
   let ltr_pos, num_pos = sq.label in
   let c_vals =
-
     if color = White then [| num_pos - 1; 1; 1 |]
     else [| 8; num_pos + 1; -1 |]
   in
@@ -259,7 +256,7 @@ let rec init_row n row piece_opt acc =
               occupant = piece_opt;
               label =
                 (let last_col_char =
-                   char_of_int (int_of_char 'A' + n - 1)
+                   char_of_int (int_of_char 'a' + n - 1)
                  in
                  (last_col_char, row));
             }
@@ -343,20 +340,21 @@ let string_of_row r row =
     ("|" ^ string_of_int row)
     r
 
-let rec terminal_rep_string_helper (t : t) count =
-  match t.board with
+let rec terminal_rep_string_helper t count =
+  match t with
   | [] -> ""
-  | h :: _ ->
+  | h :: t ->
       string_of_row h count ^ "\n"
       ^ terminal_rep_string_helper t (count + 1)
 
 let rec col_label_string count n =
   if count <= n then
     let str =
-      char_of_int (int_of_char 'A' - 1 + count) |> Char.escaped
+      char_of_int (int_of_char 'a' - 1 + count) |> Char.escaped
     in
     "  " ^ str ^ " " ^ col_label_string (count + 1) n
   else " \n"
 
 let terminal_rep_string t count =
-  col_label_string count t.size ^ terminal_rep_string_helper t count
+  col_label_string count t.size
+  ^ terminal_rep_string_helper t.board count
