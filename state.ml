@@ -1,3 +1,3 @@
 type state = { state : string }
 
-let get_turn = failwith "Unimplemented"
+let get_turn state = failwith "Unimplemented"

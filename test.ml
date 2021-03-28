@@ -26,6 +26,10 @@ let parse_illegalsq_test (name : string) (str : string) : test =
   name >:: fun _ ->
   assert_raises Command.IllegalSquare (fun () -> Command.parse str)
 
+let parse_illegalcom_test (name : string) (str : string) : test =
+  name >:: fun _ ->
+  assert_raises Command.IllegalCommand (fun () -> Command.parse str)
+
 let parse_move_test
     (name : string)
     (str : string)
@@ -55,6 +59,8 @@ let command_tests =
       "move ER8 E9";
     parse_illegalsq_test "parse square 67 (contains only numbers)"
       "move 67 E9";
+    parse_illegalcom_test "parse move with three squares"
+      "move 67 E9 E4";
   ]
 
 let state_tests = []

@@ -51,8 +51,6 @@ type state = {
 
 exception EmptyStartSquare
 
-let update_state board command = failwith "Unimplemented"
-
 (* Auxillary helper function to handle each item of the list. *)
 let de_opt_aux = function None -> [] | Some s -> [ s ]
 
