@@ -38,15 +38,6 @@ type t = {
   size : int;
 }
 
-type direction =
-  | Up
-  | Down
-  | Left
-  | Right
-  | DiagLeftUp
-  | DiagRightUp
-  | DiagLeftDown
-  | DiagRightDown
 
 exception EmptyStartSquare
 
@@ -199,13 +190,6 @@ let get_jumps_dir sq (brd : t) clr func =
     else []
   else []
 
-let get_jumps sq (brd : t) clr dir =
-  match dir with
-  | Up -> get_jumps_dir sq brd clr square_above
-  | Down -> get_jumps_dir sq brd clr square_below
-  | Left -> get_jumps_dir sq brd clr square_left
-  | Right -> get_jumps_dir sq brd clr square_right
-  | _ -> failwith "Unimplemented"
 
 (* [get_all_jumps sq brd clr] describes the list of squares that
    represent all possible jumps avalible for the piece of color [clrf]

@@ -7,16 +7,6 @@ type color
 (** A square on an n * n board *)
 type square
 
-type direction =
-  | Up
-  | Down
-  | Left
-  | Right
-  | DiagLeftUp
-  | DiagRightUp
-  | DiagLeftDown
-  | DiagRightDown
-
 (** [game_init n] is a board of size n x n with all Men pieces set up in
     their correct starting positions. Requires: n is between 8 and 26
     inclusive*)
@@ -50,8 +40,7 @@ val where_move : t -> square -> square list
     color who's piece occupies [square]*)
 val can_move : square -> t -> color -> bool
 
-(* [get_jumps sq brd clr dir] describes all possible locations the
-   occupant of square [square] can jump as a list of squares going in a
-   specific [direction]. (Recall that possible jumps are required to be
-   taken in Dama, but 2 jumps could be an option.) *)
-val get_jumps : square -> t -> color -> direction -> square list
+(* [get_all_jumps sq brd clr] describes the list of squares that
+   represent all possible jumps avalible for the piece of color [clrf]
+   on square [sq] on board [brd] *)
+val get_all_jumps : square -> t -> color -> square list
