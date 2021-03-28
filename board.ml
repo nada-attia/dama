@@ -67,6 +67,7 @@ let square_left sq color board =
   let c_vals =
     if color = White then [| ltr_pos_num - 1; Char.code 'a'; -1 |]
     else [| Char.code 'h'; ltr_pos_num + 1; 1 |]
+
   in
   if c_vals.(0) >= c_vals.(1) then
     let left1_label = (Char.chr (ltr_pos_num - c_vals.(2)), num_pos) in
@@ -81,8 +82,10 @@ let square_right sq color board =
   let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
   let c_vals =
+
     if color = White then [| ltr_pos_num + 1; Char.code 'h'; 1 |]
     else [| Char.code 'a'; ltr_pos_num - 1; -1 |]
+
   in
   if c_vals.(0) <= c_vals.(1) then
     let right1_label = (Char.chr (ltr_pos_num + c_vals.(2)), num_pos) in
@@ -94,6 +97,7 @@ let square_right sq color board =
    board changes. Uses list c_val determined by color [color] to perform
    operations. *)
 let square_above sq color board =
+
   let ltr_pos, num_pos = sq.label in
   let c_vals =
     if color = White then [| num_pos + 1; 8; 1 |]
@@ -111,6 +115,7 @@ let square_above sq color board =
 let square_below sq color board =
   let ltr_pos, num_pos = sq.label in
   let c_vals =
+
     if color = White then [| num_pos - 1; 1; 1 |]
     else [| 8; num_pos + 1; -1 |]
   in
