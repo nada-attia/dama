@@ -40,16 +40,9 @@ val where_move : t -> square -> square list
     color who's piece occupies [square]*)
 val can_move : square -> t -> color -> bool
 
-(* [get_jumps sq brd clr func] describes all possible locations the
-   occupant of square [square] can jump as a list of squares going in
-   the direction helper function [func] describes. (Recall that possible
-   jumps are required to be taken in Dama, but 2 jumps could be an
-   option.) *)
-val get_jumps_dir :
-  square ->
-  t ->
-  color ->
-  (square -> color -> t -> square list) ->
-  square list
+(* [get_all_jumps sq brd clr] describes the list of squares that
+   represent all possible jumps avalible for the piece of color [clrf]
+   on square [sq] on board [brd] *)
+val get_all_jumps : square -> t -> color -> square list
 
 val update_board : bool -> t -> char * int -> char * int -> unit
