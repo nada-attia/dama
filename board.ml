@@ -38,17 +38,6 @@ type t = {
   size : int;
 }
 
-type current =
-  | InProgress
-  | Finished
-  | Pregame
-
-type state = {
-  turn : color;
-  board : t;
-  current : current;
-}
-
 exception EmptyStartSquare
 
 let update_state board command = failwith "Unimplemented"
@@ -239,11 +228,11 @@ let where_move brd sq =
     else []
   with _ -> raise EmptyStartSquare
 
-let can_move square board (st : state) =
+let can_move square board turn =
   let condition1 = not (check_if_occupied square) in
   if square.occupant <> None then
     let pc = Option.get square.occupant in
-    let condition2 = pc.color = st.turn in
+    let condition2 = pc.color = turn in
     let condition3 = where_move board square <> [] in
     condition1 && condition2 && condition3
   else false
