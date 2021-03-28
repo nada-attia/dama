@@ -32,13 +32,13 @@ val get_square : char * int -> t -> square
 (** [where_move board square] describes the squares where any given
     piece is allowed to move to, from its current position. This depends
     on it's piece type and current position, [square]. *)
-val where_move : t -> square -> State.state -> square list
+val where_move : t -> square -> color -> square list
 
 (** [can_move square board] describes whether or not a given piece
     occupying [square] is allowed to move based off of th rules of Dama.
     true = it can and false = it cannot. Assumes: It is the move of the
     color who's piece occupies [square]*)
-val can_move : square -> t -> State.state -> bool
+val can_move : square -> t -> color -> bool
 
 (* [get_jumps sq brd clr func] describes all possible locations the
    occupant of square [square] can jump as a list of squares going in
