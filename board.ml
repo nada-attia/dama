@@ -38,6 +38,7 @@ type t = {
   size : int;
 }
 
+
 exception EmptyStartSquare
 
 let update_state board command = failwith "Unimplemented"
@@ -188,6 +189,7 @@ let get_jumps_dir sq (brd : t) clr func =
       (* Did not find next square or 2nd next in given direction. *)
     else []
   else []
+
 
 (* [get_all_jumps sq brd clr] describes the list of squares that
    represent all possible jumps avalible for the piece of color [clrf]
