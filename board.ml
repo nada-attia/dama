@@ -38,16 +38,7 @@ type t = {
   size : int;
 }
 
-type current =
-  | InProgress
-  | Finished
-  | Pregame
 
-type state = {
-  turn : color;
-  board : t;
-  current : current;
-}
 
 exception EmptyStartSquare
 
@@ -177,7 +168,7 @@ let get_all_jumps sq brd clr =
   let right = get_jumps_d sq brd clr square_right in
   above @ left @ right
 
-let where_move brd sq (st : State.state) =
+let where_move brd sq turn =
   try
     let pc = Option.get sq.occupant in
     let pc_typ = pc.role in
@@ -190,12 +181,12 @@ let where_move brd sq (st : State.state) =
     else []
   with _ -> raise EmptyStartSquare
 
-let can_move square board (st : State.state) =
+let can_move square board turn =
   let condition1 = not (check_if_occupied square) in
   if square.occupant <> None then
     let pc = Option.get square.occupant in
-    let condition2 = pc.color = State.get_turn st in
-    let condition3 = where_move board square st <> [] in
+    let condition2 = pc.color = turn in
+    let condition3 = where_move board square turn <> [] in
     condition1 && condition2 && condition3
   else false
 
