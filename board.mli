@@ -9,6 +9,8 @@ type square
 
 val get_init_player : color
 
+val get_other_player : color -> color
+
 (** [game_init n] is a board of size n x n with all Men pieces set up in
     their correct starting positions. Requires: n is between 8 and 26
     inclusive*)

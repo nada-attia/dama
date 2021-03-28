@@ -44,6 +44,8 @@ exception NoPiece
 
 let get_init_player = White
 
+let get_other_player color = if color = White then Black else White
+
 (* Auxillary helper function to handle each item of the list. *)
 let de_opt_aux = function None -> [] | Some s -> [ s ]
 
