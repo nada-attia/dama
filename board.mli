@@ -25,10 +25,6 @@ val terminal_rep_string : t -> int -> string
     color [p_color] and are not on the board *)
 val count_inactive : t -> color -> int
 
-(** [game_init n] is a board of size n x n with all Men pieces set up in
-    their correct starting positions *)
-val game_init : int -> t
-
 val get_square : char * int -> t -> square
 
 (** [where_move board square] describes the squares where any given
@@ -53,3 +49,5 @@ val get_jumps_dir :
   color ->
   (square -> color -> t -> square list) ->
   square list
+
+val find_square : t -> char * int -> square option

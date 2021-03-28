@@ -358,3 +358,16 @@ let rec col_label_string count n =
 let terminal_rep_string t count =
   col_label_string count t.size
   ^ terminal_rep_string_helper t.board count
+
+let find_square board label =
+  match board.board with
+  | [] -> None
+  | row :: remaining_rows ->
+      let rec get_square r =
+        match r with
+        | [] -> None
+        | square :: remaining_squares ->
+            if square.label = label then Some square
+            else get_square remaining_squares
+      in
+      get_square row
