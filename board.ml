@@ -33,8 +33,8 @@ type side_board = {
 
 type t = {
   board : square list list;
-  w_side_board : side_board;
-  b_side_board : side_board;
+  mutable w_side_board : side_board;
+  mutable b_side_board : side_board;
   size : int;
 }
 
@@ -367,7 +367,9 @@ let get_piece (sq : square) =
   let piece = sq.occupant in
   match piece with None -> raise NoPiece | Some piece -> piece
 
-let rec update_board board start_pos end_pos =
+let get_lost_pos = failwith "Unimplemented"
+
+let rec update_board is_jump board start_pos end_pos =
   let rec update_rem_rows rows =
     match rows with
     | [] -> ()
@@ -380,8 +382,12 @@ let rec update_board board start_pos end_pos =
               let lbl = square.label in
               if lbl = start_pos then square.occupant <- None
               else if lbl = end_pos then square.occupant <- Some p
+              else if is_jump = true && lbl = get_lost_pos then
+                square.occupant <- None
+                (* need to update side_board here *)
               else update_row remaining_squares
         in
+
         update_row row;
         update_rem_rows remaining_rows
   in

@@ -16,11 +16,11 @@ let init_state board =
 
 let get_turn state = state.turn
 
-(* [valid_end end_pos] is true if [end_pos] is a valid ending square and
-   false otherwise *)
-let rec valid_end square = function
+(* [find_square square] is true if [end_pos] is a valid ending square
+   and false otherwise *)
+let rec find_square square = function
   | [] -> false
-  | h :: t -> if h = square then true else valid_end square t
+  | h :: t -> if h = square then true else find_square square t
 
 (* need to implement move for jumps *)
 let update_state_move (state : state) (m : Command.squares_move) =
@@ -30,9 +30,11 @@ let update_state_move (state : state) (m : Command.squares_move) =
   let square = Board.get_square end_pos board in
   let is_valid_start = Board.can_move square board turn in
   let valid_ends = Board.where_move board square in
-  let is_valid_end = valid_end square valid_ends in
+  let is_valid_end = find_square square valid_ends in
+  let jumps = Board.get_jumps square board color in
+  let is_jump = find_square square jumps in
   if is_valid_start = true && is_valid_end = true then (
-    Board.update_board board start_pos end_pos;
+    Board.update_board is_jump board start_pos end_pos;
     let new_turn = Board.get_other_player turn in
     let new_current =
       if

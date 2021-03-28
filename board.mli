@@ -52,4 +52,4 @@ val get_jumps_dir :
   (square -> color -> t -> square list) ->
   square list
 
-val update_board : t -> char * int -> char * int -> unit
+val update_board : bool -> t -> char * int -> char * int -> unit
