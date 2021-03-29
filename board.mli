@@ -7,6 +7,10 @@ type color
 (** A square on an n * n board *)
 type square
 
+val get_init_player : color
+
+val get_other_player : color -> color
+
 (** [game_init n] is a board of size n x n with all Men pieces set up in
     their correct starting positions. Requires: n is between 8 and 26
     inclusive*)
@@ -22,10 +26,6 @@ val terminal_rep_string : t -> int -> string
 (** [count_inactive p_color] is the total number of pieces which have
     color [p_color] and are not on the board *)
 val count_inactive : t -> color -> int
-
-(** [game_init n] is a board of size n x n with all Men pieces set up in
-    their correct starting positions *)
-val game_init : int -> t
 
 val get_square : char * int -> t -> square
 
@@ -44,3 +44,6 @@ val can_move : square -> t -> color -> bool
    represent all possible jumps avalible for the piece of color [clrf]
    on square [sq] on board [brd] *)
 val get_all_jumps : square -> t -> color -> (square * square) list
+
+val update_board :
+  color -> square option -> t -> char * int -> char * int -> unit
