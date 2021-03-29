@@ -22,6 +22,12 @@ let rec find_square square = function
   | [] -> false
   | h :: t -> if h = square then true else find_square square t
 
+let rec find_jump square (jumps : Board.square * Board.square) =
+  match jumps with
+  | [] -> None
+  | (captured, _) :: t ->
+      if captured = square then Some square else find_jump square t
+
 (* need to implement move for jumps *)
 let update_state_move (state : state) (m : Command.squares_move) =
   let board = state.board in
@@ -32,9 +38,9 @@ let update_state_move (state : state) (m : Command.squares_move) =
   let valid_ends = Board.where_move board square in
   let is_valid_end = find_square square valid_ends in
   let jumps = Board.get_all_jumps square board turn in
-  let is_jump = find_square square jumps in
+  let captured = find_jump square jumps in
   if is_valid_start = true && is_valid_end = true then (
-    Board.update_board is_jump board start_pos end_pos;
+    Board.update_board turn captured board start_pos end_pos;
     let new_turn = Board.get_other_player turn in
     let new_current =
       if

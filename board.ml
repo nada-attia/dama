@@ -27,8 +27,8 @@ type square = {
 }
 
 type side_board = {
-  man_count : int;
-  lady_count : int;
+  mutable man_count : int;
+  mutable lady_count : int;
 }
 
 type t = {
@@ -37,7 +37,6 @@ type t = {
   mutable b_side_board : side_board;
   size : int;
 }
-
 
 exception EmptyStartSquare
 
@@ -193,7 +192,6 @@ let get_jumps_dir sq (brd : t) clr func =
       (* Did not find next square or 2nd next in given direction. *)
     else []
   else []
-
 
 (* [get_all_jumps sq brd clr] describes the list of squares that
    represent all possible jump destination avalible for the piece of
@@ -411,9 +409,7 @@ let get_piece (sq : square) =
   let piece = sq.occupant in
   match piece with None -> raise NoPiece | Some piece -> piece
 
-let get_lost_pos = failwith "Unimplemented"
-
-let rec update_board is_jump board start_pos end_pos =
+let rec update_board turn captured board start_pos end_pos =
   let rec update_rem_rows rows =
     match rows with
     | [] -> ()
@@ -421,17 +417,33 @@ let rec update_board is_jump board start_pos end_pos =
         let rec update_row r =
           match r with
           | [] -> ()
-          | square :: remaining_squares ->
+          | square :: remaining_squares -> (
               let p = get_piece square in
               let lbl = square.label in
               if lbl = start_pos then square.occupant <- None
               else if lbl = end_pos then square.occupant <- Some p
-              else if is_jump = true && lbl = get_lost_pos then
-                square.occupant <- None
-                (* need to update side_board here *)
-              else update_row remaining_squares
+              else update_row remaining_squares;
+              match captured with
+              | None -> ()
+              | Some captured_sq -> (
+                  try
+                    let captured_piece = get_piece captured_sq in
+                    let role = captured_piece.role in
+                    captured_sq.occupant <- None;
+                    let white_side = board.w_side_board in
+                    let black_side = board.b_side_board in
+                    if turn = White then
+                      if role = Lady then
+                        white_side.lady_count <-
+                          white_side.lady_count + 1
+                      else
+                        white_side.man_count <- white_side.man_count + 1
+                    else if role = Lady then
+                      black_side.lady_count <- black_side.lady_count + 1
+                    else
+                      black_side.man_count <- black_side.man_count + 1
+                  with exn -> raise NoPiece))
         in
-
         update_row row;
         update_rem_rows remaining_rows
   in

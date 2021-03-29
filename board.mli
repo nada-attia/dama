@@ -45,4 +45,5 @@ val can_move : square -> t -> color -> bool
    on square [sq] on board [brd] *)
 val get_all_jumps : square -> t -> color -> square list
 
-val update_board : bool -> t -> char * int -> char * int -> unit
+val update_board :
+  color -> square option -> t -> char * int -> char * int -> unit
