@@ -186,7 +186,7 @@ let get_jumps_dir sq (brd : t) clr func =
       then
         let pc_abv = Option.get nxt_sq.occupant in
         (* ensure that the piece color is enemy color*)
-        if pc_abv.color <> clr then [ nxt_2 ] else []
+        if pc_abv.color <> clr then [ (nxt_sq, nxt_2) ] else []
         (* conditions for jump not met. *)
       else []
       (* Did not find next square or 2nd next in given direction. *)
@@ -251,6 +251,10 @@ let get_movable_squares_lady square color board =
   in
   squares
 
+let rec final_squares = function
+  | [] -> []
+  | (captured_sq, final_sq) :: t -> final_sq :: final_squares t
+
 (* Returns a list of squares a piece on square [sq] can move to on board
    [brd]*)
 let where_move brd sq =
@@ -260,13 +264,16 @@ let where_move brd sq =
     (* If man piece *)
     if pc_typ = Man then
       (* If jump is avalible, it must be taken. But if not... *)
-      if get_all_jumps sq brd pc.color = [] then
+      let jumps = get_all_jumps sq brd pc.color in
+      if final_squares jumps = [] then
         deoptional_lst (get_movable_squares_reg sq pc.color brd)
-      else get_all_jumps sq brd pc.color (* If lady piece *)
+      else final_squares jumps (* If lady piece *)
     else if
       (* If jump is avalible, it must be taken. But if not... *)
       get_all_jumps_lady sq brd pc.color = []
-    then get_all_jumps_lady sq brd pc.color
+    then
+      let lady_jumps = get_all_jumps_lady sq brd pc.color in
+      final_squares lady_jumps
     else get_movable_squares_lady sq pc.color brd
   with _ -> raise EmptyStartSquare
 

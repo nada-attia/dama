@@ -43,7 +43,7 @@ val can_move : square -> t -> color -> bool
 (* [get_all_jumps sq brd clr] describes the list of squares that
    represent all possible jumps avalible for the piece of color [clrf]
    on square [sq] on board [brd] *)
-val get_all_jumps : square -> t -> color -> square list
+val get_all_jumps : square -> t -> color -> (square * square) list
 
 val update_board :
   color -> square option -> t -> char * int -> char * int -> unit

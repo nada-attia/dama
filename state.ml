@@ -22,7 +22,7 @@ let rec find_square square = function
   | [] -> false
   | h :: t -> if h = square then true else find_square square t
 
-let rec find_jump square (jumps : Board.square * Board.square) =
+let rec find_jump square jumps =
   match jumps with
   | [] -> None
   | (captured, _) :: t ->
