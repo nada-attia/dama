@@ -187,6 +187,17 @@ let get_all_jumps sq brd clr =
   let right = get_jumps_dir sq brd clr Right in
   above @ left @ right
 
+(* Helper function [get_vacant func square board] is the square option
+   on top of, left of, or right of square [square] from board [board],
+   depending on which helper function [func] is passed in. If the square
+   is vacant, it will be returned, otherwise None. *)
+let get_vacant square color board direction =
+  let res_sqs = get_square_dir square board color direction in
+  try
+    let res_sqr = List.nth res_sqs 0 in
+    if check_if_occupied res_sqr then None else Some res_sqr
+  with _ -> None
+
 (* [get_all_vac_sq_dir acc sq clr brd func] is the list of squares that
    are vacant in direction determined by seeking function [func] of
    square [sq] given a piece of color [clr] occupying said sqaure [sq]
