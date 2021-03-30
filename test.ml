@@ -16,15 +16,15 @@ let print_label (a1, b1) =
 let print_move_tuple (a, b) =
   "(" ^ print_label a ^ ", " ^ print_label b ^ ")"
 
-let rec print_label_list label_lst =
-  "["
-  ^
-  match label_lst with
-  | [] -> ""
-  | h :: t ->
-      print_label h
-      ^ (if List.length t <> 0 then ", " else "]")
-      ^ print_label_list t
+let print_label_list label_lst =
+  let rec print_labels = function
+    | [] -> ""
+    | h :: t ->
+        print_label h
+        ^ (if List.length t <> 0 then ", " else "")
+        ^ print_labels t
+  in
+  "[" ^ print_labels label_lst ^ "]"
 
 let print_piece_tuple (c, r) =
   "("
@@ -132,6 +132,8 @@ let board_tests =
     get_square_dir_test
       "Square right of black piece which has another black piece on it"
       ('b', 7) b Black Right ('a', 7);
+    where_move_test "move black piece" ('d', 7) b [ ('d', 6) ];
+    where_move_test "move white piece" ('d', 3) b [ ('d', 4) ];
   ]
 
 let command_tests =
