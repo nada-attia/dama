@@ -58,12 +58,6 @@ let rec get_sqlst_label = function
   | [] -> []
   | h :: t -> h.label :: get_sqlst_label t
 
-(* Auxillary helper function to handle each item of the list. *)
-let de_opt_aux = function None -> [] | Some s -> [ s ]
-
-(*Helper function to remove options from list. *)
-let deoptional_lst lst = List.concat @@ List.map de_opt_aux lst
-
 let get_square labl (brd : t) =
   let col_ltr, num_pos = labl in
   let row = num_pos - 1 in
@@ -143,38 +137,16 @@ let get_square_dir sq (board : t) (color : color) = function
 let check_if_occupied square =
   if square.occupant = None then false else true
 
-(* Helper function [get_vacant func square board] is the square option
-   on top of, left of, or right of square [square] from board [board],
-   depending on which helper function [func] is passed in. If the square
-   is vacant, it will be returned, otherwise None. *)
-let get_vacant square color board direction =
-  let res_sqs = get_square_dir square board color direction in
-  try
-    let res_sqr = List.nth res_sqs 0 in
-    if check_if_occupied res_sqr then None else Some res_sqr
-  with _ -> None
-
 (* Helper function to get the neighbor squares that can be moved to from
    a given square noting the color of the piece on said square, assuming
    it is a regular non-Lady piece. *)
-let get_movable_squares_reg square color board =
-  let squares = [] in
+let get_movable_squares_reg square (color : color) (board : t) =
   let squares =
-    if get_vacant square color board Up <> None then
-      get_vacant square color board Up :: squares
-    else squares
+    get_square_dir square board color Up
+    @ get_square_dir square board color Right
+    @ get_square_dir square board color Left
   in
-  let squares =
-    if get_vacant square color board Right <> None then
-      get_vacant square color board Right :: squares
-    else squares
-  in
-  let squares =
-    if get_vacant square color board Left <> None then
-      get_vacant square color board Left :: squares
-    else squares
-  in
-  squares
+  List.filter (fun square -> square.occupant = None) squares
 
 (* [get_jumps_dir sq brd clr fun] gets the square to jump to in a given
    direction guided by function [func] for a piece of color [clr] on
@@ -194,8 +166,7 @@ let get_jumps_dir sq (brd : t) clr direction =
       let nxt_2 = List.nth nxt_2 0 in
       (* If the next square is occupied and the 2nd next square is empty*)
       if
-        get_vacant sq clr brd direction = None
-        && get_vacant nxt_sq clr brd direction <> None
+        nxt_sq.occupant <> None && nxt_2.occupant = None
         (* get the piece from the piece option *)
       then
         let pc_abv = Option.get nxt_sq.occupant in
@@ -281,7 +252,7 @@ let where_move brd sq =
       (* If jump is avalible, it must be taken. But if not... *)
       let jumps = get_all_jumps sq brd pc.color in
       if final_squares jumps = [] then
-        deoptional_lst (get_movable_squares_reg sq pc.color brd)
+        get_movable_squares_reg sq pc.color brd
       else final_squares jumps (* If lady piece *)
     else if
       (* If jump is avalible, it must be taken. But if not... *)
