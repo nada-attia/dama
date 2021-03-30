@@ -51,6 +51,18 @@ let empty_square_test
   let sq = Board.get_square lbl board in
   assert_raises Board.NoPiece (fun () -> Board.get_piece_info sq)
 
+let get_square_dir_test
+    (name : string)
+    (sq : char * int)
+    (brd : Board.t)
+    (clr : Board.color)
+    (dir : Board.direction)
+    (expected_output : char * int) : test =
+  name >:: fun _ ->
+  let sqre = Board.get_square sq brd in
+  let sqr = Board.get_square_dir sqre brd clr dir in
+  assert_equal [ Board.get_square expected_output brd ] sqr
+
 let where_move_test
     (name : string)
     (lbl : char * int)
@@ -99,6 +111,27 @@ let board_tests =
     empty_square_test "square with no piece" ('b', 5) b;
     empty_square_test "square with no piece" ('a', 8) b;
     empty_square_test "square with no piece" ('f', 1) b;
+    get_square_dir_test
+      "Square ABOVE white piece which has another white piece on it"
+      ('c', 2) b White Up ('c', 3);
+    get_square_dir_test
+      "Square below white piece which has another white piece on it"
+      ('c', 3) b White Down ('c', 2);
+    get_square_dir_test
+      "Square left of white piece which has another white piece on it"
+      ('c', 2) b White Left ('b', 2);
+    get_square_dir_test
+      "Square right of white piece which has another white piece on it"
+      ('c', 2) b White Right ('d', 2);
+    get_square_dir_test
+      "Square above black piece which has another black piece on it"
+      ('b', 7) b Black Up ('b', 6);
+    get_square_dir_test
+      "Square left of black piece which has another black piece on it"
+      ('b', 7) b Black Left ('c', 7);
+    get_square_dir_test
+      "Square right of black piece which has another black piece on it"
+      ('b', 7) b Black Right ('a', 7);
   ]
 
 let command_tests =
