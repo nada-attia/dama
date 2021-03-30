@@ -29,6 +29,8 @@ val game_init : int -> t
 
 val get_square : char * int -> t -> square
 
+val get_color : int -> color
+
 (** [where_move board square] describes the squares where any given
     piece is allowed to move to, from its current position. This depends
     on it's piece type and current position, [square]. *)
