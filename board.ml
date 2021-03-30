@@ -195,7 +195,7 @@ let get_jumps_dir sq (brd : t) clr direction =
       (* If the next square is occupied and the 2nd next square is empty*)
       if
         get_vacant sq clr brd direction = None
-        && get_vacant nxt_2 clr brd direction <> None
+        && get_vacant nxt_sq clr brd direction <> None
         (* get the piece from the piece option *)
       then
         let pc_abv = Option.get nxt_sq.occupant in
