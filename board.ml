@@ -98,7 +98,6 @@ let square_right sq color board =
     if color = White then [| ltr_pos_num + 1; Char.code 'h'; 1 |]
     else [| Char.code 'a'; ltr_pos_num - 1; -1 |]
   in
-
   if c_vals.(0) <= c_vals.(1) then
     let right1_label = (Char.chr (ltr_pos_num + c_vals.(2)), num_pos) in
     [ get_square right1_label board ]
