@@ -10,6 +10,8 @@ type role =
   | Man
   | Lady
 
+exception NoPiece
+
 (** A square on an n * n board *)
 type square
 

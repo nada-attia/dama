@@ -31,6 +31,14 @@ let get_square_test
     (Board.get_piece_info sq)
     ~printer:print_piece_tuple
 
+let empty_square_test
+    (name : string)
+    (lbl : char * int)
+    (board : Board.t) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square lbl board in
+  assert_raises Board.NoPiece (fun () -> Board.get_piece_info sq)
+
 let parse_test
     (name : string)
     (str : string)
@@ -59,7 +67,13 @@ let parse_move_test
 let b = Board.game_init 8
 
 let board_tests =
-  [ get_square_test "first test" ('a', 2) b (Board.White, Board.Man) ]
+  [
+    get_square_test "square with white piece" ('a', 2) b
+      (Board.White, Board.Man);
+    get_square_test "square with black piece" ('e', 7) b
+      (Board.Black, Board.Man);
+    empty_square_test "square with no piece" ('b', 5) b;
+  ]
 
 let command_tests =
   [
