@@ -73,6 +73,8 @@ let board_tests =
     get_square_test "square with black piece" ('e', 7) b
       (Board.Black, Board.Man);
     empty_square_test "square with no piece" ('b', 5) b;
+    empty_square_test "square with no piece" ('a', 8) b;
+    empty_square_test "square with no piece" ('f', 1) b;
   ]
 
 let command_tests =
