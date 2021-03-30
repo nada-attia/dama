@@ -22,6 +22,8 @@ val get_other_player : color -> color
     inclusive*)
 val game_init : int -> t
 
+val get_board : t -> square list list
+
 (** [terminal_rep_string board count] is a string representation of the
     board [board] with row and column labels starting at [count]. For
     example, [terminal_rep_string board 1] will have labels for the rows

@@ -14,17 +14,21 @@ let print_move_tuple ((a1, b1), (a2, b2)) =
   "((" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ "), ("
   ^ Char.escaped a2 ^ ", " ^ string_of_int b2 ^ "))"
 
-let print_piece_tuple (c, r) = 
-  "(" ^ if c = Board.White then "White" else "Black" ^ ", " ^ if r = Board.Lady then "Lady" else "Man" ^ ")"
+let print_piece_tuple (c, r) =
+  "("
+  ^
+  if c = Board.White then "White"
+  else "Black" ^ ", " ^ if r = Board.Lady then "Lady" else "Man" ^ ")"
 
-  let get_square_test =
+let get_square_test
     (name : string)
     (lbl : char * int)
-    (board: Board.t)
-    (expected_output : Board.square) : test =
+    (board : Board.t)
+    (expected_output : Board.color * Board.role) : test =
   name >:: fun _ ->
-    let sq = Board.get_square lbl board in 
-  assert_equal expected_output Board.get_piece_info
+  let sq = Board.get_square lbl board in
+  assert_equal expected_output
+    (Board.get_piece_info sq)
     ~printer:print_piece_tuple
 
 let parse_test
@@ -52,7 +56,10 @@ let parse_move_test
   | Move t -> assert_equal t expected_output ~printer:print_move_tuple
   | _ -> failwith "Move Failed"
 
-let board_tests = []
+let b = Board.game_init 8
+
+let board_tests =
+  [ get_square_test "first test" ('a', 2) b (Board.White, Board.Man) ]
 
 let command_tests =
   [
