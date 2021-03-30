@@ -26,9 +26,13 @@ let string_to_tuple s =
     let nums = String.sub s 1 (String.length s - 1) in
     let first_char_code = Char.code s.[0] in
     try
-      if first_char_code < 97 || first_char_code > 104 then
-        raise IllegalSquare
-      else (s.[0], int_of_string nums)
+      let a = Char.code 'a' in
+      let h = Char.code 'h' in
+      let num = int_of_string nums in
+      if
+        first_char_code < a || first_char_code > h || num < 1 || num > 8
+      then raise IllegalSquare
+      else (s.[0], num)
     with exn -> raise IllegalSquare
 
 let get_label (start_pos, end_pos) =
