@@ -4,17 +4,22 @@ type current =
   | Pregame
 
 type state = {
-  turn : string;
+  turn : Board.color;
   board : Board.t;
   current : current;
 }
 
 exception IllegalMove
 
+let get_board state = state.board
+
 let init_state board =
   { turn = Board.get_init_player; board; current = Pregame }
 
 let get_turn state = state.turn
+
+let player_turn state =
+  match get_turn state with Black -> "black" | White -> "white"
 
 (* [find_square square] is true if [end_pos] is a valid ending square
    and false otherwise *)
@@ -33,12 +38,13 @@ let update_state_move (state : state) (m : Command.squares_move) =
   let board = state.board in
   let turn = state.turn in
   let start_pos, end_pos = m in
-  let square = Board.get_square end_pos board in
-  let is_valid_start = Board.can_move square board turn in
-  let valid_ends = Board.where_move board square in
-  let is_valid_end = find_square square valid_ends in
-  let jumps = Board.get_all_jumps square board turn in
-  let captured = find_jump square jumps in
+  let square_start = Board.get_square start_pos board in
+  let square_end = Board.get_square end_pos board in
+  let is_valid_start = Board.can_move square_start board turn in
+  let valid_ends = Board.where_move board square_start in
+  let is_valid_end = find_square square_start valid_ends in
+  let jumps = Board.get_all_jumps square_end board turn in
+  let captured = find_jump square_end jumps in
   if is_valid_start = true && is_valid_end = true then (
     Board.update_board turn captured board start_pos end_pos;
     let new_turn = Board.get_other_player turn in
@@ -66,3 +72,9 @@ let update_state (state : state) (command : Command.command) =
   | Undo -> update_state_undo state
   | Forfeit -> update_state_forfeit state
   | Hint -> update_state_hint state
+
+let game_over state =
+  match state.current with
+  | Pregame -> false
+  | InProgress -> false
+  | Finished -> true

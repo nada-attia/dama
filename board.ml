@@ -294,10 +294,12 @@ let where_move brd sq =
 
 let can_move square board turn =
   let condition1 = check_if_occupied square in
-  let pc = Option.get square.occupant in
-  let condition2 = pc.color = turn in
-  let condition3 = where_move board square <> [] in
-  condition1 && condition2 && condition3
+  match square.occupant with
+  | None -> false
+  | Some pc ->
+      let condition2 = pc.color = turn in
+      let condition3 = where_move board square <> [] in
+      condition1 && condition2 && condition3
 
 let terminal_rep_string =
   {
