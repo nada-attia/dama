@@ -2,6 +2,10 @@ type state
 
 type current
 
-val get_turn : state -> _
+exception IllegalMove
 
-val update_state_move : Board.t -> Command.squares_move -> _
+val init_state : Board.t -> state
+
+val get_turn : state -> Board.color
+
+val update_state : state -> Command.command -> state
