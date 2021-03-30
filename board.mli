@@ -2,7 +2,13 @@
 type t
 
 (** The colors of the 2 kinds of pieces *)
-type color
+type color =
+  | Black
+  | White
+
+type role =
+  | Man
+  | Lady
 
 (** A square on an n * n board *)
 type square
@@ -47,3 +53,5 @@ val get_all_jumps : square -> t -> color -> (square * square) list
 
 val update_board :
   color -> square option -> t -> char * int -> char * int -> unit
+
+val get_piece_info : square -> color * role

@@ -10,9 +10,22 @@ let print_command = function
   | Forfeit -> "Forfeit"
   | Hint -> "Hint"
 
-let print_tuple ((a1, b1), (a2, b2)) =
+let print_move_tuple ((a1, b1), (a2, b2)) =
   "((" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ "), ("
   ^ Char.escaped a2 ^ ", " ^ string_of_int b2 ^ "))"
+
+let print_piece_tuple (c, r) = 
+  "(" ^ if c = Board.White then "White" else "Black" ^ ", " ^ if r = Board.Lady then "Lady" else "Man" ^ ")"
+
+  let get_square_test =
+    (name : string)
+    (lbl : char * int)
+    (board: Board.t)
+    (expected_output : Board.square) : test =
+  name >:: fun _ ->
+    let sq = Board.get_square lbl board in 
+  assert_equal expected_output Board.get_piece_info
+    ~printer:print_piece_tuple
 
 let parse_test
     (name : string)
@@ -36,7 +49,7 @@ let parse_move_test
     (expected_output : Command.squares_move) : test =
   name >:: fun _ ->
   match Command.parse str with
-  | Move t -> assert_equal t expected_output ~printer:print_tuple
+  | Move t -> assert_equal t expected_output ~printer:print_move_tuple
   | _ -> failwith "Move Failed"
 
 let board_tests = []
