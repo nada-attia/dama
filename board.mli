@@ -39,6 +39,8 @@ val count_inactive : t -> color -> int
 
 val get_square : char * int -> t -> square
 
+val get_sqlst_label : square list -> (char * int) list
+
 (** [where_move board square] describes the squares where any given
     piece is allowed to move to, from its current position. This depends
     on it's piece type and current position, [square]. *)

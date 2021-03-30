@@ -42,9 +42,15 @@ exception EmptyStartSquare
 
 exception NoPiece
 
+let get_board t = t.board
+
 let get_init_player = White
 
 let get_other_player color = if color = White then Black else White
+
+let rec get_sqlst_label = function
+  | [] -> []
+  | h :: t -> h.label :: get_sqlst_label t
 
 (* Auxillary helper function to handle each item of the list. *)
 let de_opt_aux = function None -> [] | Some s -> [ s ]
@@ -352,8 +358,6 @@ let game_init n =
     b_side_board = side_board;
     size = n;
   }
-
-let get_board t = t.board
 
 let count_inactive curr_board p_color =
   match p_color with
