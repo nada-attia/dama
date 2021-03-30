@@ -52,8 +52,6 @@ let de_opt_aux = function None -> [] | Some s -> [ s ]
 (*Helper function to remove options from list. *)
 let deoptional_lst lst = List.concat @@ List.map de_opt_aux lst
 
-(* Helper function to get the square given the label it corresponds to
-   and the board it is in. *)
 let get_square labl (brd : t) =
   let col_ltr, num_pos = labl in
   let row = num_pos - 1 in
@@ -416,6 +414,28 @@ let get_piece (sq : square) =
   let piece = sq.occupant in
   match piece with None -> raise NoPiece | Some piece -> piece
 
+let get_piece_info (sq : square) =
+  try
+    let p = get_piece sq in
+    (p.color, p.role)
+  with exn -> raise NoPiece
+
+let remove_pieces captured_sq turn board =
+  try
+    let captured_piece = get_piece captured_sq in
+    let role = captured_piece.role in
+    captured_sq.occupant <- None;
+    let white_side = board.w_side_board in
+    let black_side = board.b_side_board in
+    if turn = White then
+      if role = Lady then
+        white_side.lady_count <- white_side.lady_count + 1
+      else white_side.man_count <- white_side.man_count + 1
+    else if role = Lady then
+      black_side.lady_count <- black_side.lady_count + 1
+    else black_side.man_count <- black_side.man_count + 1
+  with exn -> raise NoPiece
+
 let rec update_board turn captured board start_pos end_pos =
   let rec update_rem_rows rows =
     match rows with
@@ -432,24 +452,8 @@ let rec update_board turn captured board start_pos end_pos =
               else update_row remaining_squares;
               match captured with
               | None -> ()
-              | Some captured_sq -> (
-                  try
-                    let captured_piece = get_piece captured_sq in
-                    let role = captured_piece.role in
-                    captured_sq.occupant <- None;
-                    let white_side = board.w_side_board in
-                    let black_side = board.b_side_board in
-                    if turn = White then
-                      if role = Lady then
-                        white_side.lady_count <-
-                          white_side.lady_count + 1
-                      else
-                        white_side.man_count <- white_side.man_count + 1
-                    else if role = Lady then
-                      black_side.lady_count <- black_side.lady_count + 1
-                    else
-                      black_side.man_count <- black_side.man_count + 1
-                  with exn -> raise NoPiece))
+              | Some captured_sq -> remove_pieces captured_sq turn board
+              )
         in
         update_row row;
         update_rem_rows remaining_rows

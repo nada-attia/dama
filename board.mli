@@ -2,7 +2,15 @@
 type t
 
 (** The colors of the 2 kinds of pieces *)
-type color
+type color =
+  | Black
+  | White
+
+type role =
+  | Man
+  | Lady
+
+exception NoPiece
 
 (** A square on an n * n board *)
 type square
@@ -15,6 +23,8 @@ val get_other_player : color -> color
     their correct starting positions. Requires: n is between 8 and 26
     inclusive*)
 val game_init : int -> t
+
+val get_board : t -> square list list
 
 (** [terminal_rep_string board count] is a string representation of the
     board [board] with row and column labels starting at [count]. For
@@ -47,3 +57,5 @@ val get_all_jumps : square -> t -> color -> (square * square) list
 
 val update_board :
   color -> square option -> t -> char * int -> char * int -> unit
+
+val get_piece_info : square -> color * role

@@ -10,9 +10,34 @@ let print_command = function
   | Forfeit -> "Forfeit"
   | Hint -> "Hint"
 
-let print_tuple ((a1, b1), (a2, b2)) =
+let print_move_tuple ((a1, b1), (a2, b2)) =
   "((" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ "), ("
   ^ Char.escaped a2 ^ ", " ^ string_of_int b2 ^ "))"
+
+let print_piece_tuple (c, r) =
+  "("
+  ^
+  if c = Board.White then "White"
+  else "Black" ^ ", " ^ if r = Board.Lady then "Lady" else "Man" ^ ")"
+
+let get_square_test
+    (name : string)
+    (lbl : char * int)
+    (board : Board.t)
+    (expected_output : Board.color * Board.role) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square lbl board in
+  assert_equal expected_output
+    (Board.get_piece_info sq)
+    ~printer:print_piece_tuple
+
+let empty_square_test
+    (name : string)
+    (lbl : char * int)
+    (board : Board.t) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square lbl board in
+  assert_raises Board.NoPiece (fun () -> Board.get_piece_info sq)
 
 let parse_test
     (name : string)
@@ -36,10 +61,21 @@ let parse_move_test
     (expected_output : Command.squares_move) : test =
   name >:: fun _ ->
   match Command.parse str with
-  | Move t -> assert_equal t expected_output ~printer:print_tuple
+  | Move t -> assert_equal t expected_output ~printer:print_move_tuple
   | _ -> failwith "Move Failed"
 
-let board_tests = []
+let b = Board.game_init 8
+
+let board_tests =
+  [
+    get_square_test "square with white piece" ('a', 2) b
+      (Board.White, Board.Man);
+    get_square_test "square with black piece" ('e', 7) b
+      (Board.Black, Board.Man);
+    empty_square_test "square with no piece" ('b', 5) b;
+    empty_square_test "square with no piece" ('a', 8) b;
+    empty_square_test "square with no piece" ('f', 1) b;
+  ]
 
 let command_tests =
   [
