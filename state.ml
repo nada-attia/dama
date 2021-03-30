@@ -4,11 +4,13 @@ type current =
   | Pregame
 
 type state = {
-  turn : Board.color;
+  turn : string;
   board : Board.t;
   current : current;
 }
 
-let get_turn = failwith "Unimplemented"
+let player_turn (s : state) = "black"
 
 let update_state_move board command = failwith "Unimplemented"
+
+let init_state board = { turn = "black"; board; current = InProgress }
