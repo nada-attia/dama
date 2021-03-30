@@ -4,6 +4,12 @@ type current
 
 (* val update_state_move : Board.t -> Command.squares_move -> _ *)
 
+val player_turn : state -> string
+
+exception IllegalMove
+
 val init_state : Board.t -> state
 
-val player_turn : state -> string
+val get_turn : state -> Board.color
+
+val update_state : state -> Command.command -> state
