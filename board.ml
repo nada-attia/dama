@@ -20,6 +20,12 @@ type piece = {
   mutable role : role;
 }
 
+type direction =
+  | Up
+  | Down
+  | Left
+  | Right
+
 type square = {
   color : color;
   mutable occupant : piece option;
@@ -196,6 +202,12 @@ let get_jumps_dir sq (brd : t) clr func =
       (* Did not find next square or 2nd next in given direction. *)
     else []
   else []
+
+let get_square_dir sq (board : t) (color : color) = function
+  | Up -> square_above sq color board
+  | Down -> square_below sq color board
+  | Left -> square_left sq color board
+  | Right -> square_right sq color board
 
 (* [get_all_jumps sq brd clr] describes the list of squares that
    represent all possible jump destination avalible for the piece of

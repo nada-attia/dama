@@ -10,6 +10,12 @@ type role =
   | Man
   | Lady
 
+type direction =
+  | Up
+  | Down
+  | Left
+  | Right
+
 exception NoPiece
 
 (** A square on an n * n board *)
@@ -38,6 +44,8 @@ val terminal_rep_string : t -> int -> string
 val count_inactive : t -> color -> int
 
 val get_square : char * int -> t -> square
+
+val get_square_dir : square -> t -> color -> direction -> square list
 
 val get_sqlst_label : square list -> (char * int) list
 
