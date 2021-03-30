@@ -10,9 +10,21 @@ let print_command = function
   | Forfeit -> "Forfeit"
   | Hint -> "Hint"
 
-let print_move_tuple ((a1, b1), (a2, b2)) =
-  "((" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ "), ("
-  ^ Char.escaped a2 ^ ", " ^ string_of_int b2 ^ "))"
+let print_label (a1, b1) =
+  "(" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ ")"
+
+let print_move_tuple (a, b) =
+  "(" ^ print_label a ^ ", " ^ print_label b ^ ")"
+
+let rec print_label_list label_lst =
+  "["
+  ^
+  match label_lst with
+  | [] -> ""
+  | h :: t ->
+      print_label h
+      ^ (if List.length t <> 0 then ", " else "]")
+      ^ print_label_list t
 
 let print_piece_tuple (c, r) =
   "("
@@ -38,6 +50,18 @@ let empty_square_test
   name >:: fun _ ->
   let sq = Board.get_square lbl board in
   assert_raises Board.NoPiece (fun () -> Board.get_piece_info sq)
+
+let where_move_test
+    (name : string)
+    (lbl : char * int)
+    (board : Board.t)
+    (expected_output : (char * int) list) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square lbl board in
+  let square_list = Board.where_move board sq in
+  assert_equal expected_output
+    (Board.get_sqlst_label square_list)
+    ~printer:print_label_list
 
 let parse_test
     (name : string)

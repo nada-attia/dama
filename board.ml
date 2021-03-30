@@ -20,6 +20,12 @@ type piece = {
   mutable role : role;
 }
 
+type direction =
+  | Up
+  | Down
+  | Left
+  | Right
+
 type square = {
   color : color;
   mutable occupant : piece option;
@@ -42,9 +48,15 @@ exception EmptyStartSquare
 
 exception NoPiece
 
+let get_board t = t.board
+
 let get_init_player = White
 
 let get_other_player color = if color = White then Black else White
+
+let rec get_sqlst_label = function
+  | [] -> []
+  | h :: t -> h.label :: get_sqlst_label t
 
 (* Auxillary helper function to handle each item of the list. *)
 let de_opt_aux = function None -> [] | Some s -> [ s ]
@@ -123,6 +135,12 @@ let square_below sq color board =
     [ get_square above1_label board ]
   else []
 
+let get_square_dir sq (board : t) (color : color) = function
+  | Up -> square_above sq color board
+  | Down -> square_below sq color board
+  | Left -> square_left sq color board
+  | Right -> square_right sq color board
+
 (* Helper function to check to see if a given square is occupied or not.*)
 let check_if_occupied square =
   if square.occupant = None then false else true
@@ -131,8 +149,8 @@ let check_if_occupied square =
    on top of, left of, or right of square [square] from board [board],
    depending on which helper function [func] is passed in. If the square
    is vacant, it will be returned, otherwise None. *)
-let get_vacant func square color board =
-  let res_sqs = func square color board in
+let get_vacant square color board direction =
+  let res_sqs = get_square_dir square board color direction in
   try
     let res_sqr = List.nth res_sqs 0 in
     if check_if_occupied res_sqr then None else Some res_sqr
@@ -144,18 +162,18 @@ let get_vacant func square color board =
 let get_movable_squares_reg square color board =
   let squares = [] in
   let squares =
-    if get_vacant square_above square color board <> None then
-      get_vacant square_above square color board :: squares
+    if get_vacant square color board Up <> None then
+      get_vacant square color board Up :: squares
     else squares
   in
   let squares =
-    if get_vacant square_right square color board <> None then
-      get_vacant square_right square color board :: squares
+    if get_vacant square color board Right <> None then
+      get_vacant square color board Right :: squares
     else squares
   in
   let squares =
-    if get_vacant square_left square color board <> None then
-      get_vacant square_left square color board :: squares
+    if get_vacant square color board Left <> None then
+      get_vacant square color board Left :: squares
     else squares
   in
   squares
@@ -163,23 +181,23 @@ let get_movable_squares_reg square color board =
 (* [get_jumps_dir sq brd clr fun] gets the square to jump to in a given
    direction guided by function [func] for a piece of color [clr] on
    square [sq] on board [brd]*)
-let get_jumps_dir sq (brd : t) clr func =
+let get_jumps_dir sq (brd : t) clr direction =
   (* Get next square in direction *)
-  let nxt_sq = func sq clr brd in
+  let nxt_sq = get_square_dir sq brd clr direction in
   (* If we got something... *)
   if nxt_sq <> [] then
     (* Extract square from list *)
     let nxt_sq = List.nth nxt_sq 0 in
     (* Get 2 squares next in given direction from sq *)
-    let nxt_2 = func nxt_sq clr brd in
+    let nxt_2 = get_square_dir nxt_sq brd clr direction in
     (* If we got something... *)
     if nxt_2 <> [] then
       (* Extract the square from the list *)
       let nxt_2 = List.nth nxt_2 0 in
       (* If the next square is occupied and the 2nd next square is empty*)
       if
-        get_vacant func sq clr brd = None
-        && get_vacant func nxt_2 clr brd <> None
+        get_vacant sq clr brd direction = None
+        && get_vacant nxt_2 clr brd direction <> None
         (* get the piece from the piece option *)
       then
         let pc_abv = Option.get nxt_sq.occupant in
@@ -195,9 +213,9 @@ let get_jumps_dir sq (brd : t) clr func =
    represent all possible jump destination avalible for the piece of
    color [clrf] on square [sq] on board [brd] *)
 let get_all_jumps sq brd clr =
-  let above = get_jumps_dir sq brd clr square_above in
-  let left = get_jumps_dir sq brd clr square_left in
-  let right = get_jumps_dir sq brd clr square_right in
+  let above = get_jumps_dir sq brd clr Up in
+  let left = get_jumps_dir sq brd clr Left in
+  let right = get_jumps_dir sq brd clr Right in
   above @ left @ right
 
 (* [get_all_vac_sq_dir acc sq clr brd func] is the list of squares that
@@ -205,10 +223,11 @@ let get_all_jumps sq brd clr =
    square [sq] given a piece of color [clr] occupying said sqaure [sq]
    on board [brd]. Function is tail recursive with accumulator list
    [acc]*)
-let rec get_all_vac_sq_dir acc sq (clr : color) (brd : t) func =
-  let next = get_vacant func sq clr brd in
+let rec get_all_vac_sq_dir acc sq (clr : color) (brd : t) direction =
+  let next = get_vacant sq clr brd direction in
   match next with
-  | Some n_sqr -> get_all_vac_sq_dir (n_sqr :: acc) n_sqr clr brd func
+  | Some n_sqr ->
+      get_all_vac_sq_dir (n_sqr :: acc) n_sqr clr brd direction
   | None -> acc
 
 (* Returns list of single square in given direction that can be jumped
@@ -224,27 +243,27 @@ let get_all_jumps_dir_lady sq brd clr func =
    piece occupying square [sq] of color [clr] on board [brd] has
    avalible to it.*)
 let get_all_jumps_lady sq brd clr =
-  let above = get_all_jumps_dir_lady sq brd clr square_above in
-  let below = get_all_jumps_dir_lady sq brd clr square_below in
-  let right = get_all_jumps_dir_lady sq brd clr square_right in
-  let left = get_all_jumps_dir_lady sq brd clr square_left in
+  let above = get_all_jumps_dir_lady sq brd clr Up in
+  let below = get_all_jumps_dir_lady sq brd clr Down in
+  let right = get_all_jumps_dir_lady sq brd clr Right in
+  let left = get_all_jumps_dir_lady sq brd clr Left in
   above @ below @ right @ left
 
 let get_movable_squares_lady square color board =
   let squares = [] in
   let squares =
-    if get_all_vac_sq_dir [] square color board square_above <> [] then
-      get_all_vac_sq_dir [] square color board square_above @ squares
+    if get_all_vac_sq_dir [] square color board Up <> [] then
+      get_all_vac_sq_dir [] square color board Up @ squares
     else squares
   in
   let squares =
-    if get_all_vac_sq_dir [] square color board square_right <> [] then
-      get_all_vac_sq_dir [] square color board square_right @ squares
+    if get_all_vac_sq_dir [] square color board Right <> [] then
+      get_all_vac_sq_dir [] square color board Right @ squares
     else squares
   in
   let squares =
-    if get_all_vac_sq_dir [] square color board square_left <> [] then
-      get_all_vac_sq_dir [] square color board square_left @ squares
+    if get_all_vac_sq_dir [] square color board Left <> [] then
+      get_all_vac_sq_dir [] square color board Left @ squares
     else squares
   in
   squares
@@ -352,8 +371,6 @@ let game_init n =
     b_side_board = side_board;
     size = n;
   }
-
-let get_board t = t.board
 
 let count_inactive curr_board p_color =
   match p_color with
