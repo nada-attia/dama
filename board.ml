@@ -79,10 +79,9 @@ let square_left sq color board =
   let ltr_pos, num_pos = sq.label in
   let ltr_pos_num = Char.code ltr_pos in
   let c_vals =
-    if color = White then [| ltr_pos_num - 1; Char.code 'a'; -1 |]
-    else [| Char.code 'h'; ltr_pos_num + 1; 1 |]
+    if color = White then [| ltr_pos_num - 1; Char.code 'a'; 1 |]
+    else [| Char.code 'h'; ltr_pos_num + 1; -1 |]
   in
-
   if c_vals.(0) >= c_vals.(1) then
     let left1_label = (Char.chr (ltr_pos_num - c_vals.(2)), num_pos) in
     [ get_square left1_label board ]

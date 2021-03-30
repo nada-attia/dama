@@ -51,6 +51,17 @@ let empty_square_test
   let sq = Board.get_square lbl board in
   assert_raises Board.NoPiece (fun () -> Board.get_piece_info sq)
 
+let get_square_dir_test
+    (name : string)
+    (sq : Board.square)
+    (brd : Board.t)
+    (clr : Board.color)
+    (dir : Board.direction)
+    (expected_output : Board.square list) : test =
+  name >:: fun _ ->
+  let sqr = Board.get_square_dir sq brd clr dir in
+  assert_equal expected_output sqr
+
 let where_move_test
     (name : string)
     (lbl : char * int)
@@ -90,6 +101,22 @@ let parse_move_test
 
 let b = Board.game_init 8
 
+let w_sq_low = Board.get_square ('c', 2) b
+
+let w_sq_high = Board.get_square ('c', 3) b
+
+let w_sq_left = Board.get_square ('b', 2) b
+
+let w_sq_right = Board.get_square ('d', 2) b
+
+let b_sq_low = Board.get_square ('b', 7) b
+
+let b_sq_high = Board.get_square ('b', 6) b
+
+let b_sq_left = Board.get_square ('c', 7) b
+
+let b_sq_right = Board.get_square ('a', 7) b
+
 let board_tests =
   [
     get_square_test "square with white piece" ('a', 2) b
@@ -99,6 +126,30 @@ let board_tests =
     empty_square_test "square with no piece" ('b', 5) b;
     empty_square_test "square with no piece" ('a', 8) b;
     empty_square_test "square with no piece" ('f', 1) b;
+    get_square_dir_test
+      "Square ABOVE white piece which has another white piece on it"
+      w_sq_low b White Up [ w_sq_high ];
+    get_square_dir_test
+      "Square below white piece which has another white piece on it"
+      w_sq_high b White Down [ w_sq_low ];
+    get_square_dir_test
+      "Square left of white piece which has another white piece on it"
+      w_sq_low b White Left [ w_sq_left ];
+    get_square_dir_test
+      "Square right of white piece which has another white piece on it"
+      w_sq_low b White Right [ w_sq_right ];
+    get_square_dir_test
+      "Square above black piece which has another black piece on it"
+      b_sq_low b Black Up [ b_sq_high ];
+    get_square_dir_test
+      "Square left of black piece which has another black piece on it"
+      b_sq_low b Black Left [ b_sq_left ];
+    get_square_dir_test
+      "Square right of black piece which has another black piece on it"
+      b_sq_low b Black Right [ b_sq_right ];
+    get_square_dir_test
+      "Square right of black piece which does not exist" b_sq_right b
+      Black Right [];
   ]
 
 let command_tests =
