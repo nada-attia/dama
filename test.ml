@@ -63,17 +63,26 @@ let get_square_dir_test
   let sqr = Board.get_square_dir sqre brd clr dir in
   assert_equal [ Board.get_square expected_output brd ] sqr
 
+let get_movable_squares_reg_test
+    (name : string)
+    (sq : char * int)
+    (brd : Board.t)
+    (clr : Board.color)
+    (expected_output : square option list) : test =
+  name >:: fun _ ->
+  let sqre = Board.get_square sq brd in
+  let sqr = Board.get_movable_squares_reg sqre clr brd in
+  assert_equal expected_output sqr
+
 let where_move_test
     (name : string)
     (lbl : char * int)
     (board : Board.t)
-    (expected_output : (char * int) list) : test =
+    (expected_output : square list) : test =
   name >:: fun _ ->
   let sq = Board.get_square lbl board in
   let square_list = Board.where_move board sq in
-  assert_equal expected_output
-    (Board.get_sqlst_label square_list)
-    ~printer:print_label_list
+  assert_equal expected_output square_list
 
 let parse_test
     (name : string)
@@ -132,8 +141,11 @@ let board_tests =
     get_square_dir_test
       "Square right of black piece which has another black piece on it"
       ('b', 7) b Black Right ('a', 7);
-    where_move_test "move black piece" ('d', 7) b [ ('d', 6) ];
-    where_move_test "move white piece" ('d', 3) b [ ('d', 4) ];
+    get_movable_squares_reg_test "f" ('b', 3) b White
+      [ Some (Board.get_square ('b', 4) b) ];
+    where_move_test "move black piece" ('d', 7) b [];
+    where_move_test "move white piece" ('b', 3) b
+      [ Board.get_square ('b', 4) b ];
   ]
 
 let command_tests =

@@ -69,3 +69,5 @@ val update_board :
   color -> square option -> t -> char * int -> char * int -> unit
 
 val get_piece_info : square -> color * role
+
+val get_movable_squares_reg : square -> color -> t -> square option list
