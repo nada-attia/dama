@@ -235,44 +235,6 @@ let command_tests =
       "move 67 E9 E4";
   ]
 
-let count_inactive_test
-    (name : string)
-    (expected_output : int)
-    (t : Board.t)
-    (color : Board.color) =
-  name >:: fun _ ->
-  assert_equal expected_output
-    (count_inactive t color)
-    ~printer:string_of_int
-
-let terminal_rep_string_test
-    (name : string)
-    (expected_output : string)
-    (t : Board.t) =
-  name >:: fun _ ->
-  assert_equal expected_output (terminal_rep_string t 1)
-
-let t1 =
-  "  a   b   c   d   e   f   g   h  \n\
-   |   | . |   | . |   | . |   | . |1\n\
-   | w | W | w | W | w | W | w | W |2\n\
-   | W | w | W | w | W | w | W | w |3\n\
-   |   | . |   | . |   | . |   | . |4\n\
-   | . |   | . |   | . |   | . |   |5\n\
-   | B | b | B | b | B | b | B | b |6\n\
-   | b | B | b | B | b | B | b | B |7\n\
-   | . |   | . |   | . |   | . |   |8\n"
-
-let board_tests =
-  [
-    count_inactive_test "0 black inactive for initial board" 0
-      (Board.game_init 8) (Board.get_color 1);
-    count_inactive_test "0 white inactive for initial board" 0
-      (Board.game_init 8) (Board.get_color 2);
-    terminal_rep_string_test "terminal rep of initial board" t1
-      (Board.game_init 8);
-  ]
-
 let state_tests = []
 
 let suite =

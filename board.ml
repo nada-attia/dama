@@ -5,6 +5,10 @@ type terminal_rep = {
   black_square_empty : char;
   black_square_black : char;
   black_square_white : char;
+  white_square_white_dama : char;
+  white_square_black_dama : char;
+  black_square_white_dama : char;
+  black_square_black_dama : char;
 }
 
 type color =
@@ -296,6 +300,10 @@ let terminal_rep_string =
     black_square_empty = ' ';
     black_square_black = 'b';
     black_square_white = 'W';
+    white_square_white_dama = 'm';
+    white_square_black_dama = 'P';
+    black_square_white_dama = 'M';
+    black_square_black_dama = 'p';
   }
 
 (** [init_row n row piece_opt acc] initializes [row] of length [n] with
@@ -369,16 +377,32 @@ let square_to_string (square : square) : string =
       | None -> Char.escaped terminal_rep_string.white_square_empty
       | Some p -> (
           match p.color with
-          | Black -> Char.escaped terminal_rep_string.white_square_black
-          | White -> Char.escaped terminal_rep_string.white_square_white
+          | Black ->
+              if p.role = Man then
+                Char.escaped terminal_rep_string.white_square_black
+              else
+                Char.escaped terminal_rep_string.white_square_black_dama
+          | White ->
+              if p.role = Man then
+                Char.escaped terminal_rep_string.white_square_white
+              else
+                Char.escaped terminal_rep_string.white_square_white_dama
           ))
   | Black -> (
       match square.occupant with
       | None -> Char.escaped terminal_rep_string.black_square_empty
       | Some p -> (
           match p.color with
-          | Black -> Char.escaped terminal_rep_string.black_square_black
-          | White -> Char.escaped terminal_rep_string.black_square_white
+          | Black ->
+              if p.role = Man then
+                Char.escaped terminal_rep_string.black_square_black
+              else
+                Char.escaped terminal_rep_string.black_square_black_dama
+          | White ->
+              if p.role = Man then
+                Char.escaped terminal_rep_string.black_square_white
+              else
+                Char.escaped terminal_rep_string.black_square_white_dama
           ))
 
 let string_of_row r row =

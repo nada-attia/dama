@@ -32,6 +32,15 @@ let rec next_move state =
         | exception State.IllegalMove ->
             print_error "Illegal move";
             next_move state
+        | exception Board.EmptyStartSquare ->
+            print_error "The start square cannot be empty";
+            next_move state
+        | exception Board.NoPiece ->
+            print_error "There is no piece on the specified square";
+            next_move state
+        | exception Board.SquareNotFound ->
+            print_error "Square not found";
+            next_move state
         | new_state -> next_move new_state)
 
 (** [play_game] starts the game. *)
