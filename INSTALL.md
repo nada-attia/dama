@@ -5,7 +5,7 @@
 
 ### How to play the game
 
-To move a piece you can enter `move [starting position] [ending position]` where the positons are strings that contain a character followed by an integer. To determine the correct starting postion and ending position of your move, use the board's grid system.
+To move a piece you can enter `move <starting position> <ending position>` where the positons are strings that contain a character followed by an integer. To determine the correct starting postion and ending position of your move, use the board's grid system.
 
 For example `move c3 c4` moves the piece of c3 to c4.
 
