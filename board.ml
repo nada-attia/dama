@@ -288,6 +288,21 @@ let can_move square board turn =
       let condition3 = where_move board square <> [] in
       condition1 && condition2 && condition3
 
+(* helper to try to see if piece on square [sqr] can be upgraded *)
+let try_upgrade_piece sqr brd clr =
+  let ltr, num = sqr.label in
+  let pc =
+    match sqr.occupant with
+    | None -> raise EmptyStartSquare
+    | Some s -> s
+  in
+  (* if white, end of board is num=8 *)
+  if clr = White then
+    if num = 8 then pc.role <- Lady
+    else pc.role <- Man (* else is black so end is num=1 *)
+  else if num = 1 then pc.role <- Lady
+  else pc.role <- Man
+
 let terminal_rep_string =
   {
     white_square_empty = '.';
