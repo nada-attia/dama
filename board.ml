@@ -356,11 +356,6 @@ let game_init n =
 
 let get_board t = t.board
 
-let get_color i =
-  if i = 1 then Black
-  else if i = 2 then White
-  else failwith "Enter 1 or 2"
-
 let count_inactive curr_board p_color =
   match p_color with
   | Black ->
