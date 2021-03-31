@@ -111,8 +111,39 @@ let parse_move_test
 
 let b = Board.game_init 8
 
+let t1 =
+  "  a   b   c   d   e   f   g   h  \n\
+   |   | . |   | . |   | . |   | . |1\n\
+   | w | W | w | W | w | W | w | W |2\n\
+   | W | w | W | w | W | w | W | w |3\n\
+   |   | . |   | . |   | . |   | . |4\n\
+   | . |   | . |   | . |   | . |   |5\n\
+   | B | b | B | b | B | b | B | b |6\n\
+   | b | B | b | B | b | B | b | B |7\n\
+   | . |   | . |   | . |   | . |   |8\n"
+
+let count_inactive_test
+    (name : string)
+    (expected_output : int)
+    (t : Board.t)
+    (color : Board.color) =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (Board.count_inactive t color)
+    ~printer:string_of_int
+
+let terminal_rep_string_test
+    (name : string)
+    (expected_output : string)
+    (t : Board.t) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Board.terminal_rep_string t 1)
+
 let board_tests =
   [
+    count_inactive_test "0 white inactive on initial board" 0 b
+      Board.get_init_player;
+    terminal_rep_string_test "terminal rep of initial board" t1 b;
     get_square_test "square with white piece" ('a', 2) b
       (Board.White, Board.Man);
     get_square_test "square with black piece" ('e', 7) b
