@@ -8,6 +8,8 @@ let rec next_move state =
     let player_number =
       if player = "white" then "Player 1 " else "Player 2 "
     in
+    print_string
+      ("\n" ^ Board.terminal_rep_string (State.get_board state) 1 ^ "\n");
     print_endline (player_number ^ "(" ^ player ^ "):");
     print_string "> ";
     match read_line () with
@@ -47,7 +49,6 @@ let main () =
   ANSITerminal.print_string [ ANSITerminal.green ]
     "\n\nWelcome to Dama (Turkish Draughts).\n";
   let board = Board.game_init 8 in
-  print_string (Board.terminal_rep_string board 1);
   play_game board
 
 (* Execute the game engine. *)

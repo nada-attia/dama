@@ -48,6 +48,8 @@ exception EmptyStartSquare
 
 exception NoPiece
 
+exception SquareNotFound
+
 let get_board t = t.board
 
 let get_init_player = White
@@ -58,12 +60,15 @@ let rec get_sqlst_label = function
   | [] -> []
   | h :: t -> h.label :: get_sqlst_label t
 
+let get_label sq = sq.label
+
 let get_square labl (brd : t) =
-  let col_ltr, num_pos = labl in
-  let row = num_pos - 1 in
-  let row_lst = List.nth brd.board row in
-  let col = Char.code col_ltr - 97 in
-  List.nth row_lst col
+  let squares = List.flatten brd.board in
+  let rec find_square = function
+    | [] -> raise SquareNotFound
+    | h :: t -> if h.label = labl then h else find_square t
+  in
+  find_square squares
 
 (* Helper function to get list of square left of [square] if exists,
    else []. Behavior varies dependent on color since orientation of
@@ -322,31 +327,18 @@ let rec init_row n row piece_opt acc =
       in
       init_row (n - 1) row piece_opt (square :: acc)
 
-(** [board_init_helper n row row_end piece_opt acc] initializes rows of
-    length [n] starting at [row] for [count] rows with [piece_opt]*)
-let rec board_init_helper n row count piece_opt acc =
-  match n with
-  | 0 -> acc
-  | _ -> (
-      match row with
-      | 0 -> acc
-      | _ ->
-          if count = 0 then acc
-          else
-            board_init_helper n (row - 1) (count - 1) piece_opt
-              (init_row n row piece_opt [] :: acc))
-
 let board_init n =
   [ init_row n 1 None [] ]
   @ [ init_row n 2 (Some { color = White; role = Man }) [] ]
   @ [ init_row n 3 (Some { color = White; role = Man }) [] ]
-  @ board_init_helper n 4 (n - 6) None []
-  @ [ init_row n (n - 2) (Some { color = Black; role = Man }) [] ]
-  @ [ init_row n (n - 1) (Some { color = Black; role = Man }) [] ]
-  @ [ init_row n n None [] ]
+  @ [ init_row n 4 None [] ]
+  @ [ init_row n 5 None [] ]
+  @ [ init_row n 6 (Some { color = Black; role = Man }) [] ]
+  @ [ init_row n 7 (Some { color = Black; role = Man }) [] ]
+  @ [ init_row n 8 None [] ]
 
 let game_init n =
-  let side_board = { man_count = 2 * n; lady_count = 0 } in
+  let side_board = { man_count = 0; lady_count = 0 } in
   {
     board = board_init n;
     w_side_board = side_board;
@@ -357,13 +349,11 @@ let game_init n =
 let count_inactive curr_board p_color =
   match p_color with
   | Black ->
-      (2 * curr_board.size)
-      - (curr_board.b_side_board.lady_count
-       + curr_board.b_side_board.man_count)
+      curr_board.b_side_board.lady_count
+      + curr_board.b_side_board.man_count
   | White ->
-      (2 * curr_board.size)
-      - (curr_board.w_side_board.lady_count
-       + curr_board.w_side_board.man_count)
+      curr_board.w_side_board.lady_count
+      + curr_board.w_side_board.man_count
 
 let square_to_string (square : square) : string =
   match square.color with
@@ -385,10 +375,10 @@ let square_to_string (square : square) : string =
           ))
 
 let string_of_row r row =
-  List.fold_left
-    (fun acc square -> "| " ^ square_to_string square ^ " " ^ acc)
-    ("|" ^ string_of_int row)
+  List.fold_right
+    (fun square acc -> "| " ^ square_to_string square ^ " " ^ acc)
     r
+    ("|" ^ string_of_int row)
 
 let rec terminal_rep_string_helper t count =
   match t with
@@ -420,41 +410,24 @@ let get_piece_info (sq : square) =
   with exn -> raise NoPiece
 
 let remove_pieces captured_sq turn board =
-  try
-    let captured_piece = get_piece captured_sq in
-    let role = captured_piece.role in
-    captured_sq.occupant <- None;
-    let white_side = board.w_side_board in
-    let black_side = board.b_side_board in
-    if turn = White then
-      if role = Lady then
-        white_side.lady_count <- white_side.lady_count + 1
-      else white_side.man_count <- white_side.man_count + 1
-    else if role = Lady then
-      black_side.lady_count <- black_side.lady_count + 1
-    else black_side.man_count <- black_side.man_count + 1
-  with exn -> raise NoPiece
+  let captured_piece = get_piece captured_sq in
+  let role = captured_piece.role in
+  captured_sq.occupant <- None;
+  let white_side = board.w_side_board in
+  let black_side = board.b_side_board in
+  if turn = White then
+    if role = Lady then
+      white_side.lady_count <- white_side.lady_count + 1
+    else white_side.man_count <- white_side.man_count + 1
+  else if role = Lady then
+    black_side.lady_count <- black_side.lady_count + 1
+  else black_side.man_count <- black_side.man_count + 1
 
 let rec update_board turn captured board start_pos end_pos =
-  let rec update_rem_rows rows =
-    match rows with
-    | [] -> ()
-    | row :: remaining_rows ->
-        let rec update_row r =
-          match r with
-          | [] -> ()
-          | square :: remaining_squares -> (
-              let p = get_piece square in
-              let lbl = square.label in
-              if lbl = start_pos then square.occupant <- None
-              else if lbl = end_pos then square.occupant <- Some p
-              else update_row remaining_squares;
-              match captured with
-              | None -> ()
-              | Some captured_sq -> remove_pieces captured_sq turn board
-              )
-        in
-        update_row row;
-        update_rem_rows remaining_rows
-  in
-  update_rem_rows board.board
+  let start_sq = get_square start_pos board in
+  let end_sq = get_square end_pos board in
+  end_sq.occupant <- Some (get_piece start_sq);
+  start_sq.occupant <- None;
+  match captured with
+  | None -> ()
+  | Some sq -> remove_pieces sq turn board
