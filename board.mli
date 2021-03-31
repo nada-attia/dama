@@ -5,7 +5,7 @@ type color =
   | Black
   | White
 
-(** The colors of the 2 kinds of pieces *)
+type square
 
 type role =
   | Man
