@@ -36,12 +36,10 @@ let get_square_test
     (name : string)
     (lbl : char * int)
     (board : Board.t)
-    (expected_output : Board.color * Board.role) : test =
+    (expected_output : char * int) : test =
   name >:: fun _ ->
   let sq = Board.get_square lbl board in
-  assert_equal expected_output
-    (Board.get_piece_info sq)
-    ~printer:print_piece_tuple
+  assert_equal expected_output (Board.get_label sq) ~printer:print_label
 
 let empty_square_test
     (name : string)
@@ -68,7 +66,7 @@ let get_movable_squares_reg_test
     (sq : char * int)
     (brd : Board.t)
     (clr : Board.color)
-    (expected_output : square option list) : test =
+    (expected_output : square list) : test =
   name >:: fun _ ->
   let sqre = Board.get_square sq brd in
   let sqr = Board.get_movable_squares_reg sqre clr brd in
@@ -111,41 +109,108 @@ let parse_move_test
 
 let b = Board.game_init 8
 
+let b1 = Board.game_init 8
+
+let t1 =
+  "  a   b   c   d   e   f   g   h   \n\
+   |   | . |   | . |   | . |   | . |1\n\
+   | w | W | w | W | w | W | w | W |2\n\
+   | W | w | W | w | W | w | W | w |3\n\
+   |   | . |   | . |   | . |   | . |4\n\
+   | . |   | . |   | . |   | . |   |5\n\
+   | B | b | B | b | B | b | B | b |6\n\
+   | b | B | b | B | b | B | b | B |7\n\
+   | . |   | . |   | . |   | . |   |8\n"
+
+let count_inactive_test
+    (name : string)
+    (expected_output : int)
+    (t : Board.t)
+    (color : Board.color) =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (Board.count_inactive t color)
+    ~printer:string_of_int
+
+let terminal_rep_string_test
+    (name : string)
+    (expected_output : string)
+    (t : Board.t) : test =
+  name >:: fun _ ->
+  print_endline (Board.terminal_rep_string t 1);
+  print_endline expected_output;
+  assert_equal expected_output (Board.terminal_rep_string t 1)
+
+let can_move_test
+    (name : string)
+    (square : char * int)
+    (board : Board.t)
+    (turn : Board.color)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square square board in
+  let res = Board.can_move sq board turn in
+  assert_equal expected_output res
+
+let get_all_jumps_test
+    (name : string)
+    (square : char * int)
+    (board : Board.t)
+    (turn : Board.color)
+    (expected_output : (square * square) list) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square square board in
+  let res = Board.get_all_jumps sq board turn in
+  assert_equal expected_output res
+
 let board_tests =
   [
-    get_square_test "square with white piece" ('a', 2) b
-      (Board.White, Board.Man);
-    get_square_test "square with black piece" ('e', 7) b
-      (Board.Black, Board.Man);
+    count_inactive_test "0 white inactive on initial board" 0 b
+      Board.get_init_player;
+    (* terminal_rep_string_test "terminal rep of\n initial board" t1 b1; *)
+    get_square_test "square with white piece" ('a', 2) b ('a', 2);
+    get_square_test "square with black piece" ('e', 7) b ('e', 7);
+    get_square_test "square with black piece" ('a', 4) b ('a', 4);
+    get_square_test "b5" ('b', 5) b ('b', 5);
     empty_square_test "square with no piece" ('b', 5) b;
     empty_square_test "square with no piece" ('a', 8) b;
     empty_square_test "square with no piece" ('f', 1) b;
     get_square_dir_test
-      "Square ABOVE white piece which has another white piece on it"
-      ('c', 2) b White Up ('c', 3);
+      "Square ABOVE white piece which has another\n\
+      \       white piece on it" ('c', 2) b White Up ('c', 3);
     get_square_dir_test
-      "Square below white piece which has another white piece on it"
-      ('c', 3) b White Down ('c', 2);
+      "Square below white piece which has another\n\
+      \       white piece on it" ('c', 3) b White Down ('c', 2);
     get_square_dir_test
-      "Square left of white piece which has another white piece on it"
-      ('c', 2) b White Left ('b', 2);
+      "Square left of white piece which has another\n\
+      \       white piece on it" ('c', 2) b White Left ('b', 2);
     get_square_dir_test
-      "Square right of white piece which has another white piece on it"
-      ('c', 2) b White Right ('d', 2);
+      "Square right of white piece which has\n\
+      \       another white piece on it" ('c', 2) b White Right ('d', 2);
     get_square_dir_test
-      "Square above black piece which has another black piece on it"
-      ('b', 7) b Black Up ('b', 6);
+      "Square above black piece which has another\n\
+      \       black piece on it" ('b', 7) b Black Up ('b', 6);
     get_square_dir_test
-      "Square left of black piece which has another black piece on it"
-      ('b', 7) b Black Left ('c', 7);
+      "Square left of black piece which has another\n\
+      \       black piece on it" ('b', 7) b Black Left ('c', 7);
     get_square_dir_test
-      "Square right of black piece which has another black piece on it"
-      ('b', 7) b Black Right ('a', 7);
+      "Square right of black piece which has\n\
+      \       another black piece on it" ('b', 7) b Black Right ('a', 7);
     get_movable_squares_reg_test "f" ('b', 3) b White
-      [ Some (Board.get_square ('b', 4) b) ];
+      [ Board.get_square ('b', 4) b ];
     where_move_test "move black piece" ('d', 7) b [];
     where_move_test "move white piece" ('b', 3) b
       [ Board.get_square ('b', 4) b ];
+    can_move_test "white piece with nothing in front of it" ('b', 3) b
+      White true;
+    can_move_test "white piece with something in front of it" ('b', 2) b
+      White false;
+    can_move_test "black piece with something in front of it" ('b', 7) b
+      Black false;
+    can_move_test "black piece with nothing in front of it" ('b', 6) b
+      Black true;
+    get_all_jumps_test "jumps of white piece with no jump" ('b', 3) b
+      White [];
   ]
 
 let command_tests =
