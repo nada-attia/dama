@@ -255,6 +255,11 @@ let get_movable_squares_lady square color board =
       get_all_vac_sq_dir [] square color board Left @ squares
     else squares
   in
+  let squares =
+    if get_all_vac_sq_dir [] square color board Down <> [] then
+      get_all_vac_sq_dir [] square color board Down @ squares
+    else squares
+  in
   squares
 
 let rec final_squares = function
@@ -276,7 +281,7 @@ let where_move brd sq =
       else final_squares jumps (* If lady piece *)
     else if
       (* If jump is avalible, it must be taken. But if not... *)
-      get_all_jumps_lady sq brd pc.color = []
+      get_all_jumps_lady sq brd pc.color <> []
     then
       let lady_jumps = get_all_jumps_lady sq brd pc.color in
       final_squares lady_jumps
@@ -477,8 +482,8 @@ let update_board turn captured board start_pos end_pos =
   let start_sq = get_square start_pos board in
   let end_sq = get_square end_pos board in
   end_sq.occupant <- Some (get_piece start_sq);
-  try_upgrade_piece end_sq board turn;
   start_sq.occupant <- None;
+  try_upgrade_piece end_sq board turn;
   match captured with
   | None -> ()
   | Some sq -> remove_pieces sq turn board
