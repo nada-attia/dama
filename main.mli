@@ -1,1 +1,1 @@
-(* val display_terminal_ui : State.state -> string *)
+(* This is left intentionally empty *)
