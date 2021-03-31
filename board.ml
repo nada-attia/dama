@@ -303,9 +303,9 @@ let try_upgrade_piece sqr brd clr =
   (* if white, end of board is num=8 *)
   if clr = White then
     if num = 8 then pc.role <- Lady
-    else pc.role <- Man (* else is black so end is num=1 *)
+    else () (* else is black so end is num=1 *)
   else if num = 1 then pc.role <- Lady
-  else pc.role <- Man
+  else ()
 
 let terminal_rep_string =
   {
@@ -464,10 +464,11 @@ let remove_pieces captured_sq turn board =
     black_side.lady_count <- black_side.lady_count + 1
   else black_side.man_count <- black_side.man_count + 1
 
-let rec update_board turn captured board start_pos end_pos =
+let update_board turn captured board start_pos end_pos =
   let start_sq = get_square start_pos board in
   let end_sq = get_square end_pos board in
   end_sq.occupant <- Some (get_piece start_sq);
+  try_upgrade_piece end_sq board turn;
   start_sq.occupant <- None;
   match captured with
   | None -> ()
