@@ -84,6 +84,28 @@ let where_move_test
   let square_list = Board.where_move board sq in
   assert_equal expected_output square_list
 
+let can_move_test
+    (name : string)
+    (square : char * int)
+    (board : Board.t)
+    (turn : Board.color)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square square board in
+  let res = Board.can_move sq board turn in
+  assert_equal expected_output res
+
+let get_all_jumps_test
+    (name : string)
+    (square : char * int)
+    (board : Board.t)
+    (turn : Board.color)
+    (expected_output : (square * square) list) : test =
+  name >:: fun _ ->
+  let sq = Board.get_square square board in
+  let res = Board.get_all_jumps sq board turn in
+  assert_equal expected_output res
+
 let parse_test
     (name : string)
     (str : string)
@@ -177,6 +199,16 @@ let board_tests =
     where_move_test "move black piece" ('d', 7) b [];
     where_move_test "move white piece" ('b', 3) b
       [ Board.get_square ('b', 4) b ];
+    can_move_test "white piece with nothing in front of it" ('b', 3) b
+      White true;
+    can_move_test "white piece with something in front of it" ('b', 2) b
+      White false;
+    can_move_test "black piece with something in front of it" ('b', 7) b
+      Black false;
+    can_move_test "black piece with nothing in front of it" ('b', 6) b
+      Black true;
+    get_all_jumps_test "jumps of white piece with no jump" ('b', 3) b
+      White [];
   ]
 
 let command_tests =

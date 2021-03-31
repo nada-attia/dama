@@ -54,15 +54,11 @@ let get_init_player = White
 
 let get_other_player color = if color = White then Black else White
 
-let rec get_sqlst_label = function
-  | [] -> []
-  | h :: t -> h.label :: get_sqlst_label t
-
 let get_square labl (brd : t) =
   let col_ltr, num_pos = labl in
   let row = num_pos - 1 in
   let row_lst = List.nth brd.board row in
-  let col = Char.code col_ltr - 97 in
+  let col = Char.code col_ltr - Char.code 'a' in
   List.nth row_lst col
 
 (* Helper function to get list of square left of [square] if exists,
