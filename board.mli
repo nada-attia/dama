@@ -21,6 +21,8 @@ exception NoPiece
 
 exception SquareNotFound
 
+exception EmptyStartSquare
+
 (** A square on an n * n board *)
 
 val get_init_player : color
