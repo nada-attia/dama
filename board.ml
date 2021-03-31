@@ -321,6 +321,11 @@ let terminal_rep_string =
     black_square_black_dama = 'p';
   }
 
+let init_piece (piece : piece option) () =
+  match piece with
+  | None -> None
+  | Some p -> Some { color = p.color; role = p.role }
+
 (** [init_row n row piece_opt acc] initializes [row] of length [n] with
     [piece_opt]*)
 let rec init_row n row piece_opt acc =
@@ -333,7 +338,7 @@ let rec init_row n row piece_opt acc =
             let color = if row mod 2 = 1 then Black else White in
             {
               color;
-              occupant = piece_opt;
+              occupant = init_piece piece_opt ();
               label =
                 (let last_col_char =
                    char_of_int (int_of_char 'a' + n - 1)
@@ -346,7 +351,11 @@ let rec init_row n row piece_opt acc =
               match h.label with
               | c, r -> char_of_int (int_of_char c - 1)
             in
-            { color; occupant = piece_opt; label = (prev_letter, row) }
+            {
+              color;
+              occupant = init_piece piece_opt ();
+              label = (prev_letter, row);
+            }
       in
       init_row (n - 1) row piece_opt (square :: acc)
 
