@@ -70,6 +70,4 @@ val update_board :
 
 val get_piece_info : square -> color * role
 
-val get_movable_squares_reg : square -> color -> t -> square option list
-
-val get_init_player : color
+val get_movable_squares_reg : square -> color -> t -> square list

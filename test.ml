@@ -68,7 +68,7 @@ let get_movable_squares_reg_test
     (sq : char * int)
     (brd : Board.t)
     (clr : Board.color)
-    (expected_output : square option list) : test =
+    (expected_output : square list) : test =
   name >:: fun _ ->
   let sqre = Board.get_square sq brd in
   let sqr = Board.get_movable_squares_reg sqre clr brd in
@@ -173,7 +173,7 @@ let board_tests =
       "Square right of black piece which has another black piece on it"
       ('b', 7) b Black Right ('a', 7);
     get_movable_squares_reg_test "f" ('b', 3) b White
-      [ Some (Board.get_square ('b', 4) b) ];
+      [ Board.get_square ('b', 4) b ];
     where_move_test "move black piece" ('d', 7) b [];
     where_move_test "move white piece" ('b', 3) b
       [ Board.get_square ('b', 4) b ];
