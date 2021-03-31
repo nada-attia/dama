@@ -1,10 +1,11 @@
 (* The abstract type of values representing the board. *)
 type t
 
-(** The colors of the 2 kinds of pieces *)
 type color =
   | Black
   | White
+
+type square
 
 type role =
   | Man
@@ -18,8 +19,9 @@ type direction =
 
 exception NoPiece
 
+exception SquareNotFound
+
 (** A square on an n * n board *)
-type square
 
 val get_init_player : color
 
@@ -42,6 +44,8 @@ val terminal_rep_string : t -> int -> string
 (** [count_inactive p_color] is the total number of pieces which have
     color [p_color] and are not on the board *)
 val count_inactive : t -> color -> int
+
+val get_label : square -> char * int
 
 val get_square : char * int -> t -> square
 
