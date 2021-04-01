@@ -70,12 +70,15 @@ let update_state_move (state : state) (m : Command.squares_move) =
     let new_turn = Board.get_other_player turn in
     let new_current =
       if
-        (Board.count_inactive board turn <> 16
-        || Board.count_inactive board new_turn <> 16)
-        && Move.can_move_all (Board.get_board board) board new_turn
-      then InProgress
-      else Finished
+        Board.count_inactive board new_turn = 16
+        || Move.can_move_all (Board.get_board board) board new_turn
+           = false
+      then Finished
+      else InProgress
     in
+    (* If the game is over, we want to change the turn to the color that
+       won so we can print it in terminal*)
+    let new_turn = if new_current = Finished then turn else new_turn in
     { turn = new_turn; board; current = new_current })
   else raise IllegalMove
 
