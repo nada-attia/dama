@@ -1,4 +1,4 @@
-MODULES=board state main command author 
+MODULES=board state main command author move
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

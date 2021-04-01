@@ -38,14 +38,14 @@ let find_final_jump = function
   | (_, (final : Board.square)) :: t -> Board.get_label final
 
 let rec make_all_jumps start_pos end_pos board turn =
-  let square_start = Board.get_square start_pos board in
-  let square_end = Board.get_square end_pos board in
-  let jumps = Board.get_all_jumps square_start board turn in
+  let square_start = Move.get_square start_pos board in
+  let square_end = Move.get_square end_pos board in
+  let jumps = Move.get_all_jumps square_start board turn in
   let captured = find_jump square_end jumps in
   Board.update_board turn captured board start_pos end_pos;
   if jumps <> [] then
     try
-      let new_jumps = Board.get_all_jumps square_end board turn in
+      let new_jumps = Move.get_all_jumps square_end board turn in
       let new_end = find_final_jump new_jumps in
       make_all_jumps end_pos new_end board turn
     with _ -> ()
@@ -56,10 +56,10 @@ let update_state_move (state : state) (m : Command.squares_move) =
   let board = state.board in
   let turn = state.turn in
   let start_pos, end_pos = m in
-  let square_start = Board.get_square start_pos board in
-  let square_end = Board.get_square end_pos board in
-  let is_valid_start = Board.can_move square_start board turn in
-  let valid_ends = Board.where_move board square_start in
+  let square_start = Move.get_square start_pos board in
+  let square_end = Move.get_square end_pos board in
+  let is_valid_start = Move.can_move square_start board turn in
+  let valid_ends = Move.where_move board square_start in
   let is_valid_end = find_square square_end valid_ends in
   if is_valid_start && is_valid_end then (
     make_all_jumps start_pos end_pos board turn;
