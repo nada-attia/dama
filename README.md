@@ -7,15 +7,17 @@
 Dama (also known as Turkish Draughts) is a variant of draughts that is played in Turkey, Greece, Egypt, Kuwait, Lebanon, Syria, Jordan, Iraq, and other Middle Eastern countries. In this information age, this 5000+ year old game is losing popularity. You can find a video by Al Jazeera English [here](https://www.youtube.com/watch?v=hc-XDUwFFTE) discussing this.
 
 As group members of Middle Eastern background, this game carries cultural significance to us, and our implementation of the game is an effort to keep the game alive.
+<br/>
 
-<img src="./images/dama.jpeg"
-     alt="Dama image"
-     style="height:100px" />
-
+<div style="display: inline-block;">
+  <img src="./images/dama.jpeg"
+      alt="Dama image"
+      height="100" />
 <img src="./images/dama.jpg"
-     alt="Dama image"
-     style="height:100px" />
-
+          alt="Dama image"
+          height="100" />
+</div>
+<br/>
 ## Rules of the Game
 
 - The game starts off with an 8x8 board with 16 pieces lined up on two rows for each color with the last row empty on each side.
