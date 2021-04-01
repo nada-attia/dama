@@ -255,44 +255,20 @@ let update_board turn captured board start_pos end_pos =
   | None -> ()
   | Some sq -> Board.remove_pieces sq turn board
 
-(** [get_all_jumps_row row brd clr] gets all the available jumps for
-    [clr] on [row] of game [brd] *)
-let rec get_all_jumps_row (row : Board.square list) brd clr =
+let rec can_move_row row t clr =
   match row with
-  | [] -> []
-  | h :: t -> (
-      match Board.get_occupant h with
-      | None -> get_all_jumps_row t brd clr
-      | Some occupant ->
-          let color, role = Board.get_piece_info h in
-          if color = clr then
-            let jumps =
-              if role = Man then get_all_jumps h brd clr
-              else get_all_jumps_lady h brd clr
-            in
-            jumps @ get_all_jumps_row t brd clr
-          else get_all_jumps_row t brd clr)
-
-let rec get_all_jumps_color brd (t : Board.t) clr =
-  match Board.get_board t with
-  | [] -> []
-  | row :: remaining ->
-      get_all_jumps_row row t clr @ get_all_jumps_color remaining t clr
-
-let rec where_move_row row t clr =
-  match row with
-  | [] -> []
+  | [] -> false
   | h :: remaining -> (
       match Board.get_occupant h with
-      | None -> where_move_row row t clr
+      | None -> can_move_row row t clr
       | Some occupant ->
           let color, role = Board.get_piece_info h in
           if color = clr then
-            where_move t h @ where_move_row remaining t clr
-          else where_move_row remaining t clr)
+            can_move h t clr || can_move_row remaining t clr
+          else can_move_row remaining t clr)
 
-let rec where_move_all board t clr =
+let rec can_move_all board t clr =
   match Board.get_board t with
-  | [] -> []
+  | [] -> false
   | row :: remaining ->
-      where_move_row row t clr @ where_move_all remaining t clr
+      can_move_row row t clr || can_move_all remaining t clr
