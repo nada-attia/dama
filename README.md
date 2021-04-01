@@ -15,7 +15,7 @@ As group members of Middle Eastern background, this game carries cultural signif
       height="300" />
 <img src="./images/dama.jpg"
           alt="Dama image"
-          height="3000" />
+          height="300" />
 </div>
 
 ## Rules of the Game
