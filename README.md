@@ -12,12 +12,13 @@ As group members of Middle Eastern background, this game carries cultural signif
 <div style="display: inline-block;">
   <img src="./images/dama.jpeg"
       alt="Dama image"
-      height="100" />
+      height="200" />
 <img src="./images/dama.jpg"
           alt="Dama image"
-          height="100" />
+          height="200" />
 </div>
 <br/>
+
 ## Rules of the Game
 
 - The game starts off with an 8x8 board with 16 pieces lined up on two rows for each color with the last row empty on each side.
