@@ -71,7 +71,7 @@ let get_occupant sq = sq.occupant
 let get_color (piece : piece) = piece.color
 
 (* helper to try to see if piece on square [sqr] can be upgraded *)
-let try_upgrade_piece sqr brd clr =
+let try_upgrade_piece sqr (brd : t) (clr : color) =
   let ltr, num = sqr.label in
   let pc =
     match sqr.occupant with
@@ -235,6 +235,8 @@ let get_piece_info (sq : square) =
     (p.color, p.role)
   with exn -> raise NoPiece
 
+let update_piece sq (p : piece option) = sq.occupant <- p
+
 let remove_pieces captured_sq turn board =
   let captured_piece = get_piece captured_sq in
   let role = captured_piece.role in
@@ -248,21 +250,3 @@ let remove_pieces captured_sq turn board =
   else if role = Lady then
     black_side.lady_count <- black_side.lady_count + 1
   else black_side.man_count <- black_side.man_count + 1
-
-let get_square labl (brd : t) =
-  let squares = List.flatten (get_board brd) in
-  let rec find_square = function
-    | [] -> raise SquareNotFound
-    | h :: t -> if get_label h = labl then h else find_square t
-  in
-  find_square squares
-
-let update_board turn captured board start_pos end_pos =
-  let start_sq = get_square start_pos board in
-  let end_sq = get_square end_pos board in
-  end_sq.occupant <- Some (get_piece start_sq);
-  try_upgrade_piece end_sq board turn;
-  start_sq.occupant <- None;
-  match captured with
-  | None -> ()
-  | Some sq -> remove_pieces sq turn board

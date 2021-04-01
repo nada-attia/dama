@@ -57,7 +57,10 @@ val get_color : piece -> color
 
 val get_sqlst_label : square list -> (char * int) list
 
-val update_board :
-  color -> square option -> t -> char * int -> char * int -> unit
-
 val get_piece_info : square -> color * role
+
+val update_piece : square -> piece option -> unit
+
+val remove_pieces : square -> color -> t -> unit
+
+val try_upgrade_piece : square -> t -> color -> unit

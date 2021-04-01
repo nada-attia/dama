@@ -247,3 +247,12 @@ let can_move square board turn =
       let condition3 = where_move board square <> [] in
       condition1 && condition2 && condition3
 
+let update_board turn captured board start_pos end_pos =
+  let start_sq = get_square start_pos board in
+  let end_sq = get_square end_pos board in
+  Board.update_piece end_sq (Board.get_occupant start_sq);
+  Board.try_upgrade_piece end_sq board turn;
+  Board.update_piece start_sq None;
+  match captured with
+  | None -> ()
+  | Some sq -> Board.remove_pieces sq turn board

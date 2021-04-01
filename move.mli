@@ -39,3 +39,11 @@ val get_all_jumps :
   Board.t ->
   Board.color ->
   (Board.square * Board.square) list
+
+val update_board :
+  Board.color ->
+  Board.square option ->
+  Board.t ->
+  char * int ->
+  char * int ->
+  unit

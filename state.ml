@@ -42,7 +42,7 @@ let rec make_all_jumps start_pos end_pos board turn =
   let square_end = Move.get_square end_pos board in
   let jumps = Move.get_all_jumps square_start board turn in
   let captured = find_jump square_end jumps in
-  Board.update_board turn captured board start_pos end_pos;
+  Move.update_board turn captured board start_pos end_pos;
   if jumps <> [] then
     try
       let new_jumps = Move.get_all_jumps square_end board turn in
