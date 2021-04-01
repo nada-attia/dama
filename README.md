@@ -10,7 +10,11 @@ As group members of Middle Eastern background, this game carries cultural signif
 
 <img src="dama.jpeg"
      alt="Dama image"
-     style="float: center; margin-right: 10px; height:200px" />
+     style="height:150px" />
+
+<img src="dama.jpg"
+     alt="Dama image"
+     style="height:150px" />
 
 ## Rules of the Game
 
