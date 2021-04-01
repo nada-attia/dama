@@ -38,7 +38,7 @@ let get_square_test
     (board : Board.t)
     (expected_output : char * int) : test =
   name >:: fun _ ->
-  let sq = Board.get_square lbl board in
+  let sq = Move.get_square lbl board in
   assert_equal expected_output (Board.get_label sq) ~printer:print_label
 
 let empty_square_test
@@ -46,7 +46,7 @@ let empty_square_test
     (lbl : char * int)
     (board : Board.t) : test =
   name >:: fun _ ->
-  let sq = Board.get_square lbl board in
+  let sq = Move.get_square lbl board in
   assert_raises Board.NoPiece (fun () -> Board.get_piece_info sq)
 
 let get_square_dir_test
@@ -54,12 +54,12 @@ let get_square_dir_test
     (sq : char * int)
     (brd : Board.t)
     (clr : Board.color)
-    (dir : Board.direction)
+    (dir : Move.direction)
     (expected_output : char * int) : test =
   name >:: fun _ ->
-  let sqre = Board.get_square sq brd in
-  let sqr = Board.get_square_dir sqre brd clr dir in
-  assert_equal [ Board.get_square expected_output brd ] sqr
+  let sqre = Move.get_square sq brd in
+  let sqr = Move.get_square_dir sqre brd clr dir in
+  assert_equal [ Move.get_square expected_output brd ] sqr
 
 let get_movable_squares_reg_test
     (name : string)
@@ -68,8 +68,8 @@ let get_movable_squares_reg_test
     (clr : Board.color)
     (expected_output : square list) : test =
   name >:: fun _ ->
-  let sqre = Board.get_square sq brd in
-  let sqr = Board.get_movable_squares_reg sqre clr brd in
+  let sqre = Move.get_square sq brd in
+  let sqr = Move.get_movable_squares_reg sqre clr brd in
   assert_equal expected_output sqr
 
 let where_move_test
@@ -78,8 +78,8 @@ let where_move_test
     (board : Board.t)
     (expected_output : square list) : test =
   name >:: fun _ ->
-  let sq = Board.get_square lbl board in
-  let square_list = Board.where_move board sq in
+  let sq = Move.get_square lbl board in
+  let square_list = Move.where_move board sq in
   assert_equal expected_output square_list
 
 let parse_test
@@ -148,8 +148,8 @@ let can_move_test
     (turn : Board.color)
     (expected_output : bool) : test =
   name >:: fun _ ->
-  let sq = Board.get_square square board in
-  let res = Board.can_move sq board turn in
+  let sq = Move.get_square square board in
+  let res = Move.can_move sq board turn in
   assert_equal expected_output res
 
 let get_all_jumps_test
@@ -159,8 +159,8 @@ let get_all_jumps_test
     (turn : Board.color)
     (expected_output : (square * square) list) : test =
   name >:: fun _ ->
-  let sq = Board.get_square square board in
-  let res = Board.get_all_jumps sq board turn in
+  let sq = Move.get_square square board in
+  let res = Move.get_all_jumps sq board turn in
   assert_equal expected_output res
 
 let board_tests =
@@ -197,10 +197,10 @@ let board_tests =
       "Square right of black piece which has\n\
       \       another black piece on it" ('b', 7) b Black Right ('a', 7);
     get_movable_squares_reg_test "f" ('b', 3) b White
-      [ Board.get_square ('b', 4) b ];
+      [ Move.get_square ('b', 4) b ];
     where_move_test "move black piece" ('d', 7) b [];
     where_move_test "move white piece" ('b', 3) b
-      [ Board.get_square ('b', 4) b ];
+      [ Move.get_square ('b', 4) b ];
     can_move_test "white piece with nothing in front of it" ('b', 3) b
       White true;
     can_move_test "white piece with something in front of it" ('b', 2) b
