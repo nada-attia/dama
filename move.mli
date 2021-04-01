@@ -52,5 +52,5 @@ val get_all_jumps_lady :
   Board.color ->
   (Board.square * Board.square) list
 
-val where_move_all :
+val can_move_all :
   Board.square list list -> Board.t -> Board.color -> Board.square list
