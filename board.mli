@@ -7,6 +7,8 @@ type color =
 
 type square
 
+type piece
+
 type role =
   | Man
   | Lady
@@ -49,31 +51,16 @@ val count_inactive : t -> color -> int
 
 val get_label : square -> char * int
 
-val get_square : char * int -> t -> square
+val get_occupant : square -> piece option
 
-val get_square_dir : square -> t -> color -> direction -> square list
+val get_color : piece -> color
 
 val get_sqlst_label : square list -> (char * int) list
 
-(** [where_move board square] describes the squares where any given
-    piece is allowed to move to, from its current position. This depends
-    on it's piece type and current position, [square]. *)
-val where_move : t -> square -> square list
-
-(** [can_move square board] describes whether or not a given piece
-    occupying [square] is allowed to move based off of th rules of Dama.
-    true = it can and false = it cannot. Assumes: It is the move of the
-    color who's piece occupies [square]*)
-val can_move : square -> t -> color -> bool
-
-(* [get_all_jumps sq brd clr] describes the list of squares that
-   represent all possible jumps avalible for the piece of color [clrf]
-   on square [sq] on board [brd] *)
-val get_all_jumps : square -> t -> color -> (square * square) list
-
-val update_board :
-  color -> square option -> t -> char * int -> char * int -> unit
-
 val get_piece_info : square -> color * role
 
-val get_movable_squares_reg : square -> color -> t -> square list
+val update_piece : square -> piece option -> unit
+
+val remove_pieces : square -> color -> t -> unit
+
+val try_upgrade_piece : square -> t -> color -> unit
