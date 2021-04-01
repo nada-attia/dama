@@ -12,10 +12,10 @@ As group members of Middle Eastern background, this game carries cultural signif
 <div style="display: inline-block;">
   <img src="./images/dama.jpeg"
       alt="Dama image"
-      height="200" />
+      height="250" />
 <img src="./images/dama.jpg"
           alt="Dama image"
-          height="200" />
+          height="250" />
 </div>
 <br/>
 
