@@ -268,7 +268,7 @@ let rec can_move_row row t clr =
           else can_move_row remaining t clr)
 
 let rec can_move_all board t clr =
-  match Board.get_board t with
+  match board with
   | [] -> false
   | row :: remaining ->
       can_move_row row t clr || can_move_all remaining t clr

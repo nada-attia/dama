@@ -70,8 +70,9 @@ let update_state_move (state : state) (m : Command.squares_move) =
     let new_turn = Board.get_other_player turn in
     let new_current =
       if
-        Board.count_inactive board turn <> 16
-        || Board.count_inactive board new_turn <> 16
+        (Board.count_inactive board turn <> 16
+        || Board.count_inactive board new_turn <> 16)
+        && Move.can_move_all (Board.get_board board) board new_turn
       then InProgress
       else Finished
     in
