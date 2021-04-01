@@ -7,7 +7,7 @@ The game may work on other versions, but we have only tested it on this version.
 ### How to run this game locally
 
 - Clone this repository
-- `cd` to the cloned folder and run `make play` to start the game. There are no new OPAM packages needed. You can run this in the same OPAM switch used in CS 3110. If the game fails to build make sure you have the packages listed in the `_tags` file (you should already have those installed from class).
+- `cd` to the cloned folder and run `make play` to start the game. There are no new OPAM packages needed. You can run this in the same OPAM switch used in CS 3110.
 
 ### How to play the game
 
