@@ -40,7 +40,11 @@ let find_final_jump = function
 let rec make_all_jumps start_pos end_pos board turn =
   let square_start = Move.get_square start_pos board in
   let square_end = Move.get_square end_pos board in
-  let jumps = Move.get_all_jumps square_start board turn in
+  let _, role = Board.get_piece_info square_start in
+  let jumps =
+    if role = Board.Man then Move.get_all_jumps square_start board turn
+    else Move.get_all_jumps_lady square_start board turn
+  in
   let captured = find_jump square_end jumps in
   Move.update_board turn captured board start_pos end_pos;
   if jumps <> [] then
