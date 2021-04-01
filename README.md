@@ -9,7 +9,7 @@ Dama (also known as Turkish Draughts) is a variant of draughts that is played in
 As group members of Middle Eastern background, this game carries cultural significance to us, and our implementation of the game is an effort to keep the game alive.
 <br/>
 
-<div style="display: inline-block;">
+<div style="display: inline-block;" align="center">
   <img src="./images/dama.jpeg"
       alt="Dama image"
       height="300" />
