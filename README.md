@@ -4,11 +4,13 @@
 
 ## Background
 
-Dama (also known as Turkish Draughts) is a variant of draughts that is played in Turkey, Greece, Egypt, Kuwait, Lebanon, Syria, Jordan, Iraq, and other Middle Eastern countries. In this digital era, this ancient game is dying out. You can find a video by Al Jazeera English [here](https://www.youtube.com/watch?v=hc-XDUwFFTE) discussing this. As group members of Middle Eastern background, this game carries cultural significance to us, and our implementation of the game is an effort to keep the game alive.
+Dama (also known as Turkish Draughts) is a variant of draughts that is played in Turkey, Greece, Egypt, Kuwait, Lebanon, Syria, Jordan, Iraq, and other Middle Eastern countries. In this information age, this 5000+ year old game is losing popularity. You can find a video by Al Jazeera English [here](https://www.youtube.com/watch?v=hc-XDUwFFTE) discussing this.
+
+As group members of Middle Eastern background, this game carries cultural significance to us, and our implementation of the game is an effort to keep the game alive.
 
 <img src="dama.jpeg"
      alt="Dama image"
-     style="float: center; margin-right: 10px;" />
+     style="float: center; margin-right: 10px; height:200px" />
 
 ## Rules of the Game
 
