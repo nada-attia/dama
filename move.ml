@@ -255,20 +255,11 @@ let update_board turn captured board start_pos end_pos =
   | None -> ()
   | Some sq -> Board.remove_pieces sq turn board
 
-let rec can_move_row row t clr =
-  match row with
-  | [] -> false
-  | h :: remaining -> (
-      match Board.get_occupant h with
-      | None -> can_move_row row t clr
-      | Some occupant ->
-          let color, role = Board.get_piece_info h in
-          if color = clr then
-            can_move h t clr || can_move_row remaining t clr
-          else can_move_row remaining t clr)
-
-let rec can_move_all board t clr =
-  match board with
-  | [] -> false
-  | row :: remaining ->
-      can_move_row row t clr || can_move_all remaining t clr
+let can_move_all t clr =
+  let b = List.flatten (Board.get_board t) in
+  let rec can_move_sq sq_list =
+    match b with
+    | [] -> false
+    | h :: remaining -> can_move h t clr || can_move_sq remaining
+  in
+  can_move_sq b

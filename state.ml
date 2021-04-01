@@ -71,8 +71,7 @@ let update_state_move (state : state) (m : Command.squares_move) =
     let new_current =
       if
         Board.count_inactive board new_turn = 16
-        || Move.can_move_all (Board.get_board board) board new_turn
-           = false
+        || Move.can_move_all board new_turn = false
       then Finished
       else InProgress
     in
