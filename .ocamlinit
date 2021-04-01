@@ -3,4 +3,5 @@
 #directory "_build";;
 #load "board.cmo";;
 #load "state.cmo";;
+#load "move.cmo";;
 #load "command.cmo";;
