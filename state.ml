@@ -55,7 +55,6 @@ let rec make_all_jumps start_pos end_pos board turn =
     with _ -> ()
   else ()
 
-(* need to implement move for jumps *)
 let update_state_move (state : state) (m : Command.squares_move) =
   let board = state.board in
   let turn = state.turn in
