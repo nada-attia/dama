@@ -260,6 +260,14 @@ let can_move_all t clr =
   let rec can_move_sq sq_list =
     match b with
     | [] -> false
-    | h :: remaining -> can_move h t clr || can_move_sq remaining
+    | h :: remaining -> (
+        let occupant = Board.get_occupant h in
+        match occupant with
+        | None -> can_move_sq remaining
+        | Some piece ->
+            let color, role = Board.get_piece_info h in
+            if color = clr then
+              can_move h t clr || can_move_sq remaining
+            else can_move_sq remaining)
   in
   can_move_sq b
