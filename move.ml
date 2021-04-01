@@ -188,28 +188,10 @@ let get_all_jumps_lady sq brd clr =
   above @ below @ right @ left
 
 let get_movable_squares_lady square color board =
-  let squares = [] in
-  let squares =
-    if get_all_vac_sq_dir [] square color board Up <> [] then
-      get_all_vac_sq_dir [] square color board Up @ squares
-    else squares
-  in
-  let squares =
-    if get_all_vac_sq_dir [] square color board Right <> [] then
-      get_all_vac_sq_dir [] square color board Right @ squares
-    else squares
-  in
-  let squares =
-    if get_all_vac_sq_dir [] square color board Left <> [] then
-      get_all_vac_sq_dir [] square color board Left @ squares
-    else squares
-  in
-  let squares =
-    if get_all_vac_sq_dir [] square color board Down <> [] then
-      get_all_vac_sq_dir [] square color board Down @ squares
-    else squares
-  in
-  squares
+  get_all_vac_sq_dir [] square color board Up
+  @ get_all_vac_sq_dir [] square color board Right
+  @ get_all_vac_sq_dir [] square color board Left
+  @ get_all_vac_sq_dir [] square color board Down
 
 let rec final_squares = function
   | [] -> []
