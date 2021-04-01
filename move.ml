@@ -1,7 +1,5 @@
 exception SquareNotFound
 
-exception EmptyStartSquare
-
 type direction =
   | Up
   | Down
@@ -236,7 +234,7 @@ let where_move brd sq =
       let lady_jumps = get_all_jumps_lady sq brd pc_color in
       final_squares lady_jumps
     else get_movable_squares_lady sq pc_color brd
-  with _ -> raise EmptyStartSquare
+  with _ -> raise Board.EmptyStartSquare
 
 let can_move square board turn =
   let condition1 = check_if_occupied square in
