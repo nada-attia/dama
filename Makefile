@@ -38,4 +38,7 @@ docs-private: build
 loc: 
 	cloc --by-file --include-lang=OCaml .
 
+zip:
+	zip dama.zip *.ml* *.md *.sh *.jpg *.jpeg _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images
+	
 
