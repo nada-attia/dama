@@ -24,12 +24,6 @@ type piece = {
   mutable role : role;
 }
 
-type direction =
-  | Up
-  | Down
-  | Left
-  | Right
-
 type square = {
   color : color;
   mutable occupant : piece option;

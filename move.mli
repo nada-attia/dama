@@ -6,8 +6,6 @@ type direction =
 
 exception SquareNotFound
 
-exception EmptyStartSquare
-
 val get_square : char * int -> Board.t -> Board.square
 
 val get_square_dir :
@@ -47,3 +45,9 @@ val update_board :
   char * int ->
   char * int ->
   unit
+
+val get_all_jumps_lady :
+  Board.square ->
+  Board.t ->
+  Board.color ->
+  (Board.square * Board.square) list

@@ -13,12 +13,6 @@ type role =
   | Man
   | Lady
 
-type direction =
-  | Up
-  | Down
-  | Left
-  | Right
-
 exception NoPiece
 
 exception SquareNotFound
