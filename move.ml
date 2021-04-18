@@ -258,7 +258,7 @@ let update_board turn captured board start_pos end_pos =
 let can_move_all t clr =
   let b = List.flatten (Board.get_board t) in
   let rec can_move_sq sq_list =
-    match b with
+    match sq_list with
     | [] -> false
     | h :: remaining -> (
         let occupant = Board.get_occupant h in
