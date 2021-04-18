@@ -51,3 +51,5 @@ val get_all_jumps_lady :
   Board.t ->
   Board.color ->
   (Board.square * Board.square) list
+
+val can_move_all : Board.t -> Board.color -> bool
