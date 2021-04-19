@@ -44,6 +44,3 @@ loc:
 
 zip:
 	zip dama.zip *.ml* *.md *.sh *.jpg *.jpeg _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images
-
-
-
