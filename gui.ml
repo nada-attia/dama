@@ -9,7 +9,7 @@ let display_image img_path x y =
   Graphics.draw_image graphics_img x y
 
 let display_board board =
-  let b = Board.get_board board in
+  let b = List.rev (Board.get_board board) in
   let rec print_board x y = function
     | [] -> ()
     | sq_lst :: remaining_rows ->
@@ -64,17 +64,54 @@ let get_board_pos x y =
   let pos = col_pos ^ row_pos in
   if String.length pos = 2 then pos else ""
 
-let rec play () =
+let get_mouse_click () =
   let event = wait_next_event [ Button_down ] in
-  print_endline (get_board_pos event.mouse_x event.mouse_y);
-  play ()
+  get_board_pos event.mouse_x event.mouse_y
+
+let rec next_move state =
+  (let b = State.get_board state in
+   display_board b;
+   let start_pos = get_mouse_click () in
+   let end_pos = get_mouse_click () in
+   let command = "move " ^ start_pos ^ " " ^ end_pos in
+   let new_state = State.update_state state (Command.parse command) in
+   match new_state with
+   | state -> next_move state
+   | exception Command.IllegalCommand ->
+       ();
+       next_move state
+   | exception Command.IllegalSquare ->
+       ();
+       next_move state
+   | exception Command.NoCommand ->
+       ();
+       next_move state
+   | exception State.IllegalMove ->
+       ();
+       next_move state
+   | exception Board.EmptyStartSquare ->
+       ();
+       next_move state
+   | exception Board.NoPiece ->
+       ();
+       next_move state
+   | exception Board.SquareNotFound ->
+       ();
+       next_move state);
+  ()
+
+let play_game board =
+  let state = State.init_state board in
+  next_move state
 
 let init_window =
   open_graph " 1000x800";
   set_window_title "Dama"
 
+let rec loop () = loop ()
+
 let () =
   init_window;
   let initial = Board.game_init 8 in
-  display_board initial;
-  play ()
+  play_game initial;
+  loop ()
