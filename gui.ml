@@ -9,6 +9,7 @@ let display_image img_path x y =
   Graphics.draw_image graphics_img x y
 
 let display_board board =
+  display_image "images/title.png" 250 600;
   let b = List.rev (Board.get_board board) in
   let rec print_board x y = function
     | [] -> ()
@@ -74,9 +75,11 @@ let rec next_move state =
    let start_pos = get_mouse_click () in
    let end_pos = get_mouse_click () in
    let command = "move " ^ start_pos ^ " " ^ end_pos in
-   let new_state = State.update_state state (Command.parse command) in
-   match new_state with
-   | state -> next_move state
+   print_endline command;
+   match State.update_state state (Command.parse command) with
+   | state ->
+       display_image "images/clear-error.png" 145 45;
+       next_move state
    | exception Command.IllegalCommand ->
        ();
        next_move state
@@ -87,7 +90,7 @@ let rec next_move state =
        ();
        next_move state
    | exception State.IllegalMove ->
-       ();
+       display_image "images/illegal-move.png" 145 45;
        next_move state
    | exception Board.EmptyStartSquare ->
        ();
@@ -105,7 +108,7 @@ let play_game board =
   next_move state
 
 let init_window =
-  open_graph " 1000x800";
+  open_graph " 1000x700";
   set_window_title "Dama"
 
 let rec loop () = loop ()

@@ -1,8 +1,8 @@
 let x_margin = 100
 
-let y_margin = 50
+let y_margin = 100
 
-let square_size = 80
+let square_size = 60
 
 let square_spacing = 2
 
