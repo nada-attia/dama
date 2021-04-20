@@ -1,11 +1,11 @@
-MODULES=board state main command author move gui
+MODULES=board state main command author move gui constants
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
 GUI=gui.byte
-OCAMLBUILD=ocamlbuild -use-ocamlfind
+OCAMLBUILD=ocamlbuild -use-ocamlfind -package camlimages.all 
 
 default: build
 	OCAMLRUNPARAM=b utop
@@ -20,7 +20,7 @@ play:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 gui: 
-	$(OCAMLBUILD) -package camlimages.all -tag 'debug' $(GUI) && OCAMLRUNPARAM=b ./$(GUI) 
+	$(OCAMLBUILD) -tag 'debug' $(GUI) && OCAMLRUNPARAM=b ./$(GUI) 
 
 clean:
 	ocamlbuild -clean
