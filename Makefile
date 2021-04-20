@@ -1,9 +1,10 @@
-MODULES=board state main command author move
+MODULES=board state main command author move gui
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
+GUI=gui.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
 default: build
@@ -17,6 +18,9 @@ test:
 
 play:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
+
+gui: 
+	$(OCAMLBUILD) -package camlimages.all -tag 'debug' $(GUI) && OCAMLRUNPARAM=b ./$(GUI) 
 
 clean:
 	ocamlbuild -clean
@@ -40,5 +44,3 @@ loc:
 
 zip:
 	zip dama.zip *.ml* *.md *.sh *.jpg *.jpeg _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images
-	
-

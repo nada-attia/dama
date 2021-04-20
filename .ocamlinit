@@ -1,6 +1,8 @@
 #require "ounit2";;
 #require "ANSITerminal";;
+#require "Graphics";;
 #directory "_build";;
+#load "graphics.cma";;
 #load "board.cmo";;
 #load "state.cmo";;
 #load "move.cmo";;
