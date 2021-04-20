@@ -20,7 +20,7 @@ play:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 gui: 
-	$(OCAMLBUILD) -tag 'debug' $(GUI) && OCAMLRUNPARAM=b ./$(GUI)
+	$(OCAMLBUILD) -package camlimages.all -tag 'debug' $(GUI) && OCAMLRUNPARAM=b ./$(GUI) 
 
 clean:
 	ocamlbuild -clean
