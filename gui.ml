@@ -57,15 +57,41 @@ let get_board_pos x y =
   let pos = col_pos ^ row_pos in
   if String.length pos = 2 then pos else ""
 
-let get_mouse_click () =
+let display_selected x y board =
+  let num_square_col = (x - x_margin) / square_offset in
+  let num_square_row = (y - y_margin) / square_offset in
+  let lower_x = x_margin + (num_square_col * square_offset) in
+  let lower_y = y_margin + (num_square_row * square_offset) in
+  let c = (get_x_pos x).[0] in
+  let num = int_of_string (get_y_pos y) in
+  let square = Move.get_square (c, num) board in
+  match Board.get_occupant square with
+  | None -> display_image "images/selected-empty.png" lower_x lower_y
+  | Some p ->
+      let c, r = Board.get_piece_info square in
+      let image =
+        if c = Board.White && r = Board.Man then
+          "images/selected-white.png"
+        else if c = Board.Black && r = Board.Man then
+          "images/selected-black.png"
+        else if c = Board.Black && r = Board.Lady then
+          "images/selected-bkack-lady.png"
+        else "images/selected-white-lady.png"
+      in
+      display_image image lower_x lower_y
+
+let get_mouse_click board =
   let event = wait_next_event [ Button_down ] in
-  get_board_pos event.mouse_x event.mouse_y
+  let x = event.mouse_x in
+  let y = event.mouse_y in
+  display_selected x y board;
+  get_board_pos x y
 
 let rec next_move state =
   (let b = State.get_board state in
    display_board b;
-   let start_pos = get_mouse_click () in
-   let end_pos = get_mouse_click () in
+   let start_pos = get_mouse_click b in
+   let end_pos = get_mouse_click b in
    let command = "move " ^ start_pos ^ " " ^ end_pos in
    print_endline command;
    match State.update_state state (Command.parse command) with
