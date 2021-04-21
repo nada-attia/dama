@@ -38,22 +38,24 @@ let display_board board =
   print_board x_margin y_margin b
 
 let get_y_pos y =
-  if y < y_margin || y > y_margin + (8 * square_offset) then ""
+  if y < y_margin || y > y_margin + (8 * square_offset) then -1
   else
     let y_int = ((y - y_margin) / square_offset) + 1 in
-    string_of_int y_int
+    y_int
 
 let get_x_pos x =
-  if x < x_margin || x > x_margin + (8 * square_offset) then ""
-  else
-    let x_int = (x - x_margin) / square_offset in
-    let a = Char.code 'a' in
-    let c = a + x_int in
-    Char.escaped (Char.chr c)
+  if x < x_margin || x > x_margin + (8 * square_offset) then -1
+  else (x - x_margin) / square_offset
+
+let get_x_pos_string x =
+  let x_int = get_x_pos x in
+  let a = Char.code 'a' in
+  let c = a + x_int in
+  Char.escaped (Char.chr c)
 
 let get_board_pos x y =
-  let row_pos = get_y_pos y in
-  let col_pos = get_x_pos x in
+  let row_pos = string_of_int (get_y_pos y) in
+  let col_pos = get_x_pos_string x in
   let pos = col_pos ^ row_pos in
   if String.length pos = 2 then pos else ""
 
@@ -62,9 +64,9 @@ let display_selected x y board =
   let num_square_row = (y - y_margin) / square_offset in
   let lower_x = x_margin + (num_square_col * square_offset) in
   let lower_y = y_margin + (num_square_row * square_offset) in
-  let c = (get_x_pos x).[0] in
-  let num = int_of_string (get_y_pos y) in
-  let square = Move.get_square (c, num) board in
+  let c = get_x_pos_string x in
+  let num = get_y_pos y in
+  let square = Move.get_square (c.[0], num) board in
   match Board.get_occupant square with
   | None -> display_image "images/selected-empty.png" lower_x lower_y
   | Some p ->
@@ -80,12 +82,14 @@ let display_selected x y board =
       in
       display_image image lower_x lower_y
 
-let get_mouse_click board =
+let rec get_mouse_click board =
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
-  display_selected x y board;
-  get_board_pos x y
+  if get_x_pos x = -1 || get_y_pos y = -1 then get_mouse_click board
+  else (
+    display_selected x y board;
+    get_board_pos x y)
 
 let rec next_move state =
   (let b = State.get_board state in
