@@ -59,7 +59,7 @@ let get_board_pos x y =
   let pos = col_pos ^ row_pos in
   if String.length pos = 2 then pos else ""
 
-let display_selected x y board =
+let highlight_selected x y board =
   let num_square_col = (x - x_margin) / square_offset in
   let num_square_row = (y - y_margin) / square_offset in
   let lower_x = x_margin + (num_square_col * square_offset) in
@@ -88,7 +88,7 @@ let rec get_mouse_click board =
   let y = event.mouse_y in
   if get_x_pos x = -1 || get_y_pos y = -1 then get_mouse_click board
   else (
-    display_selected x y board;
+    highlight_selected x y board;
     get_board_pos x y)
 
 let rec next_move state =
@@ -102,26 +102,15 @@ let rec next_move state =
    | state ->
        display_image "images/clear-error.png" 300 45;
        next_move state
-   | exception Command.IllegalCommand ->
-       ();
-       next_move state
-   | exception Command.IllegalSquare ->
-       ();
-       next_move state
-   | exception Command.NoCommand ->
-       ();
-       next_move state
    | exception State.IllegalMove ->
        display_image "images/illegal-move.png" 300 45;
        next_move state
    | exception Board.EmptyStartSquare ->
-       ();
+       display_image "images/empty-start-square.png" 300 45;
        next_move state
    | exception Board.NoPiece ->
-       ();
-       next_move state
-   | exception Board.SquareNotFound ->
-       ();
+       display_image "images/empty-start-square.png" 300 45;
+       next_move state;
        next_move state);
   ()
 
