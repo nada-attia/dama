@@ -75,7 +75,7 @@ let display_selected x y board =
         else if c = Board.Black && r = Board.Man then
           "images/selected-black.png"
         else if c = Board.Black && r = Board.Lady then
-          "images/selected-bkack-lady.png"
+          "images/selected-black-lady.png"
         else "images/selected-white-lady.png"
       in
       display_image image lower_x lower_y
