@@ -227,6 +227,32 @@ let can_move square board turn =
       let condition3 = where_move board square <> [] in
       condition1 && condition2 && condition3
 
+let check_for_jumps color t =
+  let board_lst = List.flatten (Board.get_board t) in
+  let color_pieces =
+    List.filter
+      (fun x ->
+        Board.get_occupant x <> None
+        &&
+        let c, _ = Board.get_piece_info x in
+        c = color)
+      board_lst
+  in
+  let rec check_jump_aux = function
+    | [] -> ()
+    | square :: square_lst -> (
+        let _, r = Board.get_piece_info square in
+        if r = Board.Man then
+          let jumps = get_all_jumps square t color in
+          let boolean = if List.length jumps = 0 then false else true in
+          match Board.get_occupant square with
+          | None -> ()
+          | Some p ->
+              Board.update_can_jump p boolean;
+              check_jump_aux square_lst)
+  in
+  check_jump_aux color_pieces
+
 let update_board turn captured board start_pos end_pos =
   let start_sq = get_square start_pos board in
   let end_sq = get_square end_pos board in

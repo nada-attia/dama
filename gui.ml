@@ -9,8 +9,8 @@ let display_image img_path x y =
   Graphics.draw_image graphics_img x y
 
 let display_board board =
-  display_image "images/title.png" 250 600;
-  let b = List.rev (Board.get_board board) in
+  display_image "images/title.png" 400 600;
+  let b = Board.get_board board in
   let rec print_board x y = function
     | [] -> ()
     | sq_lst :: remaining_rows ->
@@ -38,26 +38,18 @@ let display_board board =
   print_board x_margin y_margin b
 
 let get_y_pos y =
-  if y >= lower_8 && y <= lower_8 + square_size then "8"
-  else if y >= lower_7 && y <= lower_7 + square_size then "7"
-  else if y >= lower_6 && y <= lower_6 + square_size then "6"
-  else if y >= lower_5 && y <= lower_5 + square_size then "5"
-  else if y >= lower_4 && y <= lower_4 + square_size then "4"
-  else if y >= lower_3 && y <= lower_3 + square_size then "3"
-  else if y >= lower_2 && y <= lower_2 + square_size then "2"
-  else if y >= lower_1 && y <= lower_1 + square_size then "1"
-  else ""
+  if y < y_margin || y > y_margin + (8 * square_offset) then ""
+  else
+    let y_int = ((y - y_margin) / square_offset) + 1 in
+    string_of_int y_int
 
 let get_x_pos x =
-  if x >= lower_a && x <= lower_a + square_size then "a"
-  else if x >= lower_b && x <= lower_b + square_size then "b"
-  else if x >= lower_c && x <= lower_c + square_size then "c"
-  else if x >= lower_d && x <= lower_d + square_size then "d"
-  else if x >= lower_e && x <= lower_e + square_size then "e"
-  else if x >= lower_f && x <= lower_f + square_size then "f"
-  else if x >= lower_g && x <= lower_g + square_size then "g"
-  else if x >= lower_h && x <= lower_h + square_size then "h"
-  else ""
+  if x < x_margin || x > x_margin + (8 * square_offset) then ""
+  else
+    let x_int = (x - x_margin) / square_offset in
+    let a = Char.code 'a' in
+    let c = a + x_int in
+    Char.escaped (Char.chr c)
 
 let get_board_pos x y =
   let row_pos = get_y_pos y in
@@ -78,7 +70,7 @@ let rec next_move state =
    print_endline command;
    match State.update_state state (Command.parse command) with
    | state ->
-       display_image "images/clear-error.png" 145 45;
+       display_image "images/clear-error.png" 300 45;
        next_move state
    | exception Command.IllegalCommand ->
        ();
@@ -90,7 +82,7 @@ let rec next_move state =
        ();
        next_move state
    | exception State.IllegalMove ->
-       display_image "images/illegal-move.png" 145 45;
+       display_image "images/illegal-move.png" 300 45;
        next_move state
    | exception Board.EmptyStartSquare ->
        ();
