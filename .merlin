@@ -1,3 +1,5 @@
 B _build
 PKG ounit2
 PKG ANSITerminal
+PKG Graphics
+PKG camlimages.all
