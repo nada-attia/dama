@@ -1,14 +1,9 @@
 type terminal_rep = {
-  white_square_empty : char;
-  white_square_white : char;
-  white_square_black : char;
-  black_square_empty : char;
-  black_square_black : char;
-  black_square_white : char;
-  white_square_white_dama : char;
-  white_square_black_dama : char;
-  black_square_white_dama : char;
-  black_square_black_dama : char;
+  empty : char;
+  white : char;
+  black : char;
+  white_dama : char;
+  black_dama : char;
 }
 
 type color =
@@ -31,7 +26,6 @@ type direction =
   | Right
 
 type square = {
-  color : color;
   mutable occupant : piece option;
   mutable label : char * int;
 }
@@ -87,16 +81,11 @@ let try_upgrade_piece sqr (brd : t) (clr : color) =
 
 let terminal_rep_string =
   {
-    white_square_empty = '.';
-    white_square_white = 'w';
-    white_square_black = 'B';
-    black_square_empty = ' ';
-    black_square_black = 'b';
-    black_square_white = 'W';
-    white_square_white_dama = 'm';
-    white_square_black_dama = 'P';
-    black_square_white_dama = 'M';
-    black_square_black_dama = 'p';
+    empty = '.';
+    white = 'w';
+    black = 'b';
+    white_dama = 'm';
+    black_dama = 'p';
   }
 
 let init_piece (piece : piece option) () =
@@ -113,9 +102,7 @@ let rec init_row n row piece_opt acc =
       let square =
         match acc with
         | [] ->
-            let color = if row mod 2 = 1 then Black else White in
             {
-              color;
               occupant = init_piece piece_opt ();
               label =
                 (let last_col_char =
@@ -124,13 +111,11 @@ let rec init_row n row piece_opt acc =
                  (last_col_char, row));
             }
         | h :: t ->
-            let color = if h.color = Black then White else Black in
             let prev_letter =
               match h.label with
               | c, r -> char_of_int (int_of_char c - 1)
             in
             {
-              color;
               occupant = init_piece piece_opt ();
               label = (prev_letter, row);
             }
@@ -166,39 +151,16 @@ let count_inactive curr_board p_color =
       + curr_board.w_side_board.man_count
 
 let square_to_string (square : square) : string =
-  match square.color with
-  | White -> (
-      match square.occupant with
-      | None -> Char.escaped terminal_rep_string.white_square_empty
-      | Some p -> (
-          match p.color with
-          | Black ->
-              if p.role = Man then
-                Char.escaped terminal_rep_string.white_square_black
-              else
-                Char.escaped terminal_rep_string.white_square_black_dama
-          | White ->
-              if p.role = Man then
-                Char.escaped terminal_rep_string.white_square_white
-              else
-                Char.escaped terminal_rep_string.white_square_white_dama
-          ))
-  | Black -> (
-      match square.occupant with
-      | None -> Char.escaped terminal_rep_string.black_square_empty
-      | Some p -> (
-          match p.color with
-          | Black ->
-              if p.role = Man then
-                Char.escaped terminal_rep_string.black_square_black
-              else
-                Char.escaped terminal_rep_string.black_square_black_dama
-          | White ->
-              if p.role = Man then
-                Char.escaped terminal_rep_string.black_square_white
-              else
-                Char.escaped terminal_rep_string.black_square_white_dama
-          ))
+  match square.occupant with
+  | None -> Char.escaped terminal_rep_string.empty
+  | Some p -> (
+      match p.color with
+      | Black ->
+          if p.role = Man then Char.escaped terminal_rep_string.black
+          else Char.escaped terminal_rep_string.black_dama
+      | White ->
+          if p.role = Man then Char.escaped terminal_rep_string.white
+          else Char.escaped terminal_rep_string.white_dama)
 
 let string_of_row r row =
   List.fold_right
