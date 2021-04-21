@@ -95,6 +95,7 @@ let rec next_move state =
   (let b = State.get_board state in
    display_board b;
    let start_pos = get_mouse_click b in
+   display_image "images/clear-error.png" 300 45;
    let end_pos = get_mouse_click b in
    let command = "move " ^ start_pos ^ " " ^ end_pos in
    print_endline command;
