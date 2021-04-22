@@ -17,6 +17,7 @@ type role =
 type piece = {
   color : color;
   mutable role : role;
+  mutable can_jump : bool;
 }
 
 type square = {
@@ -85,7 +86,7 @@ let terminal_rep_string =
 let init_piece (piece : piece option) () =
   match piece with
   | None -> None
-  | Some p -> Some { color = p.color; role = p.role }
+  | Some p -> Some { color = p.color; role = p.role; can_jump = false }
 
 (** [init_row n row piece_opt acc] initializes [row] of length [n] with
     [piece_opt]*)
@@ -118,12 +119,28 @@ let rec init_row n row piece_opt acc =
 
 let board_init n =
   [ init_row n 1 None [] ]
-  @ [ init_row n 2 (Some { color = White; role = Man }) [] ]
-  @ [ init_row n 3 (Some { color = White; role = Man }) [] ]
+  @ [
+      init_row n 2
+        (Some { color = White; role = Man; can_jump = false })
+        [];
+    ]
+  @ [
+      init_row n 3
+        (Some { color = White; role = Man; can_jump = false })
+        [];
+    ]
   @ [ init_row n 4 None [] ]
   @ [ init_row n 5 None [] ]
-  @ [ init_row n 6 (Some { color = Black; role = Man }) [] ]
-  @ [ init_row n 7 (Some { color = Black; role = Man }) [] ]
+  @ [
+      init_row n 6
+        (Some { color = Black; role = Man; can_jump = false })
+        [];
+    ]
+  @ [
+      init_row n 7
+        (Some { color = Black; role = Man; can_jump = false })
+        [];
+    ]
   @ [ init_row n 8 None [] ]
 
 let game_init n =
@@ -192,6 +209,8 @@ let get_piece_info (sq : square) =
   with exn -> raise NoPiece
 
 let update_piece sq (p : piece option) = sq.occupant <- p
+
+let update_can_jump piece boolean = piece.can_jump <- boolean
 
 let remove_pieces captured_sq turn board =
   let captured_piece = get_piece captured_sq in
