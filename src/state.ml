@@ -58,12 +58,10 @@ let rec make_all_jumps start_pos end_pos board turn =
   else ()
 
 let check_for_required_jumps color board square_start square_end =
+  let c, _ = Board.get_piece_info square_start in
   let valid_ends = Move.where_move board square_start in
   let jumps = Move.exists_jumps color board in
-  if
-    jumps <> []
-    && List.mem square_start jumps = true
-    && List.mem square_end valid_ends = false
+  if jumps <> [] && List.mem square_end valid_ends = false && c = color
   then raise RequiredJumpNotTaken
   else ()
 
