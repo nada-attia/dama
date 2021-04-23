@@ -208,6 +208,12 @@ let get_piece_info (sq : square) =
     (p.color, p.role)
   with exn -> raise NoPiece
 
+let get_can_jump (sq : square) =
+  try
+    let p = get_piece sq in
+    p.can_jump
+  with exn -> raise NoPiece
+
 let update_piece sq (p : piece option) = sq.occupant <- p
 
 let update_can_jump piece boolean = piece.can_jump <- boolean

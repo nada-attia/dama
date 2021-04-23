@@ -1,5 +1,7 @@
 exception SquareNotFound
 
+exception IllegalMove
+
 type direction =
   | Up
   | Down
@@ -196,61 +198,38 @@ let rec final_squares = function
   | [] -> []
   | (captured_sq, final_sq) :: t -> final_sq :: final_squares t
 
-(* Returns a list of squares a piece on square [sq] can move to on board
-   [brd]*)
-let where_move brd sq =
-  try
-    let pc_color, pc_role = Board.get_piece_info sq in
-    (* If man piece *)
-    if pc_role = Board.Man then
-      (* If jump is avalible, it must be taken. But if not... *)
-      let jumps = get_all_jumps sq brd pc_color in
-      if final_squares jumps = [] then
-        get_movable_squares_reg sq pc_color brd
-      else final_squares jumps (* If lady piece *)
-    else if
-      (* If jump is avalible, it must be taken. But if not... *)
-      get_all_jumps_lady sq brd pc_color <> []
-    then
-      let lady_jumps = get_all_jumps_lady sq brd pc_color in
-      final_squares lady_jumps
-    else get_movable_squares_lady sq pc_color brd
-  with _ -> raise Board.EmptyStartSquare
-
-let can_move square board turn =
-  let condition1 = check_if_occupied square in
-  match Board.get_occupant square with
-  | None -> false
-  | Some pc ->
-      let condition2 = Board.get_color pc = turn in
-      let condition3 = where_move board square <> [] in
-      condition1 && condition2 && condition3
-
-let check_for_jumps color t =
+let get_all_color_pieces t color =
   let board_lst = List.flatten (Board.get_board t) in
-  let color_pieces =
-    List.filter
-      (fun x ->
-        Board.get_occupant x <> None
-        &&
-        let c, _ = Board.get_piece_info x in
-        c = color)
-      board_lst
-  in
-  let rec check_jump_aux = function
-    | [] -> ()
-    | square :: square_lst -> (
-        let _, r = Board.get_piece_info square in
-        if r = Board.Man then
-          let jumps = get_all_jumps square t color in
-          let boolean = if List.length jumps = 0 then false else true in
-          match Board.get_occupant square with
-          | None -> ()
-          | Some p ->
-              Board.update_can_jump p boolean;
-              check_jump_aux square_lst)
-  in
-  check_jump_aux color_pieces
+  List.filter
+    (fun x ->
+      Board.get_occupant x <> None
+      &&
+      let c, _ = Board.get_piece_info x in
+      c = color)
+    board_lst
+
+(* function that describes whether or not pieces of a given color have
+   an avalible jump*)
+let exists_jumps color board =
+  let color_pieces = get_all_color_pieces board color in
+  List.filter (fun x -> Board.get_can_jump x) color_pieces
+
+let rec check_jump_aux t color = function
+  | [] -> ()
+  | square :: square_lst -> (
+      let _, r = Board.get_piece_info square in
+      if r = Board.Man then
+        let jumps = get_all_jumps square t color in
+        let boolean = if List.length jumps = 0 then false else true in
+        match Board.get_occupant square with
+        | None -> ()
+        | Some p ->
+            Board.update_can_jump p boolean;
+            check_jump_aux t color square_lst)
+
+let update_can_jumps color t =
+  let color_pieces = get_all_color_pieces t color in
+  check_jump_aux t color color_pieces
 
 let update_board turn captured board start_pos end_pos =
   let start_sq = get_square start_pos board in
@@ -261,6 +240,45 @@ let update_board turn captured board start_pos end_pos =
   match captured with
   | None -> ()
   | Some sq -> Board.remove_pieces sq turn board
+
+(* Returns a list of squares a piece on square [sq] can move to on board
+   [brd]*)
+let where_move brd sq =
+  try
+    (* Get color and role of the piece *)
+    let pc_color, pc_role = Board.get_piece_info sq in
+    (* Check if said piece is in the list of pieces with jumps given by
+       [exists_jumps]*)
+    let bs =
+      if List.mem sq (exists_jumps pc_color brd) then
+        (* if the role of the piece is a man (and it is a piece with
+           jumps...)... *)
+        if pc_role = Board.Man then
+          (* Get the list version of all of its avalible jumps *)
+          final_squares (get_all_jumps sq brd pc_color)
+          (* otherwise, if it is a lady and in the list of pieces with
+             jumps, get its associated jumps*)
+        else final_squares (get_all_jumps_lady sq brd pc_color)
+          (* if the list of pieces wil jumps is [], then we can move the
+             piece as regular*)
+      else if exists_jumps pc_color brd = [] then
+        if pc_role = Board.Man then
+          get_movable_squares_reg sq pc_color brd
+        else get_movable_squares_lady sq pc_color brd
+      else raise IllegalMove
+    in
+    update_can_jumps pc_color brd;
+    bs
+  with Board.NoPiece -> raise Board.EmptyStartSquare
+
+let can_move square board turn =
+  let condition1 = check_if_occupied square in
+  match Board.get_occupant square with
+  | None -> false
+  | Some pc ->
+      let condition2 = Board.get_color pc = turn in
+      let condition3 = where_move board square <> [] in
+      condition1 && condition2 && condition3
 
 let can_move_all t clr =
   let b = List.flatten (Board.get_board t) in
