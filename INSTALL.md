@@ -13,7 +13,7 @@ The game may work on other versions, but we have only tested it on this version.
 
 #### Package Installation Instructions
 
-To install lablgtk, graphics and camlimages on MacOS:
+#### To install lablgtk, graphics and camlimages on MacOS:
 
 ```
 brew install gtk+
@@ -22,7 +22,11 @@ opam install lablgtk
 opam install graphics camlimages
 ```
 
-To install lablgtk, graphics and camlimages on Windows:
+You might get an error saying that you need pkg-config. In that case, you should run
+
+`sudo chown -R $(whoami) /usr/local/lib/pkgconfig /usr/local/share/info`
+
+#### To install lablgtk, graphics and camlimages on Windows:
 
 - Create a new switch using the instructions on the [3110 Canvas site](https://canvas.cornell.edu/courses/25259/pages/create-an-opam-switch)
 - When you reach the `opam install...` part of the instructions, replace that command with
