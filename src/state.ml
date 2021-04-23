@@ -11,6 +11,8 @@ type state = {
 
 exception IllegalMove
 
+exception RequiredJumpNotTaken
+
 let get_board state = state.board
 
 let init_state board =
@@ -55,12 +57,23 @@ let rec make_all_jumps start_pos end_pos board turn =
     with _ -> ()
   else ()
 
+let check_for_required_jumps color board square_start square_end =
+  let valid_ends = Move.where_move board square_start in
+  let jumps = Move.exists_jumps color board in
+  if
+    jumps <> []
+    && List.mem square_start jumps = true
+    && List.mem square_end valid_ends = false
+  then raise RequiredJumpNotTaken
+  else ()
+
 let update_state_move (state : state) (m : Command.squares_move) =
   let board = state.board in
   let turn = state.turn in
   let start_pos, end_pos = m in
   let square_start = Move.get_square start_pos board in
   let square_end = Move.get_square end_pos board in
+  check_for_required_jumps turn board square_start square_end;
   let is_valid_start = Move.can_move square_start board turn in
   let valid_ends = Move.where_move board square_start in
   let is_valid_end = find_square square_end valid_ends in
