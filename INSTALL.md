@@ -4,10 +4,33 @@ OCaml 4.11.1
 
 The game may work on other versions, but we have only tested it on this version.
 
+### Packages needed
+
+- ANSITerminal
+- Lablgtk
+- Graphics
+- Camlimages
+
+#### Package Installation Instructions
+
+To install lablgtk on MacOS:
+
+```
+$ brew install gtk+
+$ export PKG_CONFIG_PATH=/opt/X11/lib/pkgconfig
+$ opam install lablgtk
+```
+
+To install Graphics and Camlimages:
+
+`opam install graphics camlimages`
+
 ### How to run this game locally
 
 - Clone this repository
-- `cd` to the cloned folder and run `make play` to start the game. There are no new OPAM packages needed. You can run this in the same OPAM switch used in CS 3110.
+- `cd` to the cloned folder
+- run `make play` to start the game in terminal
+- run `make gui` to start the GUI
 
 ### How to play the game
 
