@@ -106,6 +106,9 @@ let rec next_move state =
    | exception State.IllegalMove ->
        display_image "images/illegal-move.png" 300 45;
        next_move state
+   | exception State.RequiredJumpNotTaken ->
+       display_image "images/required-jump.png" 300 45;
+       next_move state
    | exception Board.EmptyStartSquare ->
        display_image "images/empty-start-square.png" 300 45;
        next_move state
