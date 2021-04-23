@@ -42,14 +42,18 @@ opam install -y utop ounit qcheck ocaml-lsp-server ocamlformat yojson ansitermin
 
 - Install [Xming](https://sourceforge.net/projects/xming/files/Xming/), [Xming fonts](https://sourceforge.net/projects/xming/files/Xming-fonts/7.7.0.10/), and [PuTTY](https://www.putty.org/)
 - Follow the instructions on this [website](https://aruljohn.com/info/x11forwarding/).
-- Instead of typing "textbox" as host name (as detailed in the above instructions), run `nslookup <ip address>` where `<ip address>` is your ip address. You can find your ip address by googling "what is my ip address?"
+- Instead of typing "textbox" as host name (as detailed in the above instructions), run `nslookup <ip address>` where `<ip address>` is your IP address. You can find your IP address by googling "what is my IP address?"
 - Copy the text that follows "name:" and paste it into the host name field (instead of "textbox").
 - Open the session in PuTTY, and you should be able to run the gui by running `make gui` in terminal.
 
-### How to play the game
+### How to play the game in terminal
 
 Once the game is started, you can move a piece by entering `move <starting position> <ending position>` where the start/end positons are strings that contain a character followed by an integer. To determine the correct starting postion and ending position of your move, use the board's grid system.
 
 For example `move c3 c4` moves the piece located in square c3 to square c4.
 
 To end the game, you can run `forfeit` when your player is prompted to make a move.
+
+### How to play the game in the GUI
+
+The white player starts. Move a piece by clicking on the square that has the piece that you want to move on it, and then click on the square that you want to move that piece to.
