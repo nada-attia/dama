@@ -103,7 +103,7 @@ let rec next_move state =
    | state ->
        display_image "images/clear-error.png" 300 45;
        next_move state
-   | (exception State.IllegalMove) | (exception Move.IllegalMove) ->
+   | exception State.IllegalMove ->
        display_image "images/illegal-move.png" 300 45;
        next_move state
    | exception Board.EmptyStartSquare ->

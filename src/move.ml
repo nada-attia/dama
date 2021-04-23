@@ -1,7 +1,5 @@
 exception SquareNotFound
 
-exception IllegalMove
-
 type direction =
   | Up
   | Down
@@ -92,9 +90,9 @@ let check_if_occupied square =
    a given square noting the color of the piece on said square, assuming
    it is a regular non-Lady piece. *)
 let get_movable_squares_reg
-    square
+    (square : Board.square)
     (color : Board.color)
-    (board : Board.t) =
+    (board : Board.t) : Board.square list =
   let squares =
     get_square_dir square board color Up
     @ get_square_dir square board color Right
@@ -243,32 +241,20 @@ let update_board turn captured board start_pos end_pos =
 
 (* Returns a list of squares a piece on square [sq] can move to on board
    [brd]*)
-let where_move brd sq =
+let where_move (brd : Board.t) (sq : Board.square) =
   try
     (* Get color and role of the piece *)
     let pc_color, pc_role = Board.get_piece_info sq in
-    (* Check if said piece is in the list of pieces with jumps given by
-       [exists_jumps]*)
-    let bs =
-      if List.mem sq (exists_jumps pc_color brd) then
-        (* if the role of the piece is a man (and it is a piece with
-           jumps...)... *)
-        if pc_role = Board.Man then
-          (* Get the list version of all of its avalible jumps *)
-          final_squares (get_all_jumps sq brd pc_color)
-          (* otherwise, if it is a lady and in the list of pieces with
-             jumps, get its associated jumps*)
-        else final_squares (get_all_jumps_lady sq brd pc_color)
-          (* if the list of pieces wil jumps is [], then we can move the
-             piece as regular*)
-      else if exists_jumps pc_color brd = [] then
-        if pc_role = Board.Man then
-          get_movable_squares_reg sq pc_color brd
-        else get_movable_squares_lady sq pc_color brd
-      else raise IllegalMove
-    in
     update_can_jumps pc_color brd;
-    bs
+    if List.mem sq (exists_jumps pc_color brd) then
+      if pc_role = Board.Man then
+        final_squares (get_all_jumps sq brd pc_color)
+      else final_squares (get_all_jumps_lady sq brd pc_color)
+    else if exists_jumps pc_color brd = [] then
+      if pc_role = Board.Man then
+        get_movable_squares_reg sq pc_color brd
+      else get_movable_squares_lady sq pc_color brd
+    else []
   with Board.NoPiece -> raise Board.EmptyStartSquare
 
 let can_move square board turn =
