@@ -170,12 +170,11 @@ let rec get_all_vac_sq_dir
 
 (* Returns list of single square in given direction that can be jumped
    to for lady piece else [].*)
-let get_all_jumps_dir_lady sq brd clr func =
-  let vacants = get_all_vac_sq_dir [] sq clr brd func in
-  (* First of the list is, is the last vacant in given direction, so
-     jumps of last vacant square. *)
-  if vacants <> [] then get_jumps_dir (List.nth vacants 0) brd clr func
-  else []
+let get_all_jumps_dir_lady sq brd clr direction =
+  let vacants = get_all_vac_sq_dir [] sq clr brd direction in
+  if vacants <> [] then
+    get_jumps_dir (List.nth vacants 0) brd clr direction
+  else get_jumps_dir sq brd clr direction
 
 (* [get_all_jumps_lady sq brd clr] describes all of the squares the lady
    piece occupying square [sq] of color [clr] on board [brd] has
