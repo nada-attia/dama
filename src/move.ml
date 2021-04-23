@@ -216,14 +216,16 @@ let rec check_jump_aux t color = function
   | [] -> ()
   | square :: square_lst -> (
       let _, r = Board.get_piece_info square in
-      if r = Board.Man then
-        let jumps = get_all_jumps square t color in
-        let boolean = if List.length jumps = 0 then false else true in
-        match Board.get_occupant square with
-        | None -> ()
-        | Some p ->
-            Board.update_can_jump p boolean;
-            check_jump_aux t color square_lst)
+      let jumps =
+        if r = Board.Man then get_all_jumps square t color
+        else get_all_jumps_lady square t color
+      in
+      let boolean = if List.length jumps = 0 then false else true in
+      match Board.get_occupant square with
+      | None -> ()
+      | Some p ->
+          Board.update_can_jump p boolean;
+          check_jump_aux t color square_lst)
 
 let update_can_jumps color t =
   let color_pieces = get_all_color_pieces t color in
