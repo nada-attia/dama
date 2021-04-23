@@ -1,4 +1,5 @@
-MODULES=board state main command author move gui constants
+FILES=board state main command author move gui constants
+MODULES=$(addprefix src/, $(FILES))
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -14,13 +15,13 @@ build:
 	$(OCAMLBUILD) $(OBJECTS)
 
 test:
-	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
+	$(OCAMLBUILD) -tag 'debug' src/$(TEST) && ./$(TEST) -runner sequential
 
 play:
-	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
+	$(OCAMLBUILD) -tag 'debug' src/$(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)
 
 gui: 
-	$(OCAMLBUILD) -tag 'debug' $(GUI) && OCAMLRUNPARAM=b ./$(GUI) 
+	$(OCAMLBUILD) -tag 'debug' src/$(GUI) && OCAMLRUNPARAM=b ./$(GUI) 
 
 clean:
 	ocamlbuild -clean
@@ -43,4 +44,4 @@ loc:
 	cloc --by-file --include-lang=OCaml .
 
 zip:
-	zip dama.zip *.ml* *.md *.sh *.jpg *.jpeg _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images
+	zip dama.zip *.ml* *.md *.sh _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images/* src/*
