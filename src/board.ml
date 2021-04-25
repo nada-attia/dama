@@ -214,6 +214,11 @@ let get_can_jump (sq : square) =
     p.can_jump
   with exn -> raise NoPiece
 
+let get_side_board t color =
+  if color = White then
+    (t.w_side_board.lady_count, t.w_side_board.man_count)
+  else (t.b_side_board.lady_count, t.b_side_board.man_count)
+
 let update_piece sq (p : piece option) = sq.occupant <- p
 
 let update_can_jump piece boolean = piece.can_jump <- boolean
@@ -221,13 +226,16 @@ let update_can_jump piece boolean = piece.can_jump <- boolean
 let remove_pieces captured_sq turn board =
   let captured_piece = get_piece captured_sq in
   let role = captured_piece.role in
+  let p_color = captured_piece.color in
   captured_sq.occupant <- None;
   let white_side = board.w_side_board in
   let black_side = board.b_side_board in
-  if turn = White then
+  if p_color = White then
     if role = Lady then
       white_side.lady_count <- white_side.lady_count + 1
     else white_side.man_count <- white_side.man_count + 1
-  else if role = Lady then
-    black_side.lady_count <- black_side.lady_count + 1
-  else black_side.man_count <- black_side.man_count + 1
+  else if p_color = Black then
+    if role = Lady then
+      black_side.lady_count <- black_side.lady_count + 1
+    else black_side.man_count <- black_side.man_count + 1
+  else ()

@@ -62,3 +62,5 @@ val get_can_jump : square -> bool
 val try_upgrade_piece : square -> t -> color -> unit
 
 val update_can_jump : piece -> bool -> unit
+
+val get_side_board : t -> color -> int * int
