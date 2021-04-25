@@ -15,36 +15,44 @@ let rec next_move state =
       ("\n" ^ Board.terminal_rep_string (State.get_board state) 1 ^ "\n");
   print_endline player_and_number;
   print_string "> ";
-  match read_line () with
-  | exception End_of_file -> ()
-  | command -> (
-      match State.update_state state (Command.parse command) with
-      | exception Command.IllegalCommand ->
-          print_error
-            "The squares you are moving to and from must be in the \
-             form of a valid letter followed by a valid number";
-          next_move state
-      | exception Command.IllegalSquare ->
-          print_error
-            "Please enter squares in the form of a letter followed by \
-             a number, in range";
-          next_move state
-      | exception Command.NoCommand ->
-          print_error "Please enter a move";
-          next_move state
-      | exception State.IllegalMove ->
-          print_error "Illegal move";
-          next_move state
-      | exception Board.EmptyStartSquare ->
-          print_error "The start square cannot be empty";
-          next_move state
-      | exception Board.NoPiece ->
-          print_error "There is no piece on the specified square";
-          next_move state
-      | exception Board.SquareNotFound ->
-          print_error "Square not found";
-          next_move state
-      | new_state -> next_move new_state)
+  if player = "black" then
+    print_string
+      ("\n"
+      ^ Board.terminal_rep_string
+          (State.get_board (Ai.ai_next_move state 2))
+          1
+      ^ "\n")
+  else
+    match read_line () with
+    | exception End_of_file -> ()
+    | command -> (
+        match State.update_state state (Command.parse command) with
+        | exception Command.IllegalCommand ->
+            print_error
+              "The squares you are moving to and from must be in the \
+               form of a valid letter followed by a valid number";
+            next_move state
+        | exception Command.IllegalSquare ->
+            print_error
+              "Please enter squares in the form of a letter followed \
+               by a number, in range";
+            next_move state
+        | exception Command.NoCommand ->
+            print_error "Please enter a move";
+            next_move state
+        | exception State.IllegalMove ->
+            print_error "Illegal move";
+            next_move state
+        | exception Board.EmptyStartSquare ->
+            print_error "The start square cannot be empty";
+            next_move state
+        | exception Board.NoPiece ->
+            print_error "There is no piece on the specified square";
+            next_move state
+        | exception Board.SquareNotFound ->
+            print_error "Square not found";
+            next_move state
+        | new_state -> next_move new_state)
 
 (** [play_game] starts the game. *)
 let play_game board =

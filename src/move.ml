@@ -259,6 +259,16 @@ let where_move (brd : Board.t) (sq : Board.square) =
     else []
   with Board.NoPiece -> raise Board.EmptyStartSquare
 
+let where_move_all (t : Board.t) (color : Board.color) =
+  let squares = get_all_color_pieces t color in
+  let rec where_move_all_aux s =
+    match s with
+    | [] -> []
+    | square :: rest ->
+        (square, where_move t square) :: where_move_all_aux rest
+  in
+  where_move_all_aux squares
+
 let can_move square board turn =
   let condition1 = check_if_occupied square in
   match Board.get_occupant square with
