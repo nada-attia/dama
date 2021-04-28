@@ -5,8 +5,14 @@ type t = Node of (State.state list * (State.state * float) * t list)
 let evaluate old_t new_t =
   let inactive_old = Board.count_inactive old_t Board.Black in
   let inactive_new = Board.count_inactive new_t Board.Black in
-  if inactive_new > inactive_old then -1.0
-  else if inactive_new < inactive_old then 1.0
+  let opp_old = Board.count_inactive old_t Board.White in
+  let opp_new = Board.count_inactive new_t Board.White in
+  if inactive_new - inactive_old > 2 then -1.0
+  else if inactive_new - inactive_old = 2 then -0.67
+  else if inactive_new - inactive_old = 1 then -0.5
+  else if opp_new - opp_old > 2 then 1.0
+  else if opp_new - opp_old = 2 then 0.67
+  else if opp_new - opp_old = 1 then 0.5
   else 0.0
 
 (** [end_moves_helper state square lst] is the list of states succeeding
@@ -94,6 +100,7 @@ let evaluate_tree state n sign op =
     | Node (p, (state, eval), ch) :: t ->
         let k, best_path = best in
         (* if List.length p = n - 1 then *)
+        (* let prnt = if op eval k then 1 else 0 in print_float eval; *)
         if op eval k then
           evaluate_tree_aux (evaluate_tree_aux (eval, p) ch) t
         else evaluate_tree_aux (evaluate_tree_aux (eval, p) ch) t
