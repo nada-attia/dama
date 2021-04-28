@@ -15,13 +15,9 @@ let rec next_move state =
       ("\n" ^ Board.terminal_rep_string (State.get_board state) 1 ^ "\n");
   print_endline player_and_number;
   print_string "> ";
-  if player = "black" then (
-    let new_state = Ai.ai_next_move state 2 in
-    print_string
-      ("\n"
-      ^ Board.terminal_rep_string (State.get_board new_state) 1
-      ^ "\n");
-    next_move new_state)
+  if player = "black" then
+    let new_state = Ai.ai_next_move state 3 in
+    next_move new_state
   else
     match read_line () with
     | exception End_of_file -> ()

@@ -17,8 +17,6 @@ let rec end_moves_helper state square = function
       let copy_state = State.copy_state state in
       (* let c, i = Board.get_label h in print_endline (Char.escaped c ^
          string_of_int i); *)
-      print_endline
-        (Board.terminal_rep_string (State.get_board state) 1);
       State.update_state copy_state
         (Command.Move (Board.get_label square, Board.get_label h))
       :: end_moves_helper state square t
@@ -26,11 +24,18 @@ let rec end_moves_helper state square = function
 (** [make_states_level state] creates one level of states from [state]
     representing all possible states*)
 let make_states_level (state : State.state) =
-  print_endline "start";
+  (* get the list of possible moves from the current state for the given
+     turn. Will give back a list of tuples with each in the form of
+     (origin_square, [squares; it; can; go; to]) and that as an element
+     of the list, 1 for each color square of the turn*)
   let where_move_all =
     Move.where_move_all (State.get_board state) (State.get_turn state)
   in
-  print_endline "end";
+  (* for each tuple, we look at the list of places it can move to and
+     for each of the possible moves turns it into a successive state by
+     moving from the square. We end up with a list of states ONLY,
+     corresponding to the level of children from some original state
+     node *)
   let rec make_states_level_aux = function
     | [] -> []
     | (square, end_moves) :: remaining ->
@@ -41,26 +46,36 @@ let make_states_level (state : State.state) =
   in
   make_states_level_aux where_move_all
 
-(** *)
+(* Function to initialize the tree. Firstly, we create a level of nodes
+   by giving a state to make_states which will then get a list of all
+   possible moves tuples. This will correspond to the first layer of
+   nodes and so forth. From this, we will get back a list of states that
+   suceed it by 1 move *)
 let rec initialize_tree
     (state : State.state)
     n
     (path_acc : State.state list)
     (prev_eval : float) : t list =
   let child_states = make_states_level state in
+  (* from this list of states, we then *)
   let rec initialize_tree_aux = function
     | [] -> []
     | h :: t ->
+        (* evaluate each state recursive from the list of states by
+           comparing it to tthe previous state. We then create a node
+           for it with the updated value of the previous eval weighed
+           equally with the current eval.*)
         let evaluate =
           (evaluate (State.get_board state) (State.get_board h)
           +. prev_eval)
           /. 2.0
         in
+        (* after one level is created, *)
         Node
-          ( state :: path_acc,
+          ( h :: path_acc,
             (h, evaluate),
             if n > 0 then
-              initialize_tree h (n - 1) (state :: path_acc) evaluate
+              initialize_tree h (n - 1) (h :: path_acc) evaluate
             else [] )
         :: initialize_tree_aux t
   in
@@ -78,10 +93,10 @@ let evaluate_tree state n sign op =
     | [] -> best
     | Node (p, (state, eval), ch) :: t ->
         let k, best_path = best in
-        if List.length p = n then
-          if op eval k then evaluate_tree_aux (eval, p) t
-          else evaluate_tree_aux best t
+        (* if List.length p = n - 1 then *)
+        if op eval k then evaluate_tree_aux (eval, p) t
         else evaluate_tree_aux best t
+    (* else evaluate_tree_aux best t *)
   in
   evaluate_tree_aux (sign *. 2., []) children
 
