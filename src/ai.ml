@@ -94,8 +94,9 @@ let evaluate_tree state n sign op =
     | Node (p, (state, eval), ch) :: t ->
         let k, best_path = best in
         (* if List.length p = n - 1 then *)
-        if op eval k then evaluate_tree_aux (eval, p) t
-        else evaluate_tree_aux best t
+        if op eval k then
+          evaluate_tree_aux (evaluate_tree_aux (eval, p) ch) t
+        else evaluate_tree_aux (evaluate_tree_aux (eval, p) ch) t
     (* else evaluate_tree_aux best t *)
   in
   evaluate_tree_aux (sign *. 2., []) children
