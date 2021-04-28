@@ -15,6 +15,10 @@ exception RequiredJumpNotTaken
 
 let get_board state = state.board
 
+let copy_state (s : state) =
+  let copy_board = Board.copy_board (get_board s) in
+  { s with board = copy_board }
+
 let init_state board =
   { turn = Board.get_init_player; board; current = Pregame }
 

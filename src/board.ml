@@ -22,7 +22,7 @@ type piece = {
 
 type square = {
   mutable occupant : piece option;
-  mutable label : char * int;
+  label : char * int;
 }
 
 type side_board = {
@@ -231,3 +231,36 @@ let remove_pieces captured_sq turn board =
   else if role = Lady then
     black_side.lady_count <- black_side.lady_count + 1
   else black_side.man_count <- black_side.man_count + 1
+
+let rec copy_row = function
+  | [] -> []
+  | square :: remaining ->
+      let s =
+        match square.occupant with
+        | None -> { square with occupant = None }
+        | Some p ->
+            {
+              square with
+              occupant =
+                Some
+                  {
+                    color = p.color;
+                    role = p.role;
+                    can_jump = p.can_jump;
+                  };
+            }
+      in
+      s :: copy_row remaining
+
+let copy_board t =
+  let board = t.board in
+  let rec copy_board_aux = function
+    | [] -> []
+    | row :: t -> copy_row row :: copy_board_aux t
+  in
+  {
+    t with
+    board = copy_board_aux board;
+    w_side_board = t.w_side_board;
+    b_side_board = t.b_side_board;
+  }

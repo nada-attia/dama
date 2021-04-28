@@ -14,19 +14,28 @@ let evaluate old_t new_t =
 let rec end_moves_helper state square = function
   | [] -> []
   | h :: t ->
-      State.update_state state
+      let copy_state = State.copy_state state in
+      (* let c, i = Board.get_label h in print_endline (Char.escaped c ^
+         string_of_int i); *)
+      print_endline
+        (Board.terminal_rep_string (State.get_board state) 1);
+      State.update_state copy_state
         (Command.Move (Board.get_label square, Board.get_label h))
       :: end_moves_helper state square t
 
 (** [make_states_level state] creates one level of states from [state]
     representing all possible states*)
 let make_states_level (state : State.state) =
+  print_endline "start";
   let where_move_all =
     Move.where_move_all (State.get_board state) (State.get_turn state)
   in
+  print_endline "end";
   let rec make_states_level_aux = function
     | [] -> []
     | (square, end_moves) :: remaining ->
+        (* let c, i = Board.get_label square in print_endline
+           (Char.escaped c ^ string_of_int i); *)
         end_moves_helper state square end_moves
         @ make_states_level_aux remaining
   in

@@ -265,6 +265,8 @@ let where_move_all (t : Board.t) (color : Board.color) =
     match s with
     | [] -> []
     | square :: rest ->
+        let c, i = Board.get_label square in
+        print_endline (Char.escaped c ^ string_of_int i);
         (square, where_move t square) :: where_move_all_aux rest
   in
   where_move_all_aux squares
