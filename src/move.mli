@@ -20,6 +20,9 @@ val get_square_dir :
     on it's piece type and current position, [square]. *)
 val where_move : Board.t -> Board.square -> Board.square list
 
+val where_move_all :
+  Board.t -> Board.color -> (Board.square * Board.square list) list
+
 (** [can_move square board] describes whether or not a given piece
     occupying [square] is allowed to move based off of th rules of Dama.
     true = it can and false = it cannot. Assumes: It is the move of the

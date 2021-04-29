@@ -22,7 +22,7 @@ type piece = {
 
 type square = {
   mutable occupant : piece option;
-  mutable label : char * int;
+  label : char * int;
 }
 
 type side_board = {
@@ -144,11 +144,11 @@ let board_init n =
   @ [ init_row n 8 None [] ]
 
 let game_init n =
-  let side_board = { man_count = 0; lady_count = 0 } in
+  let side_board () = { man_count = 0; lady_count = 0 } in
   {
     board = board_init n;
-    w_side_board = side_board;
-    b_side_board = side_board;
+    w_side_board = side_board ();
+    b_side_board = side_board ();
     size = n;
   }
 
@@ -239,3 +239,44 @@ let remove_pieces captured_sq turn board =
       black_side.lady_count <- black_side.lady_count + 1
     else black_side.man_count <- black_side.man_count + 1
   else ()
+
+let rec copy_row = function
+  | [] -> []
+  | square :: remaining ->
+      let s =
+        match square.occupant with
+        | None -> { square with occupant = None }
+        | Some p ->
+            {
+              square with
+              occupant =
+                Some
+                  {
+                    color = p.color;
+                    role = p.role;
+                    can_jump = p.can_jump;
+                  };
+            }
+      in
+      s :: copy_row remaining
+
+let copy_board t =
+  let board = t.board in
+  let rec copy_board_aux = function
+    | [] -> []
+    | row :: t -> copy_row row :: copy_board_aux t
+  in
+  {
+    t with
+    board = copy_board_aux board;
+    w_side_board =
+      {
+        lady_count = t.w_side_board.lady_count;
+        man_count = t.w_side_board.man_count;
+      };
+    b_side_board =
+      {
+        lady_count = t.b_side_board.lady_count;
+        man_count = t.b_side_board.man_count;
+      };
+  }
