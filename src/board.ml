@@ -269,6 +269,14 @@ let copy_board t =
   {
     t with
     board = copy_board_aux board;
-    w_side_board = t.w_side_board;
-    b_side_board = t.b_side_board;
+    w_side_board =
+      {
+        lady_count = t.w_side_board.lady_count;
+        man_count = t.w_side_board.man_count;
+      };
+    b_side_board =
+      {
+        lady_count = t.b_side_board.lady_count;
+        man_count = t.b_side_board.man_count;
+      };
   }

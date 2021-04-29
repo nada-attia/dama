@@ -15,7 +15,8 @@ let rec next_move state =
       ("\n" ^ Board.terminal_rep_string (State.get_board state) 1 ^ "\n");
   print_endline player_and_number;
   print_string "> ";
-  if player = "black" then
+  (* && true for ai mode, && false for multiplayer mode*)
+  if player = "black" && false then
     let new_state = Ai.ai_next_move state 3 in
     next_move new_state
   else

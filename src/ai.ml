@@ -5,6 +5,7 @@ type t = Node of (State.state list * (State.state * float) * t list)
 let evaluate old_t new_t =
   let inactive_old = Board.count_inactive old_t Board.Black in
   let inactive_new = Board.count_inactive new_t Board.Black in
+  (* print_int (inactive_new - inactive_old); *)
   let opp_old = Board.count_inactive old_t Board.White in
   let opp_new = Board.count_inactive new_t Board.White in
   if inactive_new - inactive_old > 2 then -1.0
@@ -103,7 +104,7 @@ let evaluate_tree state n sign op =
         (* let prnt = if op eval k then 1 else 0 in print_float eval; *)
         if op eval k then
           evaluate_tree_aux (evaluate_tree_aux (eval, p) ch) t
-        else evaluate_tree_aux (evaluate_tree_aux (eval, p) ch) t
+        else evaluate_tree_aux (evaluate_tree_aux best ch) t
     (* else evaluate_tree_aux best t *)
   in
   evaluate_tree_aux (sign *. 2., []) children
