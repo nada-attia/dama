@@ -21,36 +21,57 @@ let display_piece sq x y =
 let display_sideboard board =
   let white_x = (board_size / 2) - 200 in
   let black_x = window_width - (board_size / 2) in
-  let lady_y = 300 in
-  let man_y = 200 in
+  let lady_y = 380 in
+  let man_y = 320 in
   let w_lady_count, w_man_count =
     Board.get_side_board board Board.White
   in
   let b_lady_count, b_man_count =
     Board.get_side_board board Board.Black
   in
-  if w_lady_count <> 0 then
-    display_image "images/white-lady-clear.png" black_x lady_y
-  else ();
-  if b_lady_count <> 0 then
-    display_image "images/black-lady-clear.png" white_x lady_y
-  else ();
-  if w_man_count <> 0 then
-    display_image "images/white.png" black_x man_y
-  else ();
-  if b_man_count <> 0 then
-    display_image "images/black.png" white_x man_y
-  else ()
+  display_image "images/white-lady-clear.png" black_x lady_y;
+  display_image
+    ("images/numbers/" ^ string_of_int w_lady_count ^ ".png")
+    (black_x + 50) lady_y;
+  display_image "images/black-lady-clear.png" white_x lady_y;
+  display_image
+    ("images/numbers/" ^ string_of_int b_lady_count ^ ".png")
+    (white_x + 50) lady_y;
+  display_image "images/white.png" black_x man_y;
+  display_image
+    ("images/numbers/" ^ string_of_int w_man_count ^ ".png")
+    (black_x + 50) man_y;
+  display_image "images/black.png" white_x man_y;
+  display_image
+    ("images/numbers/" ^ string_of_int b_man_count ^ ".png")
+    (white_x + 50) man_y
 
-let display_board board =
-  let title_x = (window_width / 2) - 100 in
-  display_image "images/title.png" title_x 640;
+let display_turn state =
+  let player = State.player_turn state in
   let white_x = (board_size / 2) - 200 in
-  display_image "images/white-player.png" white_x 500;
   let black_x = window_width - (board_size / 2) in
-  display_image "images/black-player.png" black_x 500;
-  display_sideboard board;
-  let b = Board.get_board board in
+  let turn_y = 520 in
+  if player = "white" then (
+    display_image "images/clear-turn.png" black_x turn_y;
+    display_image "images/your-turn.png" white_x turn_y)
+  else (
+    display_image "images/clear-turn.png" white_x turn_y;
+    display_image "images/your-turn.png" black_x turn_y)
+
+let display_board state =
+  display_turn state;
+  let b = State.get_board state in
+  let title_x = (window_width / 2) - 100 in
+  let white_x = (board_size / 2) - 200 in
+  let black_x = window_width - (board_size / 2) in
+  display_image "images/info.png" 0 0;
+  display_image "images/title.png" title_x 640;
+  display_image "images/white-player.png" white_x 550;
+  display_image "images/black-player.png" black_x 550;
+  display_image "images/captured-pieces.png" white_x 450;
+  display_image "images/captured-pieces.png" black_x 450;
+  display_sideboard b;
+  let board = Board.get_board b in
   let rec print_board x y = function
     | [] -> ()
     | sq_lst :: remaining_rows ->
@@ -66,7 +87,7 @@ let display_board board =
         in
         print_row x y sq_lst
   in
-  print_board x_margin y_margin b
+  print_board x_margin y_margin board
 
 let get_y_pos y =
   if y < y_margin || y > y_margin + (8 * square_offset) then -1
@@ -113,36 +134,35 @@ let highlight_selected x y board =
       in
       display_image image lower_x lower_y
 
-let rec get_mouse_click board =
+let rec display_rules state =
+  display_image "images/rules.png" 0 0;
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
-  if get_x_pos x = -1 || get_y_pos y = -1 then get_mouse_click board
+  if x >= 0 && x <= 80 && y >= 0 && y <= 30 then (
+    Graphics.clear_graph ();
+    display_board state)
+  else display_rules state
+
+let rec get_mouse_click state =
+  let b = State.get_board state in
+  let event = wait_next_event [ Button_down ] in
+  let x = event.mouse_x in
+  let y = event.mouse_y in
+  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then display_rules state
+  else ();
+  if get_x_pos x = -1 || get_y_pos y = -1 then get_mouse_click state
   else (
-    highlight_selected x y board;
+    highlight_selected x y b;
     get_board_pos x y)
 
-let display_turn state =
-  let player = State.player_turn state in
-  let white_x = (board_size / 2) - 200 in
-  let black_x = window_width - (board_size / 2) in
-  let turn_y = 470 in
-  if player = "white" then (
-    display_image "images/clear-turn.png" black_x turn_y;
-    display_image "images/your-turn.png" white_x turn_y)
-  else (
-    display_image "images/clear-turn.png" white_x turn_y;
-    display_image "images/your-turn.png" black_x turn_y)
-
 let rec next_move state =
-  (display_turn state;
-   let error_x = (window_width / 2) - 200 in
+  (let error_x = (window_width / 2) - 200 in
    let error_y = 55 in
-   let b = State.get_board state in
-   display_board b;
-   let start_pos = get_mouse_click b in
+   display_board state;
+   let start_pos = get_mouse_click state in
    display_image "images/clear-error.png" error_x error_y;
-   let end_pos = get_mouse_click b in
+   let end_pos = get_mouse_click state in
    let command = "move " ^ start_pos ^ " " ^ end_pos in
    print_endline command;
    match State.update_state state (Command.parse command) with

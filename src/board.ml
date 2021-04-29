@@ -144,11 +144,11 @@ let board_init n =
   @ [ init_row n 8 None [] ]
 
 let game_init n =
-  let side_board = { man_count = 0; lady_count = 0 } in
+  let side_board () = { man_count = 0; lady_count = 0 } in
   {
     board = board_init n;
-    w_side_board = side_board;
-    b_side_board = side_board;
+    w_side_board = side_board ();
+    b_side_board = side_board ();
     size = n;
   }
 
