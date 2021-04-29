@@ -46,7 +46,7 @@ let display_sideboard board =
     ("images/numbers/" ^ string_of_int b_man_count ^ ".png")
     (white_x + 50) man_y
 
-let display_turn state =
+let display_turn state is_ai =
   let player = State.player_turn state in
   let white_x = (board_size / 2) - 200 in
   let black_x = window_width - (board_size / 2) in
@@ -56,11 +56,12 @@ let display_turn state =
     display_image "images/your-turn.png" white_x turn_y)
   else (
     display_image "images/clear-turn.png" white_x turn_y;
-    display_image "images/your-turn.png" black_x turn_y)
+    let img =
+      if is_ai then "images/ai-turn.png" else "images/your-turn.png"
+    in
+    display_image img black_x turn_y)
 
-let display_board state =
-  display_turn state;
-  let b = State.get_board state in
+let display_board_info () =
   let title_x = (window_width / 2) - 100 in
   let white_x = (board_size / 2) - 200 in
   let black_x = window_width - (board_size / 2) in
@@ -69,7 +70,12 @@ let display_board state =
   display_image "images/white-player.png" white_x 550;
   display_image "images/black-player.png" black_x 550;
   display_image "images/captured-pieces.png" white_x 450;
-  display_image "images/captured-pieces.png" black_x 450;
+  display_image "images/captured-pieces.png" black_x 450
+
+let display_board state is_ai =
+  display_turn state is_ai;
+  let b = State.get_board state in
+  display_board_info ();
   display_sideboard b;
   let board = Board.get_board b in
   let rec print_board x y = function
@@ -134,59 +140,67 @@ let highlight_selected x y board =
       in
       display_image image lower_x lower_y
 
-let rec display_rules state =
+let rec display_rules state is_ai =
   display_image "images/rules.png" 0 0;
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
   if x >= 0 && x <= 80 && y >= 0 && y <= 30 then (
     Graphics.clear_graph ();
-    display_board state)
-  else display_rules state
+    display_board state is_ai)
+  else display_rules state is_ai
 
-let rec get_mouse_click state =
+let rec get_mouse_click state is_ai =
   let b = State.get_board state in
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
-  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then display_rules state
+  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
+    display_rules state is_ai
   else ();
-  if get_x_pos x = -1 || get_y_pos y = -1 then get_mouse_click state
+  if get_x_pos x = -1 || get_y_pos y = -1 then
+    get_mouse_click state is_ai
   else (
     highlight_selected x y b;
     get_board_pos x y)
 
-let rec next_move state =
-  (let error_x = (window_width / 2) - 200 in
-   let error_y = 55 in
-   display_board state;
-   let start_pos = get_mouse_click state in
+let rec next_move state is_ai =
+  display_board state is_ai;
+  let player = State.player_turn state in
+  let error_x = (window_width / 2) - 200 in
+  let error_y = 55 in
+  (if player = "black" && is_ai then (
+   display_image "images/ai-thinking.png" error_x error_y;
+   let new_state = Ai.ai_next_move state ai_level in
    display_image "images/clear-error.png" error_x error_y;
-   let end_pos = get_mouse_click state in
-   let command = "move " ^ start_pos ^ " " ^ end_pos in
-   print_endline command;
-   match State.update_state state (Command.parse command) with
-   | state ->
-       display_image "images/clear-error.png" error_x error_y;
-       next_move state
-   | exception State.IllegalMove ->
-       display_image "images/illegal-move.png" error_x error_y;
-       next_move state
-   | exception State.RequiredJumpNotTaken ->
-       display_image "images/required-jump.png" error_x error_y;
-       next_move state
-   | exception Board.EmptyStartSquare ->
-       display_image "images/empty-start-square.png" error_x error_y;
-       next_move state
-   | exception Board.NoPiece ->
-       display_image "images/empty-start-square.png" error_x error_y;
-       next_move state;
-       next_move state);
+   next_move new_state is_ai)
+  else
+    let start_pos = get_mouse_click state is_ai in
+    display_image "images/clear-error.png" error_x error_y;
+    let end_pos = get_mouse_click state is_ai in
+    let command = "move " ^ start_pos ^ " " ^ end_pos in
+    print_endline command;
+    match State.update_state state (Command.parse command) with
+    | state ->
+        display_image "images/clear-error.png" error_x error_y;
+        next_move state is_ai
+    | exception State.IllegalMove ->
+        display_image "images/illegal-move.png" error_x error_y;
+        next_move state is_ai
+    | exception State.RequiredJumpNotTaken ->
+        display_image "images/required-jump.png" error_x error_y;
+        next_move state is_ai
+    | exception Board.EmptyStartSquare ->
+        display_image "images/empty-start-square.png" error_x error_y;
+        next_move state is_ai
+    | exception Board.NoPiece ->
+        display_image "images/empty-start-square.png" error_x error_y;
+        next_move state is_ai);
   ()
 
-let play_game board =
+let play_game board is_ai =
   let state = State.init_state board in
-  next_move state
+  next_move state is_ai
 
 let init_window =
   open_graph
@@ -196,10 +210,21 @@ let init_window =
     ^ string_of_int window_height);
   set_window_title "Dama"
 
-let rec loop () = loop ()
+let rec choose_type_game () =
+  display_image "images/home.png" 0 0;
+  let event = wait_next_event [ Button_down ] in
+  let x = event.mouse_x in
+  let y = event.mouse_y in
+  if x >= 300 && x <= 800 && y > 230 && y < 310 then (
+    Graphics.clear_graph ();
+    let initial = Board.game_init 8 in
+    play_game initial false)
+  else if x >= 300 && x <= 800 && y > 350 && y < 430 then (
+    Graphics.clear_graph ();
+    let initial = Board.game_init 8 in
+    play_game initial true)
+  else choose_type_game ()
 
 let () =
   init_window;
-  let initial = Board.game_init 8 in
-  play_game initial;
-  loop ()
+  choose_type_game ()

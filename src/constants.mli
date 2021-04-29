@@ -11,3 +11,5 @@ val square_size : int
 val square_offset : int
 
 val board_size : int
+
+val ai_level : int
