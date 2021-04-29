@@ -63,14 +63,12 @@ let rec mode () =
   | exception End_of_file -> ()
   | i -> (
       let board = Board.game_init 8 in
-      try
-        match i with
-        | "1" -> play_game board true
-        | "2" -> play_game board false
-        | _ -> failwith "invalid"
-      with Failure _ ->
-        print_error "invalid mode";
-        mode ())
+      match i with
+      | "1" -> play_game board true
+      | "2" -> play_game board false
+      | _ ->
+          print_error "invalid mode";
+          mode ())
 
 (* init board prompt player who's turn it is to play (black starts)
    parse string and convert the exceptions into readable error messages
