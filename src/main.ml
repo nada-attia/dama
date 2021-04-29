@@ -49,6 +49,9 @@ let rec next_move state mode =
         | exception Board.SquareNotFound ->
             print_error "Square not found";
             next_move state mode
+        | exception State.RequiredJumpNotTaken ->
+            print_error "Required jump not taken";
+            next_move state mode
         | new_state -> next_move new_state mode)
 
 (** [play_game] starts the game. *)
