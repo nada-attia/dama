@@ -44,4 +44,4 @@ loc:
 	cloc --by-file --include-lang=OCaml .
 
 zip:
-	zip dama.zip *.ml* *.md *.sh _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images/* src/*
+	zip dama.zip *.ml* *.md *.sh _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	images/* src/* images/numbers/*
