@@ -13,3 +13,5 @@ let board_size = square_offset * 8
 let x_margin = (window_width - board_size) / 2
 
 let y_margin = (window_height - board_size) / 2
+
+let ai_level = 2
