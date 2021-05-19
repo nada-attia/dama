@@ -192,9 +192,8 @@ let get_movable_squares_lady square color board =
   @ get_all_vac_sq_dir [] square color board Left
   @ get_all_vac_sq_dir [] square color board Down
 
-let rec final_squares = function
-  | [] -> []
-  | (captured_sq, final_sq) :: t -> final_sq :: final_squares t
+let final_squares jumps =
+  List.map (fun (captured_sq, final_sq) -> final_sq) jumps
 
 let get_all_color_pieces t color =
   let board_lst = List.flatten (Board.get_board t) in
@@ -211,6 +210,22 @@ let get_all_color_pieces t color =
 let exists_jumps color board =
   let color_pieces = get_all_color_pieces board color in
   List.filter (fun x -> Board.get_can_jump x) color_pieces
+
+(* helper for highlight available jumps *)
+let get_where_jump color board =
+  let squares_with_jump = exists_jumps color board in
+  let rec get_where_jump_sq = function
+    | [] -> []
+    | sq :: remaining_sqs ->
+        let _, r = Board.get_piece_info sq in
+        let sq_jumps =
+          if r = Board.Man then get_all_jumps sq board color
+          else get_all_jumps_lady sq board color
+        in
+        let final_sqs = final_squares sq_jumps in
+        final_sqs @ get_where_jump_sq remaining_sqs
+  in
+  get_where_jump_sq squares_with_jump
 
 let rec check_jump_aux t color = function
   | [] -> ()
