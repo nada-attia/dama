@@ -72,6 +72,33 @@ let display_board_info () =
   display_image "images/captured-pieces.png" white_x 450;
   display_image "images/captured-pieces.png" black_x 450
 
+let get_y_pos y =
+  if y < y_margin || y > y_margin + (8 * square_offset) then -1
+  else
+    let y_int = ((y - y_margin) / square_offset) + 1 in
+    y_int
+
+let get_x_pos x =
+  if x < x_margin || x > x_margin + (8 * square_offset) then -1
+  else (x - x_margin) / square_offset
+
+let get_x_pos_string x =
+  let x_int = get_x_pos x in
+  let a = Char.code 'a' in
+  let c = a + x_int in
+  Char.escaped (Char.chr c)
+
+let get_label x y =
+  let c = (get_x_pos_string x).[0] in
+  let i = get_y_pos y in
+  (c, i)
+
+let get_board_pos x y =
+  let row_pos = string_of_int (get_y_pos y) in
+  let col_pos = get_x_pos_string x in
+  let pos = col_pos ^ row_pos in
+  if String.length pos = 2 then pos else ""
+
 let highlight_jump state board =
   let player = State.get_turn state in
   let all_jumps = Move.get_where_jump player board in
@@ -86,6 +113,29 @@ let highlight_jump state board =
         highlight_all_jumps remaining_sqs
   in
   highlight_all_jumps all_jumps
+
+let highlight_selected x y board =
+  let num_square_col = (x - x_margin) / square_offset in
+  let num_square_row = (y - y_margin) / square_offset in
+  let lower_x = x_margin + (num_square_col * square_offset) in
+  let lower_y = y_margin + (num_square_row * square_offset) in
+  let c = get_x_pos_string x in
+  let num = get_y_pos y in
+  let square = Move.get_square (c.[0], num) board in
+  match Board.get_occupant square with
+  | None -> display_image "images/selected-empty.png" lower_x lower_y
+  | Some p ->
+      let c, r = Board.get_piece_info square in
+      let image =
+        if c = Board.White && r = Board.Man then
+          "images/selected-white.png"
+        else if c = Board.Black && r = Board.Man then
+          "images/selected-black.png"
+        else if c = Board.Black && r = Board.Lady then
+          "images/selected-black-lady.png"
+        else "images/selected-white-lady.png"
+      in
+      display_image image lower_x lower_y
 
 let display_board state is_ai =
   display_turn state is_ai;
@@ -111,51 +161,6 @@ let display_board state is_ai =
   print_board x_margin y_margin board;
   highlight_jump state b
 
-let get_y_pos y =
-  if y < y_margin || y > y_margin + (8 * square_offset) then -1
-  else
-    let y_int = ((y - y_margin) / square_offset) + 1 in
-    y_int
-
-let get_x_pos x =
-  if x < x_margin || x > x_margin + (8 * square_offset) then -1
-  else (x - x_margin) / square_offset
-
-let get_x_pos_string x =
-  let x_int = get_x_pos x in
-  let a = Char.code 'a' in
-  let c = a + x_int in
-  Char.escaped (Char.chr c)
-
-let get_board_pos x y =
-  let row_pos = string_of_int (get_y_pos y) in
-  let col_pos = get_x_pos_string x in
-  let pos = col_pos ^ row_pos in
-  if String.length pos = 2 then pos else ""
-
-let highlight_selected x y board =
-  let num_square_col = (x - x_margin) / square_offset in
-  let num_square_row = (y - y_margin) / square_offset in
-  let lower_x = x_margin + (num_square_col * square_offset) in
-  let lower_y = y_margin + (num_square_row * square_offset) in
-  let c = get_x_pos_string x in
-  let num = get_y_pos y in
-  let square = Move.get_square (c.[0], num) board in
-  match Board.get_occupant square with
-  | None -> display_image "images/selected-empty.png" lower_x lower_y
-  | Some p ->
-      let c, r = Board.get_piece_info square in
-      let image =
-        if c = Board.White && r = Board.Man then
-          "images/selected-white.png"
-        else if c = Board.Black && r = Board.Man then
-          "images/selected-black.png"
-        else if c = Board.Black && r = Board.Lady then
-          "images/selected-black-lady.png"
-        else "images/selected-white-lady.png"
-      in
-      display_image image lower_x lower_y
-
 let rec display_rules state is_ai =
   display_image "images/rules.png" 0 0;
   let event = wait_next_event [ Button_down ] in
@@ -166,7 +171,7 @@ let rec display_rules state is_ai =
     display_board state is_ai)
   else display_rules state is_ai
 
-let rec get_mouse_click state is_ai =
+let rec get_mouse_click state is_ai start =
   let b = State.get_board state in
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
@@ -175,7 +180,14 @@ let rec get_mouse_click state is_ai =
     display_rules state is_ai
   else ();
   if get_x_pos x = -1 || get_y_pos y = -1 then
-    get_mouse_click state is_ai
+    get_mouse_click state is_ai start
+  else if start = true then (
+    let sq = Move.get_square (get_label x y) b in
+    match Board.get_occupant sq with
+    | None -> get_mouse_click state is_ai start
+    | Some p ->
+        highlight_selected x y b;
+        get_board_pos x y)
   else (
     highlight_selected x y b;
     get_board_pos x y)
@@ -198,9 +210,9 @@ let rec next_move state is_ai =
     display_image "images/clear-error.png" error_x error_y;
     next_move new_state is_ai)
   else
-    let start_pos = get_mouse_click state is_ai in
+    let start_pos = get_mouse_click state is_ai true in
     display_image "images/clear-error.png" error_x error_y;
-    let end_pos = get_mouse_click state is_ai in
+    let end_pos = get_mouse_click state is_ai false in
     let command = "move " ^ start_pos ^ " " ^ end_pos in
     print_endline command;
     display_errors state command is_ai
@@ -215,9 +227,6 @@ and display_errors state command is_ai =
       next_move state is_ai
   | exception State.RequiredJumpNotTaken ->
       display_image "images/required-jump.png" error_x error_y;
-      next_move state is_ai
-  | exception Board.EmptyStartSquare ->
-      display_image "images/empty-start-square.png" error_x error_y;
       next_move state is_ai
   | exception Board.NoPiece ->
       display_image "images/empty-start-square.png" error_x error_y;
