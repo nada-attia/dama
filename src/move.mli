@@ -58,3 +58,5 @@ val get_all_jumps_lady :
 val can_move_all : Board.t -> Board.color -> bool
 
 val exists_jumps : Board.color -> Board.t -> Board.square list
+
+val get_where_jump : Board.color -> Board.t -> Board.square list

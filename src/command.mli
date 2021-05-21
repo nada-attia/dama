@@ -1,7 +1,9 @@
+(** The data type that represents a square label which has one character
+    between a-h and a digit between 1-8 *)
 type square_label = char * int
 
-(** The abstract data type that represents two squares on the board: the
-    starting square and the ending square in a move. *)
+(** The data type that represents two squares on the board: the starting
+    square and the ending square in a move. *)
 type squares_move = square_label * square_label
 
 (** The abstract data type representing a command. *)
@@ -17,6 +19,8 @@ type command =
     begin/end with any number of spaces also *)
 exception IllegalCommand
 
+(** Raised when the square label is not a valid square label. A valid
+    square label has one character between a-h and a digit between 1-8 *)
 exception IllegalSquare
 
 (** Raised when no command is given or the command is empty. *)
