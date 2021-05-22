@@ -1,10 +1,10 @@
-exception SquareNotFound
-
 type direction =
   | Up
   | Down
   | Left
   | Right
+
+exception SquareNotFound
 
 let get_square labl (brd : Board.t) =
   let squares = List.flatten (Board.get_board brd) in
@@ -104,30 +104,20 @@ let get_movable_squares_reg
    direction guided by function [func] for a piece of color [clr] on
    square [sq] on board [brd]*)
 let get_jumps_dir sq (brd : Board.t) clr direction =
-  (* Get next square in direction *)
   let nxt_sq = get_square_dir sq brd clr direction in
-  (* If we got something... *)
   if nxt_sq <> [] then
-    (* Extract square from list *)
     let nxt_sq = List.nth nxt_sq 0 in
-    (* Get 2 squares next in given direction from sq *)
     let nxt_2 = get_square_dir nxt_sq brd clr direction in
-    (* If we got something... *)
     if nxt_2 <> [] then
-      (* Extract the square from the list *)
       let nxt_2 = List.nth nxt_2 0 in
-      (* If the next square is occupied and the 2nd next square is empty*)
       if
         Board.get_occupant nxt_sq <> None
         && Board.get_occupant nxt_2 = None
-        (* get the piece from the piece option *)
       then
         let pc_abv = Option.get (Board.get_occupant nxt_sq) in
-        (* ensure that the piece color is enemy color*)
         if Board.get_color pc_abv <> clr then [ (nxt_sq, nxt_2) ]
-        else [] (* conditions for jump not met. *)
+        else []
       else []
-      (* Did not find next square or 2nd next in given direction. *)
     else []
   else []
 
@@ -256,11 +246,8 @@ let update_board turn captured board start_pos end_pos =
   | None -> ()
   | Some sq -> Board.remove_pieces sq turn board
 
-(* Returns a list of squares a piece on square [sq] can move to on board
-   [brd]*)
 let where_move (brd : Board.t) (sq : Board.square) =
   try
-    (* Get color and role of the piece *)
     let pc_color, pc_role = Board.get_piece_info sq in
     update_can_jumps pc_color brd;
     if List.mem sq (exists_jumps pc_color brd) then
