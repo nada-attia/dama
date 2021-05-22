@@ -15,3 +15,7 @@ let x_margin = (window_width - board_size) / 2
 let y_margin = (window_height - board_size) / 2
 
 let ai_level = 2
+
+let error_x = (window_width / 2) - 200
+
+let error_y = 55
