@@ -9,9 +9,7 @@ type squares_move = square_label * square_label
 (** The abstract data type representing a command. *)
 type command =
   | Move of squares_move
-  | Undo
   | Forfeit
-  | Hint
 
 (** Raised when the command is not in correct form. Correct forms are:
     move followed by two strings, undo, forfeit, hint Each of these

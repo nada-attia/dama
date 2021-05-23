@@ -10,9 +10,7 @@ exception NoCommand
 
 type command =
   | Move of squares_move
-  | Undo
   | Forfeit
-  | Hint
 
 (* [string_to_tuple s] converts a list of strings in the form [["a",
    "9"]] to [("a", 9)]
@@ -56,8 +54,6 @@ let return_command action remaining_command =
     Move (get_positions remaining_command)
   else if action = "forfeit" && List.length remaining_command = 0 then
     Forfeit
-  else if action = "hint" && List.length remaining_command = 0 then Hint
-  else if action = "undo" && List.length remaining_command = 0 then Undo
   else raise IllegalCommand
 
 let parse s =

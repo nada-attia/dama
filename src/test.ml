@@ -36,11 +36,7 @@ open Command
    being handled in the terminal as well as the GUI. We also tested the
    game manually on different edge cases with different states, and it
    works as expected.*)
-let print_command = function
-  | Move t -> "Move"
-  | Undo -> "Undo"
-  | Forfeit -> "Forfeit"
-  | Hint -> "Hint"
+let print_command = function Move t -> "Move" | Forfeit -> "Forfeit"
 
 let print_label (a1, b1) =
   "(" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ ")"
@@ -149,6 +145,10 @@ let parse_illegalsq_test (name : string) (str : string) : test =
 let parse_illegalcom_test (name : string) (str : string) : test =
   name >:: fun _ ->
   assert_raises Command.IllegalCommand (fun () -> Command.parse str)
+
+let parse_nocom_test (name : string) (str : string) : test =
+  name >:: fun _ ->
+  assert_raises Command.NoCommand (fun () -> Command.parse str)
 
 let parse_move_test
     (name : string)
@@ -308,14 +308,12 @@ let move_tests =
 
 let command_tests =
   [
-    parse_test "parse undo" "undo" Undo;
-    parse_test "parse undo with extra spaces" "    undo   " Undo;
-    parse_test "parse hint" "hint" Hint;
-    parse_test "parse hint with extra spaces" "   hint   " Hint;
     parse_test "parse forfeit" "forfeit" Forfeit;
     parse_test "parse forfeit with extra spaces" "   forfeit    "
       Forfeit;
     parse_move_test "parse move from A6 to A7" "move A6 A7"
+      (('a', 6), ('a', 7));
+    parse_move_test "parse move from a6 to a7, lowercase" "move a6 a7"
       (('a', 6), ('a', 7));
     parse_move_test "parse move from A6 to A7 with extra spaces"
       "   move A6 A7"
@@ -324,8 +322,13 @@ let command_tests =
       "move ER8 E9";
     parse_illegalsq_test "parse square 67 (contains only numbers)"
       "move 67 E9";
+    parse_illegalsq_test "parse square A (contains only letters)"
+      "move A E9";
     parse_illegalcom_test "parse move with three squares"
       "move 67 E9 E4";
+    parse_illegalcom_test "parse move with no squares" "move ";
+    parse_nocom_test "parse empty command" "";
+    parse_nocom_test "parse empty command" "   ";
   ]
 
 let player_turn_test
