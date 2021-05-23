@@ -178,6 +178,8 @@ let rec get_mouse_click state is_ai start =
   let y = event.mouse_y in
   if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
     display_rules state is_ai
+    (* else if x >= 980 && x <= 1080 && y >= 20 && y <= 60 then get_hint
+       state is_ai *)
   else ();
   if get_x_pos x = -1 || get_y_pos y = -1 then
     get_mouse_click state is_ai start
@@ -202,11 +204,12 @@ let check_end_game state =
 
 let rec next_move state is_ai =
   display_board state is_ai;
+  let color = State.get_turn state in
   let player = State.player_turn state in
   check_end_game state;
   if player = "black" && is_ai then (
     display_image "images/ai-thinking.png" error_x error_y;
-    let new_state = Ai.ai_next_move state ai_level in
+    let new_state = Ai.ai_next_move color state ai_level in
     display_image "images/clear-error.png" error_x error_y;
     next_move new_state is_ai)
   else
@@ -232,8 +235,8 @@ and display_errors state command is_ai =
       display_image "images/empty-start-square.png" error_x error_y;
       next_move state is_ai
 
-let play_game board is_ai =
-  let state = State.init_state board in
+let play_game state is_ai =
+  Graphics.clear_graph ();
   next_move state is_ai
 
 let init_window =
@@ -245,18 +248,23 @@ let init_window =
   set_window_title "Dama"
 
 let rec choose_type_game () =
-  display_image "images/home.png" 0 0;
+  if Sys.file_exists "game.json" then (
+    display_image "images/home.png" 0 0;
+    display_image "images/continue-old-game.png" 335 120)
+  else display_image "images/home.png" 0 0;
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
-  if x >= 300 && x <= 800 && y > 230 && y < 310 then (
-    Graphics.clear_graph ();
-    let initial = Board.game_init 8 in
-    play_game initial false)
-  else if x >= 300 && x <= 800 && y > 350 && y < 430 then (
-    Graphics.clear_graph ();
-    let initial = Board.game_init 8 in
-    play_game initial true)
+  let init_board = Board.game_init 8 in
+  let init_state = State.init_state init_board in
+  if x >= 300 && x <= 800 && y > 230 && y < 310 then
+    play_game init_state false
+  else if x >= 300 && x <= 800 && y > 350 && y < 430 then
+    play_game init_state true
+  else if x >= 350 && x <= 750 && y >= 140 && y <= 190 then
+    let saved_game = Yojson.Basic.from_file "game.json" in
+    let s = State.json_to_state saved_game in
+    play_game s false
   else choose_type_game ()
 
 let () =

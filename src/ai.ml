@@ -4,11 +4,14 @@ type t = Node of (State.state list * (State.state * float) * t list)
 (** [evaluate old_state new_state] is the value of moving from [old_t]
     to [new_t]. A higher value is better for Black and lower value is
     better for White.*)
-let evaluate old_t new_t =
-  let inactive_old = Board.count_inactive old_t Board.Black in
-  let inactive_new = Board.count_inactive new_t Board.Black in
-  let opp_old = Board.count_inactive old_t Board.White in
-  let opp_new = Board.count_inactive new_t Board.White in
+let evaluate color old_t new_t =
+  let opp_color =
+    if color = Board.Black then Board.White else Board.Black
+  in
+  let inactive_old = Board.count_inactive old_t color in
+  let inactive_new = Board.count_inactive new_t color in
+  let opp_old = Board.count_inactive old_t opp_color in
+  let opp_new = Board.count_inactive new_t opp_color in
   if inactive_new - inactive_old > 2 then -1.0
   else if inactive_new - inactive_old = 2 then -0.67
   else if inactive_new - inactive_old = 1 then -0.5
@@ -63,6 +66,7 @@ let make_states_level (state : State.state) =
     as the evaluation value of [st] and [path_acc] as the list of states
     leading to [st]*)
 let rec initialize_tree
+    (color : Board.color)
     (state : State.state)
     n
     (path_acc : State.state list)
@@ -77,7 +81,7 @@ let rec initialize_tree
            for it with the updated value of the previous eval weighed
            equally with the current eval.*)
         let evaluate =
-          (evaluate (State.get_board state) (State.get_board h)
+          (evaluate color (State.get_board state) (State.get_board h)
           +. prev_eval)
           /. 2.0
         in
@@ -86,7 +90,7 @@ let rec initialize_tree
           ( h :: path_acc,
             (h, evaluate),
             if n > 0 then
-              initialize_tree h (n - 1) (h :: path_acc) evaluate
+              initialize_tree color h (n - 1) (h :: path_acc) evaluate
             else [] )
         :: initialize_tree_aux t
   in
@@ -95,8 +99,8 @@ let rec initialize_tree
 (** [evaluate parent n sign op] is the best path from [parent] [n]
     levels deep in the search tree. [op] is ( > ) and [sign] is -1 if
     the ai is black, and ( < ) and 1, respectively, if the ai is white *)
-let evaluate_tree state n sign op =
-  let children = initialize_tree state n [] 0.0 in
+let evaluate_tree color state n sign op =
+  let children = initialize_tree color state n [] 0.0 in
   let rec evaluate_tree_aux best = function
     | [] -> best
     | Node (p, (state, eval), ch) :: t ->
@@ -110,6 +114,6 @@ let evaluate_tree state n sign op =
   in
   evaluate_tree_aux (sign *. 2., []) children
 
-let ai_next_move state n =
-  let best_val, path = evaluate_tree state n (-1.) ( > ) in
+let ai_next_move color state n =
+  let best_val, path = evaluate_tree color state n (-1.) ( > ) in
   if path <> [] then path |> List.rev |> List.hd else failwith "no path"
