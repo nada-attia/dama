@@ -1,11 +1,12 @@
+(** [t] is the AI search tree*)
 type t = Node of (State.state list * (State.state * float) * t list)
 
-(** [evaluate old_state new_state] that has a higher value is better for
-    Black and lower value is better for white*)
+(** [evaluate old_state new_state] is the value of moving from [old_t]
+    to [new_t]. A higher value is better for Black and lower value is
+    better for White.*)
 let evaluate old_t new_t =
   let inactive_old = Board.count_inactive old_t Board.Black in
   let inactive_new = Board.count_inactive new_t Board.Black in
-  (* print_int (inactive_new - inactive_old); *)
   let opp_old = Board.count_inactive old_t Board.White in
   let opp_new = Board.count_inactive new_t Board.White in
   if inactive_new - inactive_old > 2 then -1.0
@@ -28,8 +29,8 @@ let rec end_moves_helper state square = function
         (Command.Move (Board.get_label square, Board.get_label h))
       :: end_moves_helper state square t
 
-(** [make_states_level state] creates one level of states from [state]
-    representing all possible states*)
+(** [make_states_level state] is one level of states that are reachable
+    from [state]*)
 let make_states_level (state : State.state) =
   (* get the list of possible moves from the current state for the given
      turn. Will give back a list of tuples with each in the form of
@@ -46,8 +47,6 @@ let make_states_level (state : State.state) =
   let rec make_states_level_aux = function
     | [] -> []
     | (square, end_moves) :: remaining ->
-        (* let c, i = Board.get_label square in print_endline
-           (Char.escaped c ^ string_of_int i); *)
         end_moves_helper state square end_moves
         @ make_states_level_aux remaining
   in
@@ -58,6 +57,11 @@ let make_states_level (state : State.state) =
    possible moves tuples. This will correspond to the first layer of
    nodes and so forth. From this, we will get back a list of states that
    suceed it by 1 move *)
+
+(** [initialize_tree st n path_acc prev_eval] is the search tree [n]
+    levels deep, starting with [st] as the parent state and [prev_eval]
+    as the evaluation value of [st] and [path_acc] as the list of states
+    leading to [st]*)
 let rec initialize_tree
     (state : State.state)
     n
@@ -88,12 +92,9 @@ let rec initialize_tree
   in
   initialize_tree_aux child_states
 
-(* let tree state n = Node ([], (state, 0.0), initilize_tree state n []
-   0.0) *)
-
 (** [evaluate parent n sign op] is the best path from [parent] [n]
-    levels deep. [op] is ( > ) and [sign] is -1 if the ai is black, and
-    vice versa if the ai is white *)
+    levels deep in the search tree. [op] is ( > ) and [sign] is -1 if
+    the ai is black, and ( < ) and 1, respectively, if the ai is white *)
 let evaluate_tree state n sign op =
   let children = initialize_tree state n [] 0.0 in
   let rec evaluate_tree_aux best = function

@@ -41,8 +41,6 @@ exception EmptyStartSquare
 
 exception NoPiece
 
-exception SquareNotFound
-
 let get_board t = t.board
 
 let get_init_player = White
@@ -59,7 +57,6 @@ let get_occupant sq = sq.occupant
 
 let get_color (piece : piece) = piece.color
 
-(* helper to try to see if piece on square [sqr] can be upgraded *)
 let try_upgrade_piece sqr (brd : t) (clr : color) =
   let ltr, num = sqr.label in
   let pc =
@@ -223,7 +220,7 @@ let update_piece sq (p : piece option) = sq.occupant <- p
 
 let update_can_jump piece boolean = piece.can_jump <- boolean
 
-let remove_pieces captured_sq turn board =
+let remove_pieces captured_sq board =
   let captured_piece = get_piece captured_sq in
   let role = captured_piece.role in
   let p_color = captured_piece.color in
