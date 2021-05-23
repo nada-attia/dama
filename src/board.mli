@@ -100,3 +100,12 @@ val copy_board : t -> t
 
 (** [get_side_board t color] is the sideboard of [t] for [color]*)
 val get_side_board : t -> color -> int * int
+
+(** [board_to_json t] is the json representation of board [t]*)
+val board_to_json : t -> Yojson.Basic.t
+
+(** [sideboard_to_json t] is the json representation of the sideboard of
+    board [t]. *)
+val sideboard_to_json : t -> Yojson.Basic.t
+
+val t_of_board_json : Yojson.Basic.t -> Yojson.Basic.t -> t
