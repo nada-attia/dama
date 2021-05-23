@@ -1,3 +1,5 @@
+(** [Board] contains representation of the board and functions on it*)
+
 (** [t] is the abstract type of values representing the board along with
     any necessary information accociated with the board. *)
 type t
