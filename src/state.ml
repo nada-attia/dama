@@ -1,3 +1,5 @@
+open Yojson.Basic.Util
+
 type current =
   | InProgress
   | Finished
@@ -33,7 +35,7 @@ let current_string state =
 
 let state_to_json state : Yojson.Basic.t =
   let turn_str = player_turn state in
-  let current_str = state.current in
+  let current_str = current_string state in
   let board_json = Board.board_to_json state.board in
   let sideboard_json = Board.sideboard_to_json state.board in
   `Assoc
@@ -41,8 +43,20 @@ let state_to_json state : Yojson.Basic.t =
       ("board", board_json);
       ("turn", `String turn_str);
       ("current", `String current_str);
-      ("side-board", sideboard_json);
+      ("sideboard", sideboard_json);
     ]
+
+let json_to_state json =
+  let turn_str = json |> member "turn" |> to_string in
+  let turn = if turn_str = "black" then Board.Black else Board.White in
+  let current_str = json |> member "currnet" |> to_string in
+  let current =
+    if current_str = "in-progress" then InProgress else Finished
+  in
+  let board_json = json |> member "board" in
+  let sideboard_json = json |> member "sideboard" in
+  let board = Board.t_of_board_json board_json sideboard_json in
+  { turn; board; current }
 
 (* [find_square square] is true if [end_pos] is a valid ending square
    and false otherwise *)

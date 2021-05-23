@@ -73,3 +73,5 @@ val board_to_json : t -> Yojson.Basic.t
 (** [sideboard_to_json t] is the json representation of the sideboard of
     board [t]. *)
 val sideboard_to_json : t -> Yojson.Basic.t
+
+val t_of_board_json : Yojson.Basic.t -> Yojson.Basic.t -> t

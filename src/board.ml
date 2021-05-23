@@ -32,8 +32,8 @@ type side_board = {
 
 type t = {
   board : square list list;
-  mutable w_side_board : side_board;
-  mutable b_side_board : side_board;
+  w_side_board : side_board;
+  b_side_board : side_board;
   size : int;
 }
 
@@ -87,6 +87,9 @@ let init_piece (piece : piece option) () =
   match piece with
   | None -> None
   | Some p -> Some { color = p.color; role = p.role; can_jump = false }
+
+let init_piece_deop p () =
+  { color = p.color; role = p.role; can_jump = false }
 
 (** [init_row n row piece_opt acc] initializes [row] of length [n] with
     [piece_opt]*)
@@ -320,3 +323,66 @@ let sideboard_to_json t : Yojson.Basic.t =
       ("b_men", `String b_m);
       ("b_lady", `String b_l);
     ]
+
+let occ_str_to_p occ_str =
+  if occ_str <> "" then
+    let color =
+      if occ_str.[0] = 'B' || occ_str.[0] = 'b' then Black else White
+    in
+    let can_jump = if occ_str.[1] = 't' then true else false in
+    let role =
+      if occ_str.[0] = 'B' || occ_str.[0] = 'W' then Lady else Man
+    in
+    let p = { color; role; can_jump } in
+    Some (init_piece_deop p ())
+  else None
+
+let rec json_to_sq (sq_lst : Yojson.Basic.t list) =
+  match sq_lst with
+  | [] -> []
+  | `Assoc
+      [ ("label", `String label_str); ("occupant", `String occ_str) ]
+    :: t ->
+      let piece = occ_str_to_p occ_str in
+      let c = label_str.[0] in
+      let i = int_of_string (Char.escaped label_str.[1]) in
+      let label = (c, i) in
+      let sq = { occupant = piece; label } in
+      sq :: json_to_sq t
+  | _ -> failwith "Wrong square format"
+
+let rec json_to_list_sqs (list_sqs : Yojson.Basic.t list) =
+  match list_sqs with
+  | [] -> []
+  | `List list_sq :: t -> json_to_sq list_sq @ json_to_list_sqs t
+  | _ -> failwith "Wrong format"
+
+let json_to_board (board : Yojson.Basic.t) =
+  match board with
+  | `List lists -> [ json_to_list_sqs lists ]
+  | _ -> failwith "Wrong format"
+
+let init_side_board man lady () = { man_count = man; lady_count = lady }
+
+let json_to_sidebaord (board : Yojson.Basic.t) =
+  match board with
+  | `Assoc
+      [
+        ("w_lady", `String w_l);
+        ("w_men", `String w_m);
+        ("b_men", `String b_m);
+        ("b_lady", `String b_l);
+      ] ->
+      let w_lady = int_of_string w_l in
+      let w_men = int_of_string w_m in
+      let b_men = int_of_string b_m in
+      let b_lady = int_of_string b_l in
+      (init_side_board w_men w_lady (), init_side_board b_men b_lady ())
+  | _ -> failwith "Wrong sideboard format"
+
+let t_of_board_json
+    (board : Yojson.Basic.t)
+    (sideboard : Yojson.Basic.t) =
+  let board = json_to_board board in
+  let w_side_board, b_side_board = json_to_sidebaord sideboard in
+  { board; w_side_board; b_side_board; size = 8 }
