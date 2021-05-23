@@ -19,7 +19,9 @@ let rec next_move state mode =
   print_string "> ";
   (* && true for ai mode, && false for multiplayer mode*)
   if player = "black" && mode then
-    let new_state = Ai.ai_next_move state ai_level in
+    let new_state =
+      Ai.ai_next_move (State.get_turn state) state ai_level
+    in
     next_move new_state mode
   else
     match read_line () with

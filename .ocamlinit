@@ -1,6 +1,7 @@
 #require "ounit2";;
 #require "ANSITerminal";;
 #require "Graphics";;
+#require "yojson";;
 #directory "_build";;
 #load "graphics.cma";;
 #load "board.cmo";;

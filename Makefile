@@ -31,7 +31,7 @@ docs: docs-public
 
 docs-public: build
 	mkdir -p _doc.public
-	ocamlfind ocamldoc -I _build/src \
+	ocamlfind ocamldoc -I _build/src -package yojson,ANSITerminal\
 		-html -stars -d _doc.public $(MLIS)
 
 loc: 
