@@ -163,7 +163,7 @@ let display_board state is_ai =
   print_board x_margin y_margin board;
   highlight_jump state b;
   if is_ai && State.get_turn state = Board.Black then
-    display_image "images/hide-hint.png" 980 20
+    display_image "images/hide-hint.png" 870 20
   else ()
 
 let rec display_rules state is_ai =
@@ -184,6 +184,8 @@ let check_end_game state =
     else display_image "images/pages/white-wins.png" 0 0
   else ()
 
+let is_end_game state = if State.game_over state then true else false
+
 let rec get_mouse_click state is_ai start =
   let b = State.get_board state in
   let event = wait_next_event [ Button_down ] in
@@ -192,8 +194,11 @@ let rec get_mouse_click state is_ai start =
   if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
     display_rules state is_ai
   else if x >= 870 && x <= 970 && y >= 20 && y <= 80 then
-    get_hint state is_ai
-  else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then ()
+    if (is_ai && State.get_turn state = Board.White) || is_ai = false
+    then get_hint state is_ai
+    else ()
+  else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then
+    forfeit_game state is_ai
   else ();
   if get_x_pos x = -1 || get_y_pos y = -1 then
     get_mouse_click state is_ai start
@@ -208,6 +213,11 @@ let rec get_mouse_click state is_ai start =
     highlight_selected x y b;
     get_board_pos x y)
 
+and forfeit_game state is_ai =
+  match State.update_state state (Command.parse "forfeit") with
+  | state -> next_move state is_ai
+  | exception _ -> failwith "F"
+
 and get_hint state is_ai =
   display_image "images/ai-move.png" error_x error_y;
   let color = State.get_turn state in
@@ -221,7 +231,8 @@ and next_move state is_ai =
   let color = State.get_turn state in
   let player = State.player_turn state in
   check_end_game state;
-  if player = "black" && is_ai then (
+  if is_end_game state then ()
+  else if player = "black" && is_ai then (
     display_image "images/ai-thinking.png" error_x error_y;
     let new_state = Ai.ai_next_move color state ai_level in
     display_image "images/clear-error.png" error_x error_y;
