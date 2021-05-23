@@ -19,7 +19,7 @@ val get_turn : state -> Board.color
 
 (** [update_state state command] is the new state after the command is
     executed. Raises an exception if the command is not a valid one *)
-val update_state : state -> Command.command -> state
+val update_state : state -> Command.command -> bool -> state
 
 (** [get_board state] is the current board at a given state of the game *)
 val get_board : state -> Board.t
