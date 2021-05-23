@@ -23,18 +23,19 @@ open Command
    in forming new states and boards by their abstract types, so we used
    automated tests to test basic functionality and used manual testing
    through playing the game with different states to complement this
-   automated testing. We tested copy_state by updating the state several
-   times and making copies each time so tests on earlier states still
-   pass. We believe that our test suite demonstrates the correctness of
-   our system because we tested that the initialization of the board and
-   state is correct, and tested many functions with that initialization.
-   If the initialization is correct and the functions return the correct
-   value, then we believe that further into the game the return value
-   should also be correct. We additionally tested exceptions to make
-   sure they were being thrown correctly, in addition to making sure
-   errors were being handled in the terminal as well as the GUI. We also
-   tested the game manually on different edge cases with different
-   states, and it works as expected.*)
+   automated testing. The tests were developed with glass-box testing.
+   We tested copy_state by updating the state several times and making
+   copies each time so tests on earlier states still pass. We believe
+   that our test suite demonstrates the correctness of our system
+   because we tested that the initialization of the board and state is
+   correct, and tested many functions with that initialization. If the
+   initialization is correct and the functions return the correct value,
+   then we believe that further into the game the return value should
+   also be correct. We additionally tested exceptions to make sure they
+   were being thrown correctly, in addition to making sure errors were
+   being handled in the terminal as well as the GUI. We also tested the
+   game manually on different edge cases with different states, and it
+   works as expected.*)
 let print_command = function
   | Move t -> "Move"
   | Undo -> "Undo"
