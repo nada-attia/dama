@@ -2,4 +2,5 @@ B _build
 PKG ounit2
 PKG ANSITerminal
 PKG Graphics
+PKG yojson
 PKG camlimages.all
