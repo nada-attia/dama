@@ -186,8 +186,6 @@ let terminal_rep_string_test
     (expected_output : string) : test =
   name >:: fun _ ->
   let board = Board.get_board t in
-  (* print_endline (Board.terminal_rep_string_aux board 1);
-     print_endline expected_output; *)
   assert_equal expected_output (Board.terminal_rep_string_aux board 1)
 
 let can_move_test
