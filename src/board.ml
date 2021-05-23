@@ -280,3 +280,23 @@ let copy_board t =
         man_count = t.b_side_board.man_count;
       };
   }
+
+let square_to_json_rep sq : Yojson.Basic.t =
+  let c, i = sq.label in
+  let label_str = Char.escaped c ^ string_of_int i in
+  let occ_str =
+    match sq.occupant with
+    | None -> ""
+    | Some o ->
+        let is_can_jump = if o.can_jump then "t" else "f" in
+        let piece_str =
+          if o.color = Black then if o.role = Lady then "B" else "b"
+          else if o.role = Lady then "W"
+          else "w"
+        in
+        piece_str ^ is_can_jump
+  in
+  `Assoc [ ("label", `String label_str); ("occupant", `String occ_str) ]
+
+let board_to_json brd =
+  List.map (fun x -> List.map square_to_json_rep x) brd

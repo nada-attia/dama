@@ -1,0 +1,300 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Board" rel="Chapter" href="Board.html">
+<link title="State" rel="Chapter" href="State.html">
+<link title="Main" rel="Chapter" href="Main.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Author" rel="Chapter" href="Author.html">
+<link title="Move" rel="Chapter" href="Move.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Constants" rel="Chapter" href="Constants.html"><title>Index of values</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Index of values</h1>
+<table>
+<tr><td align="left"><div>A</div></td></tr>
+<tr><td><a href="Constants.html#VALai_level">ai_level</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The number of levels traversed in the Monte Carlo Tree Search</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>B</div></td></tr>
+<tr><td><a href="Constants.html#VALboard_size">board_size</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The size of the board</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>C</div></td></tr>
+<tr><td><a href="Move.html#VALcan_move">can_move</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">can_move square board color</code> is true if a piece of color <code class="code">color</code> on
+    square <code class="code">square</code> in board <code class="code">board</code> is currently able to move, and
+    false otherwise.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALcan_move_all">can_move_all</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">can_move_all board color</code> is true if any piece of color <code class="code">color</code> in
+    board <code class="code">board</code> is currently able to move, and false otherwise.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Board.html#VALcopy_board">copy_board</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="State.html#VALcopy_state">copy_state</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">copy_state state</code> creates a copy of the state which is used in the
+    Monte Carlo Tree Search AI</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Board.html#VALcount_inactive">count_inactive</a> [<a href="Board.html">Board</a>]</td>
+<td><div class="info">
+<p><code class="code">count_inactive p_color</code> is the total number of pieces which have
+    color <code class="code">p_color</code> and are not on the board</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>E</div></td></tr>
+<tr><td><a href="Constants.html#VALerror_x">error_x</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The x location where error messages are displayed</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Constants.html#VALerror_y">error_y</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The y location where error messages are displayed</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALexists_jumps">exists_jumps</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">exists_jumps color board</code> is true if any valid jumps exist for a
+    piece of color <code class="code">color</code> in board <code class="code">board</code>, and false otherwise.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>G</div></td></tr>
+<tr><td><a href="Board.html#VALgame_init">game_init</a> [<a href="Board.html">Board</a>]</td>
+<td><div class="info">
+<p><code class="code">game_init n</code> is a board of size n x n with all Men pieces set up in
+    their correct starting positions.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="State.html#VALgame_over">game_over</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">game_over state</code> is true if the game is over and false otherwise</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALget_all_jumps">get_all_jumps</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">get_all_jumps square board color</code> is all of the (jumped square,
+    destination square)'s that a regular piece of color <code class="code">color</code> on
+    square <code class="code">square</code> in board <code class="code">board</code> is avalible to take and arrive at.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALget_all_jumps_lady">get_all_jumps_lady</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">get_all_jumps_lady square board color</code> is all of the (jumped
+    square, destination square)'s that a lady piece of color <code class="code">color</code> on
+    square <code class="code">square</code> in board <code class="code">board</code> is avalible to take and arrive at.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="State.html#VALget_board">get_board</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">get_board state</code> is the current board at a given state of the game</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Board.html#VALget_board">get_board</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_can_jump">get_can_jump</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_color">get_color</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_init_player">get_init_player</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_label">get_label</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Move.html#VALget_movable_squares_reg">get_movable_squares_reg</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">get_movable_squares_reg square color board</code> is all of the squares a
+    regular piece of color <code class="code">color</code> on square <code class="code">square</code> in board <code class="code">board</code>
+    can move to.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Board.html#VALget_occupant">get_occupant</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_other_player">get_other_player</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_piece_info">get_piece_info</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_side_board">get_side_board</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALget_sqlst_label">get_sqlst_label</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Move.html#VALget_square">get_square</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">get_square label board</code> is the square at position <code class="code">label</code> on board
+    <code class="code">board</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALget_square_dir">get_square_dir</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">get_square_dir square board color direction</code> is the square in
+    direction <code class="code">direction</code> from square <code class="code">square</code> for a piece of color
+    <code class="code">color</code> on board <code class="code">board</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="State.html#VALget_turn">get_turn</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">get_turn state</code> is the color of the player whose turn it is</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALget_where_jump">get_where_jump</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">get_where_jump color board</code> is all of the destination squares for
+    all of jumps avalible for pieces of color <code class="code">color</code> in board <code class="code">board</code>.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>H</div></td></tr>
+<tr><td><a href="Author.html#VALhours_worked">hours_worked</a> [<a href="Author.html">Author</a>]</td>
+<td><div class="info">
+<p><code class="code">hours_worked</code> is the number of hours you worked on this assignment.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>I</div></td></tr>
+<tr><td><a href="State.html#VALinit_state">init_state</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">init_state board</code> is the initial state when the game first starts</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>P</div></td></tr>
+<tr><td><a href="Command.html#VALparse">parse</a> [<a href="Command.html">Command</a>]</td>
+<td><div class="info">
+<p>Parses the command and returns the type of command, and if the
+    command is move, it returns a type Move of <code class="code">squares_move</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="State.html#VALplayer_turn">player_turn</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">player_turn state</code> is the string representation of the player</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>R</div></td></tr>
+<tr><td><a href="Board.html#VALremove_pieces">remove_pieces</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td align="left"><div>S</div></td></tr>
+<tr><td><a href="Constants.html#VALsquare_offset">square_offset</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The distance between the start of one square and the start of the
+    other</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Constants.html#VALsquare_size">square_size</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The size of the squares on the board</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>T</div></td></tr>
+<tr><td><a href="Board.html#VALterminal_rep_string">terminal_rep_string</a> [<a href="Board.html">Board</a>]</td>
+<td><div class="info">
+<p><code class="code">terminal_rep_string board count</code> is a string representation of the
+    board <code class="code">board</code> with row and column labels starting at <code class="code">count</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Board.html#VALtry_upgrade_piece">try_upgrade_piece</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td align="left"><div>U</div></td></tr>
+<tr><td><a href="Move.html#VALupdate_board">update_board</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">update_board color square board label1 label2</code> updates the board
+    for a player of color <code class="code">color</code> after the player has captured a piece
+    on square <code class="code">square</code> by moving from <code class="code">label1</code> to <code class="code">label2</code> in board
+    <code class="code">board</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Board.html#VALupdate_can_jump">update_can_jump</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="Board.html#VALupdate_piece">update_piece</a> [<a href="Board.html">Board</a>]</td>
+<td></td></tr>
+<tr><td><a href="State.html#VALupdate_state">update_state</a> [<a href="State.html">State</a>]</td>
+<td><div class="info">
+<p><code class="code">update_state state command</code> is the new state after the command is
+    executed.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>W</div></td></tr>
+<tr><td><a href="Move.html#VALwhere_move">where_move</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">where_move board square</code> are the squares a piece on square <code class="code">square</code>
+    in board <code class="code">board</code> it is allowed to move to.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Move.html#VALwhere_move_all">where_move_all</a> [<a href="Move.html">Move</a>]</td>
+<td><div class="info">
+<p><code class="code">where_move_all board color</code> is all of the squares that can be moved
+    to for the curently active pieces of color <code class="code">color</code> on board <code class="code">board</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Constants.html#VALwindow_height">window_height</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The height of the GUI window</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Constants.html#VALwindow_width">window_width</a> [<a href="Constants.html">Constants</a>]</td>
+<td></td></tr>
+<tr><td align="left"><div>X</div></td></tr>
+<tr><td><a href="Constants.html#VALx_margin">x_margin</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The horizontal margin between the start of the GUI window and the
+    start of the board</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>Y</div></td></tr>
+<tr><td><a href="Constants.html#VALy_margin">y_margin</a> [<a href="Constants.html">Constants</a>]</td>
+<td><div class="info">
+<p>The vertical margin between the start of the GUI window and the
+    start of the board</p>
+
+</div>
+</td></tr>
+</table>
+</body>
+</html>

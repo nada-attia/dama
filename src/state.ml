@@ -1,7 +1,6 @@
 type current =
   | InProgress
   | Finished
-  | Pregame
 
 type state = {
   turn : Board.color;
@@ -20,12 +19,23 @@ let copy_state (s : state) =
   { s with board = copy_board }
 
 let init_state board =
-  { turn = Board.get_init_player; board; current = Pregame }
+  { turn = Board.get_init_player; board; current = InProgress }
 
 let get_turn state = state.turn
 
 let player_turn state =
   match get_turn state with Black -> "black" | White -> "white"
+
+let current_string state =
+  match state.current with
+  | InProgress -> "in-progress"
+  | Finished -> "finished"
+
+let state_to_json state =
+  let turn_str = player_turn state in
+  let current = state.current in
+  let board_str = Board.terminal_rep_string state.board in
+  turn_str
 
 (* [find_square square] is true if [end_pos] is a valid ending square
    and false otherwise *)
@@ -110,7 +120,4 @@ let update_state (state : state) (command : Command.command) =
   | Hint -> update_state_hint state
 
 let game_over state =
-  match state.current with
-  | Pregame -> false
-  | InProgress -> false
-  | Finished -> true
+  match state.current with InProgress -> false | Finished -> true
