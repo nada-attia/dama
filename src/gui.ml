@@ -65,6 +65,8 @@ let display_board_info () =
   let title_x = (window_width / 2) - 100 in
   let white_x = (board_size / 2) - 200 in
   let black_x = window_width - (board_size / 2) in
+  display_image "images/hint.png" 870 20;
+  display_image "images/forfeit.png" 980 20;
   display_image "images/info.png" 0 0;
   display_image "images/title.png" title_x 640;
   display_image "images/white-player.png" white_x 550;
@@ -159,7 +161,10 @@ let display_board state is_ai =
         print_row x y sq_lst
   in
   print_board x_margin y_margin board;
-  highlight_jump state b
+  highlight_jump state b;
+  if is_ai && State.get_turn state = Board.Black then
+    display_image "images/hide-hint.png" 980 20
+  else ()
 
 let rec display_rules state is_ai =
   display_image "images/rules.png" 0 0;
@@ -171,6 +176,14 @@ let rec display_rules state is_ai =
     display_board state is_ai)
   else display_rules state is_ai
 
+let check_end_game state =
+  let player = State.get_turn state in
+  if State.game_over state then
+    if player = Board.Black then
+      display_image "images/pages/black-wins.png" 0 0
+    else display_image "images/pages/white-wins.png" 0 0
+  else ()
+
 let rec get_mouse_click state is_ai start =
   let b = State.get_board state in
   let event = wait_next_event [ Button_down ] in
@@ -178,8 +191,9 @@ let rec get_mouse_click state is_ai start =
   let y = event.mouse_y in
   if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
     display_rules state is_ai
-    (* else if x >= 980 && x <= 1080 && y >= 20 && y <= 60 then get_hint
-       state is_ai *)
+  else if x >= 870 && x <= 970 && y >= 20 && y <= 80 then
+    get_hint state is_ai
+  else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then ()
   else ();
   if get_x_pos x = -1 || get_y_pos y = -1 then
     get_mouse_click state is_ai start
@@ -194,15 +208,15 @@ let rec get_mouse_click state is_ai start =
     highlight_selected x y b;
     get_board_pos x y)
 
-let check_end_game state =
-  let player = State.get_turn state in
-  if State.game_over state then
-    if player = Board.Black then
-      display_image "images/pages/black-wins.png" 0 0
-    else display_image "images/pages/white-wins.png" 0 0
-  else ()
+and get_hint state is_ai =
+  display_image "images/ai-move.png" error_x error_y;
+  let color = State.get_turn state in
+  let ai_state = Ai.ai_next_move color state ai_level in
+  display_image "images/clear-error.png" error_x error_y;
+  next_move ai_state is_ai
 
-let rec next_move state is_ai =
+and next_move state is_ai =
+  Yojson.Basic.to_file "game.json" (State.state_to_json state);
   display_board state is_ai;
   let color = State.get_turn state in
   let player = State.player_turn state in
