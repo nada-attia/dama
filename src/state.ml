@@ -99,16 +99,28 @@ let check_for_required_jumps color board sq_start sq_end valid_ends =
     raise RequiredJumpNotTaken
   else ()
 
-let update_state_move (state : state) (m : Command.squares_move) =
+let update_state_move
+    (state : state)
+    (m : Command.squares_move)
+    (check : bool) =
   let board = state.board in
   let turn = state.turn in
   let start_pos, end_pos = m in
   let square_start = Move.get_square start_pos board in
   let square_end = Move.get_square end_pos board in
-  let valid_ends = Move.where_move board square_start in
-  check_for_required_jumps turn board square_start square_end valid_ends;
-  let is_valid_start = Move.can_move square_start board turn in
-  let is_valid_end = find_square square_end valid_ends in
+  let valid_ends =
+    if check then Move.where_move board square_start else []
+  in
+  if check then
+    check_for_required_jumps turn board square_start square_end
+      valid_ends
+  else ();
+  let is_valid_start =
+    if check then Move.can_move square_start board turn else true
+  in
+  let is_valid_end =
+    if check then find_square square_end valid_ends else true
+  in
   if is_valid_start && is_valid_end then (
     make_all_jumps start_pos end_pos board turn;
     let new_turn = Board.get_other_player turn in
@@ -131,9 +143,12 @@ let update_state_forfeit state =
   let new_turn = Board.get_other_player state.turn in
   { turn = new_turn; board = state.board; current = Finished }
 
-let update_state (state : state) (command : Command.command) =
+let update_state
+    (state : state)
+    (command : Command.command)
+    (check : bool) =
   match command with
-  | Move m -> update_state_move state m
+  | Move m -> update_state_move state m check
   | Forfeit -> update_state_forfeit state
 
 let game_over state =

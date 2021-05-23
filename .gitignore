@@ -9,6 +9,8 @@
 _build
 _doc.public 
 
+game.json
+
 # temporary files
 *.swp
 *~

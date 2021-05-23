@@ -255,7 +255,7 @@ and next_move state is_ai =
     display_errors state command is_ai
 
 and display_errors state command is_ai =
-  match State.update_state state (Command.parse command) with
+  match State.update_state state (Command.parse command) true with
   | state ->
       display_image "images/clear-error.png" error_x error_y;
       next_move state is_ai

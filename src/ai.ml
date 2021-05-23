@@ -30,6 +30,7 @@ let rec end_moves_helper state square = function
          string_of_int i); *)
       State.update_state copy_state
         (Command.Move (Board.get_label square, Board.get_label h))
+        false
       :: end_moves_helper state square t
 
 (** [make_states_level state] is one level of states that are reachable

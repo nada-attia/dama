@@ -27,7 +27,7 @@ let rec next_move state mode =
     match read_line () with
     | exception End_of_file -> ()
     | command -> (
-        match State.update_state state (Command.parse command) with
+        match State.update_state state (Command.parse command) true with
         | exception Command.IllegalCommand ->
             print_error
               "The squares you are moving to and from must be in the \
