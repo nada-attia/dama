@@ -215,7 +215,9 @@ let rec get_mouse_click state is_ai start =
 
 and forfeit_game state is_ai =
   match State.update_state state (Command.parse "forfeit") with
-  | state -> next_move state is_ai
+  | state ->
+      next_move state is_ai;
+      Sys.remove "game.json"
   | exception _ -> failwith "F"
 
 and get_hint state is_ai =
