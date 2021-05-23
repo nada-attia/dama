@@ -48,7 +48,7 @@ let rec next_move state mode =
         | exception Board.NoPiece ->
             print_error "There is no piece on the specified square";
             next_move state mode
-        | exception Board.SquareNotFound ->
+        | exception Move.SquareNotFound ->
             print_error "Square not found";
             next_move state mode
         | exception State.RequiredJumpNotTaken ->
