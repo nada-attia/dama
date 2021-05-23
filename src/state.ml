@@ -122,6 +122,8 @@ let update_state_move (state : state) (m : Command.squares_move) =
     (* If the game is over, we want to change the turn to the color that
        won so we can print it in terminal*)
     let new_turn = if new_current = Finished then turn else new_turn in
+    Yojson.Basic.to_file "game.json"
+      (state_to_json { turn = new_turn; board; current = new_current });
     { turn = new_turn; board; current = new_current })
   else raise IllegalMove
 
