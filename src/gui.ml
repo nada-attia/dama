@@ -65,6 +65,8 @@ let display_board_info () =
   let title_x = (window_width / 2) - 100 in
   let white_x = (board_size / 2) - 200 in
   let black_x = window_width - (board_size / 2) in
+  display_image "images/hint.png" 870 20;
+  display_image "images/forfeit.png" 980 20;
   display_image "images/info.png" 0 0;
   display_image "images/title.png" title_x 640;
   display_image "images/white-player.png" white_x 550;
@@ -72,11 +74,11 @@ let display_board_info () =
   display_image "images/captured-pieces.png" white_x 450;
   display_image "images/captured-pieces.png" black_x 450
 
-let get_y_pos y =
+let get_y_pos state y =
   if y < y_margin || y > y_margin + (8 * square_offset) then -1
   else
     let y_int = ((y - y_margin) / square_offset) + 1 in
-    y_int
+    if State.get_turn state = Board.Black then 9 - y_int else y_int
 
 let get_x_pos x =
   if x < x_margin || x > x_margin + (8 * square_offset) then -1
@@ -88,13 +90,8 @@ let get_x_pos_string x =
   let c = a + x_int in
   Char.escaped (Char.chr c)
 
-let get_label x y =
-  let c = (get_x_pos_string x).[0] in
-  let i = get_y_pos y in
-  (c, i)
-
-let get_board_pos x y =
-  let row_pos = string_of_int (get_y_pos y) in
+let get_board_pos state x y =
+  let row_pos = string_of_int (get_y_pos state y) in
   let col_pos = get_x_pos_string x in
   let pos = col_pos ^ row_pos in
   if String.length pos = 2 then pos else ""
@@ -108,19 +105,23 @@ let highlight_jump state board =
         let c, i = Board.get_label sq in
         let num_c = Char.code c - Char.code 'a' in
         let lower_x = x_margin + (num_c * square_offset) in
-        let lower_y = y_margin + ((i - 1) * square_offset) in
+        let lower_y =
+          if State.get_turn state = Board.Black then
+            y_margin + ((8 - i) * square_offset)
+          else y_margin + ((i - 1) * square_offset)
+        in
         display_image "images/can-jump.png" lower_x lower_y;
         highlight_all_jumps remaining_sqs
   in
   highlight_all_jumps all_jumps
 
-let highlight_selected x y board =
+let highlight_selected state x y board =
   let num_square_col = (x - x_margin) / square_offset in
   let num_square_row = (y - y_margin) / square_offset in
   let lower_x = x_margin + (num_square_col * square_offset) in
   let lower_y = y_margin + (num_square_row * square_offset) in
   let c = get_x_pos_string x in
-  let num = get_y_pos y in
+  let num = get_y_pos state y in
   let square = Move.get_square (c.[0], num) board in
   match Board.get_occupant square with
   | None -> display_image "images/selected-empty.png" lower_x lower_y
@@ -143,6 +144,9 @@ let display_board state is_ai =
   display_board_info ();
   display_sideboard b;
   let board = Board.get_board b in
+  let displayed_board =
+    if State.get_turn state = Board.Black then List.rev board else board
+  in
   let rec print_board x y = function
     | [] -> ()
     | sq_lst :: remaining_rows ->
@@ -158,8 +162,11 @@ let display_board state is_ai =
         in
         print_row x y sq_lst
   in
-  print_board x_margin y_margin board;
-  highlight_jump state b
+  print_board x_margin y_margin displayed_board;
+  highlight_jump state b;
+  if is_ai && State.get_turn state = Board.Black then
+    display_image "images/hide-hint.png" 870 20
+  else ()
 
 let rec display_rules state is_ai =
   display_image "images/rules.png" 0 0;
@@ -171,27 +178,6 @@ let rec display_rules state is_ai =
     display_board state is_ai)
   else display_rules state is_ai
 
-let rec get_mouse_click state is_ai start =
-  let b = State.get_board state in
-  let event = wait_next_event [ Button_down ] in
-  let x = event.mouse_x in
-  let y = event.mouse_y in
-  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
-    display_rules state is_ai
-  else ();
-  if get_x_pos x = -1 || get_y_pos y = -1 then
-    get_mouse_click state is_ai start
-  else if start = true then (
-    let sq = Move.get_square (get_label x y) b in
-    match Board.get_occupant sq with
-    | None -> get_mouse_click state is_ai start
-    | Some p ->
-        highlight_selected x y b;
-        get_board_pos x y)
-  else (
-    highlight_selected x y b;
-    get_board_pos x y)
-
 let check_end_game state =
   let player = State.get_turn state in
   if State.game_over state then
@@ -200,13 +186,64 @@ let check_end_game state =
     else display_image "images/pages/white-wins.png" 0 0
   else ()
 
-let rec next_move state is_ai =
+let is_end_game state = if State.game_over state then true else false
+
+let get_label x y state =
+  let c = (get_x_pos_string x).[0] in
+  let i = get_y_pos state y in
+  (c, i)
+
+let rec get_mouse_click state is_ai start =
+  let b = State.get_board state in
+  let event = wait_next_event [ Button_down ] in
+  let x = event.mouse_x in
+  let y = event.mouse_y in
+  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
+    display_rules state is_ai
+  else if x >= 870 && x <= 970 && y >= 20 && y <= 80 then
+    if (is_ai && State.get_turn state = Board.White) || is_ai = false
+    then get_hint state is_ai
+    else ()
+  else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then
+    forfeit_game state is_ai
+  else ();
+  if get_x_pos x = -1 || get_y_pos state y = -1 then
+    get_mouse_click state is_ai start
+  else if start = true then (
+    let sq = Move.get_square (get_label x y state) b in
+    match Board.get_occupant sq with
+    | None -> get_mouse_click state is_ai start
+    | Some p ->
+        highlight_selected state x y b;
+        get_board_pos state x y)
+  else (
+    highlight_selected state x y b;
+    get_board_pos state x y)
+
+and forfeit_game state is_ai =
+  match State.update_state state (Command.parse "forfeit") with
+  | state ->
+      next_move state is_ai;
+      Sys.remove "game.json"
+  | exception _ -> failwith "F"
+
+and get_hint state is_ai =
+  display_image "images/ai-move.png" error_x error_y;
+  let color = State.get_turn state in
+  let ai_state = Ai.ai_next_move color state ai_level in
+  display_image "images/clear-error.png" error_x error_y;
+  next_move ai_state is_ai
+
+and next_move state is_ai =
+  Yojson.Basic.to_file "game.json" (State.state_to_json state);
   display_board state is_ai;
+  let color = State.get_turn state in
   let player = State.player_turn state in
   check_end_game state;
-  if player = "black" && is_ai then (
+  if is_end_game state then ()
+  else if player = "black" && is_ai then (
     display_image "images/ai-thinking.png" error_x error_y;
-    let new_state = Ai.ai_next_move state ai_level in
+    let new_state = Ai.ai_next_move color state ai_level in
     display_image "images/clear-error.png" error_x error_y;
     next_move new_state is_ai)
   else
@@ -232,8 +269,8 @@ and display_errors state command is_ai =
       display_image "images/empty-start-square.png" error_x error_y;
       next_move state is_ai
 
-let play_game board is_ai =
-  let state = State.init_state board in
+let play_game state is_ai =
+  Graphics.clear_graph ();
   next_move state is_ai
 
 let init_window =
@@ -245,18 +282,23 @@ let init_window =
   set_window_title "Dama"
 
 let rec choose_type_game () =
-  display_image "images/home.png" 0 0;
+  if Sys.file_exists "game.json" then (
+    display_image "images/home.png" 0 0;
+    display_image "images/continue-old-game.png" 335 120)
+  else display_image "images/home.png" 0 0;
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
-  if x >= 300 && x <= 800 && y > 230 && y < 310 then (
-    Graphics.clear_graph ();
-    let initial = Board.game_init 8 in
-    play_game initial false)
-  else if x >= 300 && x <= 800 && y > 350 && y < 430 then (
-    Graphics.clear_graph ();
-    let initial = Board.game_init 8 in
-    play_game initial true)
+  let init_board = Board.game_init 8 in
+  let init_state = State.init_state init_board in
+  if x >= 300 && x <= 800 && y > 230 && y < 310 then
+    play_game init_state false
+  else if x >= 300 && x <= 800 && y > 350 && y < 430 then
+    play_game init_state true
+  else if x >= 350 && x <= 750 && y >= 140 && y <= 190 then
+    let saved_game = Yojson.Basic.from_file "game.json" in
+    let s = State.json_to_state saved_game in
+    play_game s false
   else choose_type_game ()
 
 let () =

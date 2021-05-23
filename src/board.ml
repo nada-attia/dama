@@ -350,12 +350,12 @@ let rec json_to_sq (sq_lst : Yojson.Basic.t list) =
 let rec json_to_list_sqs (list_sqs : Yojson.Basic.t list) =
   match list_sqs with
   | [] -> []
-  | `List list_sq :: t -> json_to_sq list_sq @ json_to_list_sqs t
+  | `List list_sq :: t -> json_to_sq list_sq :: json_to_list_sqs t
   | _ -> failwith "Wrong format"
 
 let json_to_board (board : Yojson.Basic.t) =
   match board with
-  | `List lists -> [ json_to_list_sqs lists ]
+  | `List lists -> json_to_list_sqs lists
   | _ -> failwith "Wrong format"
 
 let init_side_board man lady () = { man_count = man; lady_count = lady }

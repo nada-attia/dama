@@ -32,3 +32,7 @@ val game_over : state -> bool
 (** [copy_state state] creates a copy of the state which is used in the
     Monte Carlo Tree Search AI *)
 val copy_state : state -> state
+
+val json_to_state : Yojson.Basic.t -> state
+
+val state_to_json : state -> Yojson.Basic.t
