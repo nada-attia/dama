@@ -10,16 +10,15 @@ exception NoCommand
 
 type command =
   | Move of squares_move
-  | Undo
   | Forfeit
-  | Hint
 
-(* [string_to_tuple s] converts a list of strings in the form [["a",
-   "9"]] to [("a", 9)]
+(** [string_to_tuple s] converts a list of strings in the form
+    [\["a",
+   "9"\]] to [("a", 9)]
 
-   If the first element is not one lowercase letter and the second
-   element is not a string that contains only an int (and no characters)
-   an IllegalSquare is raised *)
+    If the first element is not one lowercase letter and the second
+    element is not a string that contains only an int (and no
+    characters) an IllegalSquare is raised *)
 let string_to_tuple s =
   if String.length s < 2 then raise IllegalSquare
   else
@@ -40,9 +39,9 @@ let get_label (start_pos, end_pos) =
   let end_label = string_to_tuple end_pos in
   (start_label, end_label)
 
-(* [get_positions lst] converts a list containing two elements into a
-   tuple. if the list has more or less than two elements, an
-   IllegalCommand exception will be thrown *)
+(** [get_positions lst] converts a list containing two elements into a
+    tuple. if the list has more or less than two elements, an
+    IllegalCommand exception will be thrown *)
 let get_positions = function
   | start_pos :: end_pos :: t ->
       let s_pos_lower = String.lowercase_ascii start_pos in
@@ -56,8 +55,6 @@ let return_command action remaining_command =
     Move (get_positions remaining_command)
   else if action = "forfeit" && List.length remaining_command = 0 then
     Forfeit
-  else if action = "hint" && List.length remaining_command = 0 then Hint
-  else if action = "undo" && List.length remaining_command = 0 then Undo
   else raise IllegalCommand
 
 let parse s =

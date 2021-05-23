@@ -1,3 +1,5 @@
+(** [State] contains the state of the game and functions on it*)
+
 (** The abstract data type representing the state of the game *)
 type state
 

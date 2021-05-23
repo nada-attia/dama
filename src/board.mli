@@ -1,3 +1,5 @@
+(** [Board] contains representation of the board and functions on it*)
+
 (** [t] is the abstract type of values representing the board along with
     any necessary information accociated with the board. *)
 type t
@@ -48,6 +50,11 @@ val get_board : t -> square list list
     Requires: count > 0 *)
 val terminal_rep_string : t -> int -> string
 
+(** [terminal_rep_string_aux board count] is
+    [terminal_rep_string board count] without labels for the columns.
+    Used for testing.*)
+val terminal_rep_string_aux : square list list -> int -> string
+
 (** [count_inactive p_color] is the total number of pieces which have
     color [p_color] and are not on the board *)
 val count_inactive : t -> color -> int
@@ -93,3 +100,12 @@ val copy_board : t -> t
 
 (** [get_side_board t color] is the sideboard of [t] for [color]*)
 val get_side_board : t -> color -> int * int
+
+(** [board_to_json t] is the json representation of board [t]*)
+val board_to_json : t -> Yojson.Basic.t
+
+(** [sideboard_to_json t] is the json representation of the sideboard of
+    board [t]. *)
+val sideboard_to_json : t -> Yojson.Basic.t
+
+val t_of_board_json : Yojson.Basic.t -> Yojson.Basic.t -> t

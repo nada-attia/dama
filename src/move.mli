@@ -1,3 +1,5 @@
+(** [Move] contains functions for moving pieces on the board*)
+
 (** the type representing the 4 possible directions a piece can move.*)
 type direction =
   | Up
