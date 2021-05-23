@@ -72,11 +72,37 @@ let display_board_info () =
   display_image "images/captured-pieces.png" white_x 450;
   display_image "images/captured-pieces.png" black_x 450
 
-let get_y_pos y =
+let display_board state is_ai =
+  display_turn state is_ai;
+  let b = State.get_board state in
+  display_board_info ();
+  display_sideboard b;
+  let board = Board.get_board b in
+  let displayed_board =
+    if State.get_turn state = Board.Black then List.rev board else board
+  in
+  let rec print_board x y = function
+    | [] -> ()
+    | sq_lst :: remaining_rows ->
+        let rec print_row x y = function
+          | [] ->
+              print_board x_margin (y + square_offset) remaining_rows
+          | sq :: remaining_sqs ->
+              (let piece = Board.get_occupant sq in
+               match piece with
+               | None -> display_image "images/empty-square.png" x y
+               | Some p -> display_piece sq x y);
+              print_row (x + square_offset) y remaining_sqs
+        in
+        print_row x y sq_lst
+  in
+  print_board x_margin y_margin displayed_board
+
+let get_y_pos state y =
   if y < y_margin || y > y_margin + (8 * square_offset) then -1
   else
     let y_int = ((y - y_margin) / square_offset) + 1 in
-    y_int
+    if State.get_turn state = Board.Black then 9 - y_int else y_int
 
 let get_x_pos x =
   if x < x_margin || x > x_margin + (8 * square_offset) then -1
@@ -88,13 +114,8 @@ let get_x_pos_string x =
   let c = a + x_int in
   Char.escaped (Char.chr c)
 
-let get_label x y =
-  let c = (get_x_pos_string x).[0] in
-  let i = get_y_pos y in
-  (c, i)
-
-let get_board_pos x y =
-  let row_pos = string_of_int (get_y_pos y) in
+let get_board_pos state x y =
+  let row_pos = string_of_int (get_y_pos state y) in
   let col_pos = get_x_pos_string x in
   let pos = col_pos ^ row_pos in
   if String.length pos = 2 then pos else ""
@@ -108,19 +129,23 @@ let highlight_jump state board =
         let c, i = Board.get_label sq in
         let num_c = Char.code c - Char.code 'a' in
         let lower_x = x_margin + (num_c * square_offset) in
-        let lower_y = y_margin + ((i - 1) * square_offset) in
+        let lower_y =
+          if State.get_turn state = Board.Black then
+            y_margin + ((8 - i) * square_offset)
+          else y_margin + ((i - 1) * square_offset)
+        in
         display_image "images/can-jump.png" lower_x lower_y;
         highlight_all_jumps remaining_sqs
   in
   highlight_all_jumps all_jumps
 
-let highlight_selected x y board =
+let highlight_selected state x y board =
   let num_square_col = (x - x_margin) / square_offset in
   let num_square_row = (y - y_margin) / square_offset in
   let lower_x = x_margin + (num_square_col * square_offset) in
   let lower_y = y_margin + (num_square_row * square_offset) in
   let c = get_x_pos_string x in
-  let num = get_y_pos y in
+  let num = get_y_pos state y in
   let square = Move.get_square (c.[0], num) board in
   match Board.get_occupant square with
   | None -> display_image "images/selected-empty.png" lower_x lower_y
@@ -143,6 +168,9 @@ let display_board state is_ai =
   display_board_info ();
   display_sideboard b;
   let board = Board.get_board b in
+  let displayed_board =
+    if State.get_turn state = Board.Black then List.rev board else board
+  in
   let rec print_board x y = function
     | [] -> ()
     | sq_lst :: remaining_rows ->
@@ -158,7 +186,7 @@ let display_board state is_ai =
         in
         print_row x y sq_lst
   in
-  print_board x_margin y_margin board;
+  print_board x_margin y_margin displayed_board;
   highlight_jump state b
 
 let rec display_rules state is_ai =
@@ -171,6 +199,11 @@ let rec display_rules state is_ai =
     display_board state is_ai)
   else display_rules state is_ai
 
+let get_label x y state =
+  let c = (get_x_pos_string x).[0] in
+  let i = get_y_pos state y in
+  (c, i)
+
 let rec get_mouse_click state is_ai start =
   let b = State.get_board state in
   let event = wait_next_event [ Button_down ] in
@@ -179,18 +212,18 @@ let rec get_mouse_click state is_ai start =
   if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
     display_rules state is_ai
   else ();
-  if get_x_pos x = -1 || get_y_pos y = -1 then
+  if get_x_pos x = -1 || get_y_pos state y = -1 then
     get_mouse_click state is_ai start
   else if start = true then (
-    let sq = Move.get_square (get_label x y) b in
+    let sq = Move.get_square (get_label x y state) b in
     match Board.get_occupant sq with
     | None -> get_mouse_click state is_ai start
     | Some p ->
-        highlight_selected x y b;
-        get_board_pos x y)
+        highlight_selected state x y b;
+        get_board_pos state x y)
   else (
-    highlight_selected x y b;
-    get_board_pos x y)
+    highlight_selected state x y b;
+    get_board_pos state x y)
 
 let check_end_game state =
   let player = State.get_turn state in
