@@ -298,5 +298,25 @@ let square_to_json_rep sq : Yojson.Basic.t =
   in
   `Assoc [ ("label", `String label_str); ("occupant", `String occ_str) ]
 
-let board_to_json brd =
-  List.map (fun x -> List.map square_to_json_rep x) brd
+let board_to_json t : Yojson.Basic.t =
+  let l_of_l =
+    List.map (fun x -> List.map square_to_json_rep x) t.board
+  in
+  let rec board_to_json_aux = function
+    | [] -> []
+    | h :: t -> [ `List h ] @ board_to_json_aux t
+  in
+  `List (board_to_json_aux l_of_l)
+
+let sideboard_to_json t : Yojson.Basic.t =
+  let w_m = string_of_int t.w_side_board.man_count in
+  let w_l = string_of_int t.w_side_board.lady_count in
+  let b_m = string_of_int t.b_side_board.man_count in
+  let b_l = string_of_int t.b_side_board.lady_count in
+  `Assoc
+    [
+      ("w_lady", `String w_l);
+      ("w_men", `String w_m);
+      ("b_men", `String b_m);
+      ("b_lady", `String b_l);
+    ]

@@ -31,11 +31,18 @@ let current_string state =
   | InProgress -> "in-progress"
   | Finished -> "finished"
 
-let state_to_json state =
+let state_to_json state : Yojson.Basic.t =
   let turn_str = player_turn state in
-  let current = state.current in
-  let board_str = Board.terminal_rep_string state.board in
-  turn_str
+  let current_str = state.current in
+  let board_json = Board.board_to_json state.board in
+  let sideboard_json = Board.sideboard_to_json state.board in
+  `Assoc
+    [
+      ("board", board_json);
+      ("turn", `String turn_str);
+      ("current", `String current_str);
+      ("side-board", sideboard_json);
+    ]
 
 (* [find_square square] is true if [end_pos] is a valid ending square
    and false otherwise *)

@@ -66,3 +66,10 @@ val update_can_jump : piece -> bool -> unit
 val copy_board : t -> t
 
 val get_side_board : t -> color -> int * int
+
+(** [board_to_json t] is the json representation of board [t]*)
+val board_to_json : t -> Yojson.Basic.t
+
+(** [sideboard_to_json t] is the json representation of the sideboard of
+    board [t]. *)
+val sideboard_to_json : t -> Yojson.Basic.t
