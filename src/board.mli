@@ -1,3 +1,5 @@
+(** [Board] contains representation of the board and functions on it*)
+
 (** [t] is the abstract type of values representing the board along with
     any necessary information accociated with the board. *)
 type t
@@ -47,6 +49,11 @@ val get_board : t -> square list list
     from 1 to size of the board and column labels starting at 'A'.
     Requires: count > 0 *)
 val terminal_rep_string : t -> int -> string
+
+(** [terminal_rep_string_aux board count] is
+    [terminal_rep_string board count] without labels for the columns.
+    Used for testing.*)
+val terminal_rep_string_aux : square list list -> int -> string
 
 (** [count_inactive p_color] is the total number of pieces which have
     color [p_color] and are not on the board *)

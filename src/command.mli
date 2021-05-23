@@ -1,3 +1,5 @@
+(** [Command] is for parsing input to move squares *)
+
 (** The data type that represents a square label which has one character
     between a-h and a digit between 1-8 *)
 type square_label = char * int
@@ -6,12 +8,10 @@ type square_label = char * int
     square and the ending square in a move. *)
 type squares_move = square_label * square_label
 
-(** The abstract data type representing a command. *)
+(** The data type representing a command. *)
 type command =
   | Move of squares_move
-  | Undo
   | Forfeit
-  | Hint
 
 (** Raised when the command is not in correct form. Correct forms are:
     move followed by two strings, undo, forfeit, hint Each of these

@@ -2,11 +2,41 @@ open OUnit2
 open Board
 open Command
 
-let print_command = function
-  | Move t -> "Move"
-  | Undo -> "Undo"
-  | Forfeit -> "Forfeit"
-  | Hint -> "Hint"
+(* What we tested: We had 7 modules: Board, Move, Command, State, Ai,
+   Gui, Main. Ai, Gui, and Main were tested manually: Ai was tested by
+   playing the game against the AI through the terminal as well as the
+   GUI. Main was tested through the terminal and Gui was tested through
+   the GUI. The tests for the Command module were automated. For the
+   Board module, update_piece, remove_pieces, try_upgrade_piece and
+   update_can_jump were tested manually through playing the game because
+   these functions use mutability and change states. For the State
+   module, update_state and game_over were tested manually because
+   update_state uses mutability and game_over requires a lot of moves to
+   end the game in order to test it. For the Move module,
+   where_move_all, get_moveable_squares_reg, get_all_jumps_lady,
+   exists_jumps and get_where_jump were tested manually because they
+   required a state in the middle of the game to be tested, required
+   available jumps, lady pieces, or returned abstract types.
+   update_board was also tested manually because of mutability. The
+   other functions in Move were automated. For the functions that had
+   automated tests, the tests weren't exhaustive because we were limited
+   in forming new states and boards by their abstract types, so we used
+   automated tests to test basic functionality and used manual testing
+   through playing the game with different states to complement this
+   automated testing. The tests were developed with glass-box testing.
+   We tested copy_state by updating the state several times and making
+   copies each time so tests on earlier states still pass. We believe
+   that our test suite demonstrates the correctness of our system
+   because we tested that the initialization of the board and state is
+   correct, and tested many functions with that initialization. If the
+   initialization is correct and the functions return the correct value,
+   then we believe that further into the game the return value should
+   also be correct. We additionally tested exceptions to make sure they
+   were being thrown correctly, in addition to making sure errors were
+   being handled in the terminal as well as the GUI. We also tested the
+   game manually on different edge cases with different states, and it
+   works as expected.*)
+let print_command = function Move t -> "Move" | Forfeit -> "Forfeit"
 
 let print_label (a1, b1) =
   "(" ^ Char.escaped a1 ^ ", " ^ string_of_int b1 ^ ")"
@@ -38,6 +68,26 @@ let get_square_test
   name >:: fun _ ->
   let sq = Move.get_square lbl board in
   assert_equal expected_output (Board.get_label sq) ~printer:print_label
+
+let get_occupant_test
+    (name : string)
+    (lbl : char * int)
+    (board : Board.t)
+    (expected_output : Board.color option) : test =
+  name >:: fun _ ->
+  let sq = Move.get_square lbl board in
+  let occupant = Board.get_occupant sq in
+  match (occupant, expected_output) with
+  | Some piece, Some color -> assert_equal color (Board.get_color piece)
+  | None, None -> assert_equal None None
+  | _ -> assert_equal true false
+
+let get_sqlst_label_test
+    (name : string)
+    (sqlst : Board.square list)
+    (expected_output : (char * int) list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Board.get_sqlst_label sqlst)
 
 let empty_square_test
     (name : string)
@@ -96,6 +146,10 @@ let parse_illegalcom_test (name : string) (str : string) : test =
   name >:: fun _ ->
   assert_raises Command.IllegalCommand (fun () -> Command.parse str)
 
+let parse_nocom_test (name : string) (str : string) : test =
+  name >:: fun _ ->
+  assert_raises Command.NoCommand (fun () -> Command.parse str)
+
 let parse_move_test
     (name : string)
     (str : string)
@@ -107,18 +161,15 @@ let parse_move_test
 
 let b = Board.game_init 8
 
-let b1 = Board.game_init 8
-
 let t1 =
-  "  a   b   c   d   e   f   g   h   \n\
-   |   | . |   | . |   | . |   | . |1\n\
-   | w | W | w | W | w | W | w | W |2\n\
-   | W | w | W | w | W | w | W | w |3\n\
-   |   | . |   | . |   | . |   | . |4\n\
-   | . |   | . |   | . |   | . |   |5\n\
-   | B | b | B | b | B | b | B | b |6\n\
-   | b | B | b | B | b | B | b | B |7\n\
-   | . |   | . |   | . |   | . |   |8\n"
+  "| . | . | . | . | . | . | . | . |1\n\
+   | w | w | w | w | w | w | w | w |2\n\
+   | w | w | w | w | w | w | w | w |3\n\
+   | . | . | . | . | . | . | . | . |4\n\
+   | . | . | . | . | . | . | . | . |5\n\
+   | b | b | b | b | b | b | b | b |6\n\
+   | b | b | b | b | b | b | b | b |7\n\
+   | . | . | . | . | . | . | . | . |8\n"
 
 let count_inactive_test
     (name : string)
@@ -132,12 +183,11 @@ let count_inactive_test
 
 let terminal_rep_string_test
     (name : string)
-    (expected_output : string)
-    (t : Board.t) : test =
+    (t : Board.t)
+    (expected_output : string) : test =
   name >:: fun _ ->
-  print_endline (Board.terminal_rep_string t 1);
-  print_endline expected_output;
-  assert_equal expected_output (Board.terminal_rep_string t 1)
+  let board = Board.get_board t in
+  assert_equal expected_output (Board.terminal_rep_string_aux board 1)
 
 let can_move_test
     (name : string)
@@ -148,6 +198,15 @@ let can_move_test
   name >:: fun _ ->
   let sq = Move.get_square square board in
   let res = Move.can_move sq board turn in
+  assert_equal expected_output res
+
+let can_move_all_test
+    (name : string)
+    (board : Board.t)
+    (turn : Board.color)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  let res = Move.can_move_all board turn in
   assert_equal expected_output res
 
 let get_all_jumps_test
@@ -161,11 +220,43 @@ let get_all_jumps_test
   let res = Move.get_all_jumps sq board turn in
   assert_equal expected_output res
 
+let get_other_player_test
+    (name : string)
+    (color : Board.color)
+    (expected_output : Board.color) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (Board.get_other_player color)
+
+let sqlst = List.hd (Board.get_board b)
+
+let row1 =
+  [
+    ('a', 1);
+    ('b', 1);
+    ('c', 1);
+    ('d', 1);
+    ('e', 1);
+    ('f', 1);
+    ('g', 1);
+    ('h', 1);
+  ]
+
 let board_tests =
   [
     count_inactive_test "0 white inactive on initial board" 0 b
       Board.get_init_player;
-    (* terminal_rep_string_test "terminal rep of\n initial board" t1 b1; *)
+    terminal_rep_string_test "terminal rep of\n initial board" b t1;
+    get_other_player_test "player other than white" White Black;
+    get_other_player_test "player other than black" Black White;
+    get_occupant_test "occupant of a3 is white" ('a', 3) b (Some White);
+    get_occupant_test "occupant of a3 is white" ('a', 1) b None;
+    get_occupant_test "occupant of a3 is white" ('h', 8) b None;
+    get_occupant_test "occupant of a3 is white" ('f', 6) b (Some Black);
+    get_sqlst_label_test "labels of first row" sqlst row1;
+  ]
+
+let move_tests =
+  [
     get_square_test "square with white piece" ('a', 2) b ('a', 2);
     get_square_test "square with black piece" ('e', 7) b ('e', 7);
     get_square_test "square with black piece" ('a', 4) b ('a', 4);
@@ -209,18 +300,20 @@ let board_tests =
       Black true;
     get_all_jumps_test "jumps of white piece with no jump" ('b', 3) b
       White [];
+    can_move_all_test "white piece has moves in initial state" b White
+      true;
+    can_move_all_test "black piece has moves in initial state" b Black
+      true;
   ]
 
 let command_tests =
   [
-    parse_test "parse undo" "undo" Undo;
-    parse_test "parse undo with extra spaces" "    undo   " Undo;
-    parse_test "parse hint" "hint" Hint;
-    parse_test "parse hint with extra spaces" "   hint   " Hint;
     parse_test "parse forfeit" "forfeit" Forfeit;
     parse_test "parse forfeit with extra spaces" "   forfeit    "
       Forfeit;
     parse_move_test "parse move from A6 to A7" "move A6 A7"
+      (('a', 6), ('a', 7));
+    parse_move_test "parse move from a6 to a7, lowercase" "move a6 a7"
       (('a', 6), ('a', 7));
     parse_move_test "parse move from A6 to A7 with extra spaces"
       "   move A6 A7"
@@ -229,14 +322,66 @@ let command_tests =
       "move ER8 E9";
     parse_illegalsq_test "parse square 67 (contains only numbers)"
       "move 67 E9";
+    parse_illegalsq_test "parse square A (contains only letters)"
+      "move A E9";
     parse_illegalcom_test "parse move with three squares"
       "move 67 E9 E4";
+    parse_illegalcom_test "parse move with no squares" "move ";
+    parse_nocom_test "parse empty command" "";
+    parse_nocom_test "parse empty command" "   ";
   ]
 
-let state_tests = []
+let player_turn_test
+    (name : string)
+    (state : State.state)
+    (expected_output : string) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (State.player_turn state)
+    ~printer:(fun x -> x)
+
+let get_turn_test
+    (name : string)
+    (state : State.state)
+    (expected_output : Board.color) : test =
+  name >:: fun _ -> assert_equal expected_output (State.get_turn state)
+
+let st = State.init_state b
+
+let b1 = Board.game_init 8
+
+let st1 = State.init_state b1
+
+let st2 = State.update_state st1 (Move (('a', 3), ('a', 4)))
+
+let st3 = State.copy_state st2
+
+let st3 = State.update_state st3 (Move (('b', 6), ('b', 5)))
+
+let t2 =
+  "| . | . | . | . | . | . | . | . |1\n\
+   | w | w | w | w | w | w | w | w |2\n\
+   | . | w | w | w | w | w | w | w |3\n\
+   | w | . | . | . | . | . | . | . |4\n\
+   | . | b | . | . | . | . | . | . |5\n\
+   | b | . | b | b | b | b | b | b |6\n\
+   | b | b | b | b | b | b | b | b |7\n\
+   | . | . | . | . | . | . | . | . |8\n"
+
+let state_tests =
+  [
+    player_turn_test "white player is first (as a string)" st "white";
+    terminal_rep_string_test "board of initial state"
+      (State.get_board st) t1;
+    terminal_rep_string_test "board of initial state"
+      (State.get_board st3) t2;
+    get_turn_test "white player is first" st White;
+    get_turn_test "black player is next" st2 Black;
+    get_turn_test "white player is next" st3 White;
+  ]
 
 let suite =
   "test suite for dama"
-  >::: List.flatten [ board_tests; command_tests; state_tests ]
+  >::: List.flatten
+         [ board_tests; move_tests; command_tests; state_tests ]
 
 let _ = run_test_tt_main suite

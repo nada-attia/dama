@@ -1,3 +1,5 @@
+(** Constants*)
+
 (** The width of the GUI window *)
 val window_width : int
 
