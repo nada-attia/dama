@@ -1,7 +1,8 @@
+open Yojson.Basic.Util
+
 type current =
   | InProgress
   | Finished
-  | Pregame
 
 type state = {
   turn : Board.color;
@@ -20,14 +21,44 @@ let copy_state (s : state) =
   { s with board = copy_board }
 
 let init_state board =
-  { turn = Board.get_init_player; board; current = Pregame }
+  { turn = Board.get_init_player; board; current = InProgress }
 
 let get_turn state = state.turn
 
 let player_turn state =
   match get_turn state with Black -> "black" | White -> "white"
 
-(* [find_square square] is true if [end_pos] is a valid ending square
+let current_string state =
+  match state.current with
+  | InProgress -> "in-progress"
+  | Finished -> "finished"
+
+let state_to_json state : Yojson.Basic.t =
+  let turn_str = player_turn state in
+  let current_str = current_string state in
+  let board_json = Board.board_to_json state.board in
+  let sideboard_json = Board.sideboard_to_json state.board in
+  `Assoc
+    [
+      ("board", board_json);
+      ("turn", `String turn_str);
+      ("current", `String current_str);
+      ("sideboard", sideboard_json);
+    ]
+
+let json_to_state json =
+  let turn_str = json |> member "turn" |> to_string in
+  let turn = if turn_str = "black" then Board.Black else Board.White in
+  let current_str = json |> member "currnet" |> to_string in
+  let current =
+    if current_str = "in-progress" then InProgress else Finished
+  in
+  let board_json = json |> member "board" in
+  let sideboard_json = json |> member "sideboard" in
+  let board = Board.t_of_board_json board_json sideboard_json in
+  { turn; board; current }
+
+(** [find_square square] is true if [end_pos] is a valid ending square
    and false otherwise *)
 let rec find_square square = function
   | [] -> false
@@ -91,26 +122,19 @@ let update_state_move (state : state) (m : Command.squares_move) =
     (* If the game is over, we want to change the turn to the color that
        won so we can print it in terminal*)
     let new_turn = if new_current = Finished then turn else new_turn in
+    Yojson.Basic.to_file "game.json"
+      (state_to_json { turn = new_turn; board; current = new_current });
     { turn = new_turn; board; current = new_current })
   else raise IllegalMove
-
-let update_state_undo state = failwith "Unimplimented"
 
 let update_state_forfeit state =
   let new_turn = Board.get_other_player state.turn in
   { turn = new_turn; board = state.board; current = Finished }
 
-let update_state_hint state = failwith "Unimplimented"
-
 let update_state (state : state) (command : Command.command) =
   match command with
   | Move m -> update_state_move state m
-  | Undo -> update_state_undo state
   | Forfeit -> update_state_forfeit state
-  | Hint -> update_state_hint state
 
 let game_over state =
-  match state.current with
-  | Pregame -> false
-  | InProgress -> false
-  | Finished -> true
+  match state.current with InProgress -> false | Finished -> true

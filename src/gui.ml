@@ -143,6 +143,30 @@ let highlight_selected state x y board =
       in
       display_image image lower_x lower_y
 
+let display_board state is_ai =
+  display_turn state is_ai;
+  let b = State.get_board state in
+  display_board_info ();
+  display_sideboard b;
+  let board = Board.get_board b in
+  let rec print_board x y = function
+    | [] -> ()
+    | sq_lst :: remaining_rows ->
+        let rec print_row x y = function
+          | [] ->
+              print_board x_margin (y + square_offset) remaining_rows
+          | sq :: remaining_sqs ->
+              (let piece = Board.get_occupant sq in
+               match piece with
+               | None -> display_image "images/empty-square.png" x y
+               | Some p -> display_piece sq x y);
+              print_row (x + square_offset) y remaining_sqs
+        in
+        print_row x y sq_lst
+  in
+  print_board x_margin y_margin board;
+  highlight_jump state b
+
 let rec display_rules state is_ai =
   display_image "images/rules.png" 0 0;
   let event = wait_next_event [ Button_down ] in
@@ -153,7 +177,7 @@ let rec display_rules state is_ai =
     display_board state is_ai)
   else display_rules state is_ai
 
-let rec get_mouse_click state is_ai =
+let rec get_mouse_click state is_ai start =
   let b = State.get_board state in
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
@@ -161,45 +185,58 @@ let rec get_mouse_click state is_ai =
   if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
     display_rules state is_ai
   else ();
-  if get_x_pos x = -1 || get_y_pos state y = -1 then
-    get_mouse_click state is_ai
+  if get_x_pos x = -1 || get_y_pos y = -1 then
+    get_mouse_click state is_ai start
+  else if start = true then (
+    let sq = Move.get_square (get_label x y) b in
+    match Board.get_occupant sq with
+    | None -> get_mouse_click state is_ai start
+    | Some p ->
+        highlight_selected x y b;
+        get_board_pos x y)
   else (
     highlight_selected state x y b;
     get_board_pos state x y)
 
+let check_end_game state =
+  let player = State.get_turn state in
+  if State.game_over state then
+    if player = Board.Black then
+      display_image "images/pages/black-wins.png" 0 0
+    else display_image "images/pages/white-wins.png" 0 0
+  else ()
+
 let rec next_move state is_ai =
   display_board state is_ai;
   let player = State.player_turn state in
-  let error_x = (window_width / 2) - 200 in
-  let error_y = 55 in
-  (if player = "black" && is_ai then (
-   display_image "images/ai-thinking.png" error_x error_y;
-   let new_state = Ai.ai_next_move state ai_level in
-   display_image "images/clear-error.png" error_x error_y;
-   next_move new_state is_ai)
-  else
-    let start_pos = get_mouse_click state is_ai in
+  check_end_game state;
+  if player = "black" && is_ai then (
+    display_image "images/ai-thinking.png" error_x error_y;
+    let new_state = Ai.ai_next_move state ai_level in
     display_image "images/clear-error.png" error_x error_y;
-    let end_pos = get_mouse_click state is_ai in
+    next_move new_state is_ai)
+  else
+    let start_pos = get_mouse_click state is_ai true in
+    display_image "images/clear-error.png" error_x error_y;
+    let end_pos = get_mouse_click state is_ai false in
     let command = "move " ^ start_pos ^ " " ^ end_pos in
     print_endline command;
-    match State.update_state state (Command.parse command) with
-    | state ->
-        display_image "images/clear-error.png" error_x error_y;
-        next_move state is_ai
-    | exception State.IllegalMove ->
-        display_image "images/illegal-move.png" error_x error_y;
-        next_move state is_ai
-    | exception State.RequiredJumpNotTaken ->
-        display_image "images/required-jump.png" error_x error_y;
-        next_move state is_ai
-    | exception Board.EmptyStartSquare ->
-        display_image "images/empty-start-square.png" error_x error_y;
-        next_move state is_ai
-    | exception Board.NoPiece ->
-        display_image "images/empty-start-square.png" error_x error_y;
-        next_move state is_ai);
-  ()
+    display_errors state command is_ai
+
+and display_errors state command is_ai =
+  match State.update_state state (Command.parse command) with
+  | state ->
+      display_image "images/clear-error.png" error_x error_y;
+      next_move state is_ai
+  | exception State.IllegalMove ->
+      display_image "images/illegal-move.png" error_x error_y;
+      next_move state is_ai
+  | exception State.RequiredJumpNotTaken ->
+      display_image "images/required-jump.png" error_x error_y;
+      next_move state is_ai
+  | exception Board.NoPiece ->
+      display_image "images/empty-start-square.png" error_x error_y;
+      next_move state is_ai
 
 let play_game board is_ai =
   let state = State.init_state board in

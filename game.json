@@ -1,0 +1,284 @@
+{
+  "board": [
+    [
+      {
+        "label": "a1",
+        "occupant": ""
+      },
+      {
+        "label": "b1",
+        "occupant": ""
+      },
+      {
+        "label": "c1",
+        "occupant": ""
+      },
+      {
+        "label": "d1",
+        "occupant": ""
+      },
+      {
+        "label": "e1",
+        "occupant": ""
+      },
+      {
+        "label": "f1",
+        "occupant": ""
+      },
+      {
+        "label": "g1",
+        "occupant": ""
+      },
+      {
+        "label": "h1",
+        "occupant": ""
+      }
+    ],
+    [
+      {
+        "label": "a2",
+        "occupant": "wf"
+      },
+      {
+        "label": "b2",
+        "occupant": ""
+      },
+      {
+        "label": "c2",
+        "occupant": "wf"
+      },
+      {
+        "label": "d2",
+        "occupant": "wf"
+      },
+      {
+        "label": "e2",
+        "occupant": "wf"
+      },
+      {
+        "label": "f2",
+        "occupant": "wf"
+      },
+      {
+        "label": "g2",
+        "occupant": "wf"
+      },
+      {
+        "label": "h2",
+        "occupant": "wf"
+      }
+    ],
+    [
+      {
+        "label": "a3",
+        "occupant": "wt"
+      },
+      {
+        "label": "b3",
+        "occupant": "wf"
+      },
+      {
+        "label": "c3",
+        "occupant": "wf"
+      },
+      {
+        "label": "d3",
+        "occupant": "wf"
+      },
+      {
+        "label": "e3",
+        "occupant": "wf"
+      },
+      {
+        "label": "f3",
+        "occupant": "wf"
+      },
+      {
+        "label": "g3",
+        "occupant": "wf"
+      },
+      {
+        "label": "h3",
+        "occupant": "wf"
+      }
+    ],
+    [
+      {
+        "label": "a4",
+        "occupant": "bf"
+      },
+      {
+        "label": "b4",
+        "occupant": "wf"
+      },
+      {
+        "label": "c4",
+        "occupant": ""
+      },
+      {
+        "label": "d4",
+        "occupant": ""
+      },
+      {
+        "label": "e4",
+        "occupant": ""
+      },
+      {
+        "label": "f4",
+        "occupant": ""
+      },
+      {
+        "label": "g4",
+        "occupant": ""
+      },
+      {
+        "label": "h4",
+        "occupant": ""
+      }
+    ],
+    [
+      {
+        "label": "a5",
+        "occupant": ""
+      },
+      {
+        "label": "b5",
+        "occupant": ""
+      },
+      {
+        "label": "c5",
+        "occupant": ""
+      },
+      {
+        "label": "d5",
+        "occupant": ""
+      },
+      {
+        "label": "e5",
+        "occupant": ""
+      },
+      {
+        "label": "f5",
+        "occupant": ""
+      },
+      {
+        "label": "g5",
+        "occupant": ""
+      },
+      {
+        "label": "h5",
+        "occupant": ""
+      }
+    ],
+    [
+      {
+        "label": "a6",
+        "occupant": ""
+      },
+      {
+        "label": "b6",
+        "occupant": "bf"
+      },
+      {
+        "label": "c6",
+        "occupant": "bf"
+      },
+      {
+        "label": "d6",
+        "occupant": "bf"
+      },
+      {
+        "label": "e6",
+        "occupant": "bf"
+      },
+      {
+        "label": "f6",
+        "occupant": "bf"
+      },
+      {
+        "label": "g6",
+        "occupant": "bf"
+      },
+      {
+        "label": "h6",
+        "occupant": "bf"
+      }
+    ],
+    [
+      {
+        "label": "a7",
+        "occupant": "bf"
+      },
+      {
+        "label": "b7",
+        "occupant": "bf"
+      },
+      {
+        "label": "c7",
+        "occupant": "bf"
+      },
+      {
+        "label": "d7",
+        "occupant": "bf"
+      },
+      {
+        "label": "e7",
+        "occupant": "bf"
+      },
+      {
+        "label": "f7",
+        "occupant": "bf"
+      },
+      {
+        "label": "g7",
+        "occupant": "bf"
+      },
+      {
+        "label": "h7",
+        "occupant": "bf"
+      }
+    ],
+    [
+      {
+        "label": "a8",
+        "occupant": ""
+      },
+      {
+        "label": "b8",
+        "occupant": ""
+      },
+      {
+        "label": "c8",
+        "occupant": ""
+      },
+      {
+        "label": "d8",
+        "occupant": ""
+      },
+      {
+        "label": "e8",
+        "occupant": ""
+      },
+      {
+        "label": "f8",
+        "occupant": "wf"
+      },
+      {
+        "label": "g8",
+        "occupant": ""
+      },
+      {
+        "label": "h8",
+        "occupant": ""
+      }
+    ]
+  ],
+  "turn": "white",
+  "current": "in-progress",
+  "sideboard": {
+    "w_lady": "0",
+    "w_men": "0",
+    "b_men": "0",
+    "b_lady": "0"
+  }
+}
