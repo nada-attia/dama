@@ -235,24 +235,26 @@ and get_hint state is_ai =
   next_move ai_state is_ai
 
 and next_move state is_ai =
-  Yojson.Basic.to_file "game.json" (State.state_to_json state);
-  display_board state is_ai;
-  let color = State.get_turn state in
-  let player = State.player_turn state in
   check_end_game state;
-  if is_end_game state then ()
-  else if player = "black" && is_ai then (
-    display_image "images/ai-thinking.png" error_x error_y;
-    let new_state = Ai.ai_next_move color state ai_level in
-    display_image "images/clear-error.png" error_x error_y;
-    next_move new_state is_ai)
-  else
-    let start_pos = get_mouse_click state is_ai true in
-    display_image "images/clear-error.png" error_x error_y;
-    let end_pos = get_mouse_click state is_ai false in
-    let command = "move " ^ start_pos ^ " " ^ end_pos in
-    print_endline command;
-    display_errors state command is_ai
+  if is_end_game state = false then (
+    Yojson.Basic.to_file "game.json" (State.state_to_json state);
+    display_board state is_ai;
+    let color = State.get_turn state in
+    let player = State.player_turn state in
+
+    if player = "black" && is_ai then (
+      display_image "images/ai-thinking.png" error_x error_y;
+      let new_state = Ai.ai_next_move color state ai_level in
+      display_image "images/clear-error.png" error_x error_y;
+      next_move new_state is_ai)
+    else
+      let start_pos = get_mouse_click state is_ai true in
+      display_image "images/clear-error.png" error_x error_y;
+      let end_pos = get_mouse_click state is_ai false in
+      let command = "move " ^ start_pos ^ " " ^ end_pos in
+      print_endline command;
+      display_errors state command is_ai)
+  else ()
 
 and display_errors state command is_ai =
   match State.update_state state (Command.parse command) true with
