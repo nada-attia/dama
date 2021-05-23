@@ -48,6 +48,11 @@ val get_board : t -> square list list
     Requires: count > 0 *)
 val terminal_rep_string : t -> int -> string
 
+(** [terminal_rep_string_aux board count] is
+    [terminal_rep_string board count] without labels for the columns.
+    Used for testing.*)
+val terminal_rep_string_aux : square list list -> int -> string
+
 (** [count_inactive p_color] is the total number of pieces which have
     color [p_color] and are not on the board *)
 val count_inactive : t -> color -> int

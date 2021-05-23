@@ -23,21 +23,18 @@ open Command
    in forming new states and boards by their abstract types, so we used
    automated tests to test basic functionality and used manual testing
    through playing the game with different states to complement this
-   automated testing. We omitted testing copy_board in Board and
-   copy_state in State because it's hard to know if a two states
-   reference the same location or different locations when they have the
-   same values. These functions were implemented to address a problem
-   that we encountered in the AI where states were being mutated and the
-   behavior was unexpected. We believe that your test suite demonstrates
-   the correctness of our system because we tested that the
-   initialization of the board and state is correct, and tested many
-   functions with that initialization. If the initialization is correct
-   and the functions return the correct value, then we believe that
-   further into the game the return value should also be correct. We
-   additionally tested exceptions to make sure they were being thrown
-   correctly, in addition to making sure errors were being handled in
-   the terminal as well as the GUI. We also tested the game manually on
-   different edge cases with different states, and it works as expected.*)
+   automated testing. We tested copy_state by updating the state several
+   times and making copies each time so tests on earlier states still
+   pass. We believe that our test suite demonstrates the correctness of
+   our system because we tested that the initialization of the board and
+   state is correct, and tested many functions with that initialization.
+   If the initialization is correct and the functions return the correct
+   value, then we believe that further into the game the return value
+   should also be correct. We additionally tested exceptions to make
+   sure they were being thrown correctly, in addition to making sure
+   errors were being handled in the terminal as well as the GUI. We also
+   tested the game manually on different edge cases with different
+   states, and it works as expected.*)
 let print_command = function
   | Move t -> "Move"
   | Undo -> "Undo"
@@ -164,8 +161,7 @@ let parse_move_test
 let b = Board.game_init 8
 
 let t1 =
-  "  a   b   c   d   e   f   g   h   \n\
-   | . | . | . | . | . | . | . | . |1\n\
+  "| . | . | . | . | . | . | . | . |1\n\
    | w | w | w | w | w | w | w | w |2\n\
    | w | w | w | w | w | w | w | w |3\n\
    | . | . | . | . | . | . | . | . |4\n\
@@ -189,9 +185,10 @@ let terminal_rep_string_test
     (t : Board.t)
     (expected_output : string) : test =
   name >:: fun _ ->
-  print_endline (Board.terminal_rep_string t 1);
-  print_endline expected_output;
-  assert_equal expected_output (Board.terminal_rep_string t 1)
+  let board = Board.get_board t in
+  (* print_endline (Board.terminal_rep_string_aux board 1);
+     print_endline expected_output; *)
+  assert_equal expected_output (Board.terminal_rep_string_aux board 1)
 
 let can_move_test
     (name : string)
@@ -249,7 +246,7 @@ let board_tests =
   [
     count_inactive_test "0 white inactive on initial board" 0 b
       Board.get_init_player;
-    (* terminal_rep_string_test "terminal rep of\n initial board" b t1; *)
+    terminal_rep_string_test "terminal rep of\n initial board" b t1;
     get_other_player_test "player other than white" White Black;
     get_other_player_test "player other than black" Black White;
     get_occupant_test "occupant of a3 is white" ('a', 3) b (Some White);
@@ -348,12 +345,36 @@ let get_turn_test
 
 let st = State.init_state b
 
+let b1 = Board.game_init 8
+
+let st1 = State.init_state b1
+
+let st2 = State.update_state st1 (Move (('a', 3), ('a', 4)))
+
+let st3 = State.copy_state st2
+
+let st3 = State.update_state st3 (Move (('b', 6), ('b', 5)))
+
+let t2 =
+  "| . | . | . | . | . | . | . | . |1\n\
+   | w | w | w | w | w | w | w | w |2\n\
+   | . | w | w | w | w | w | w | w |3\n\
+   | w | . | . | . | . | . | . | . |4\n\
+   | . | b | . | . | . | . | . | . |5\n\
+   | b | . | b | b | b | b | b | b |6\n\
+   | b | b | b | b | b | b | b | b |7\n\
+   | . | . | . | . | . | . | . | . |8\n"
+
 let state_tests =
   [
     player_turn_test "white player is first (as a string)" st "white";
-    (* terminal_rep_string_test "board of initial state"
-       (State.get_board st) t1; *)
+    terminal_rep_string_test "board of initial state"
+      (State.get_board st) t1;
+    terminal_rep_string_test "board of initial state"
+      (State.get_board st3) t2;
     get_turn_test "white player is first" st White;
+    get_turn_test "black player is next" st2 Black;
+    get_turn_test "white player is next" st3 White;
   ]
 
 let suite =
