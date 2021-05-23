@@ -49,7 +49,7 @@ let state_to_json state : Yojson.Basic.t =
 let json_to_state json =
   let turn_str = json |> member "turn" |> to_string in
   let turn = if turn_str = "black" then Board.Black else Board.White in
-  let current_str = json |> member "currnet" |> to_string in
+  let current_str = json |> member "current" |> to_string in
   let current =
     if current_str = "in-progress" then InProgress else Finished
   in
@@ -59,7 +59,7 @@ let json_to_state json =
   { turn; board; current }
 
 (** [find_square square] is true if [end_pos] is a valid ending square
-   and false otherwise *)
+    and false otherwise *)
 let rec find_square square = function
   | [] -> false
   | h :: t -> if h = square then true else find_square square t
