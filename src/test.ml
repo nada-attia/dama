@@ -2,8 +2,6 @@ open OUnit2
 open Board
 open Command
 
-(* open Command open State *)
-
 let print_command = function
   | Move t -> "Move"
   | Undo -> "Undo"

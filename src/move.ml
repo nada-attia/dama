@@ -244,7 +244,7 @@ let update_board turn captured board start_pos end_pos =
   Board.update_piece start_sq None;
   match captured with
   | None -> ()
-  | Some sq -> Board.remove_pieces sq turn board
+  | Some sq -> Board.remove_pieces sq board
 
 let where_move (brd : Board.t) (sq : Board.square) =
   try
