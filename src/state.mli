@@ -33,6 +33,8 @@ val game_over : state -> bool
     Monte Carlo Tree Search AI *)
 val copy_state : state -> state
 
+(** [json_to_state json] converts json to a state type *)
 val json_to_state : Yojson.Basic.t -> state
 
+(** [state_to_json state] converts state to a json type *)
 val state_to_json : state -> Yojson.Basic.t
