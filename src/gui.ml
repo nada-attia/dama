@@ -163,8 +163,9 @@ let display_board state is_ai =
   in
   print_board x_margin y_margin displayed_board;
   highlight_jump state b;
-  if is_ai && State.get_turn state = Board.Black then
-    display_image "images/hide-hint.png" 870 20
+  if is_ai && State.get_turn state = Board.Black then (
+    display_image "images/hide-hint.png" 980 20;
+    display_image "images/hide-hint.png" 870 20)
   else ()
 
 let rec display_rules state is_ai =
@@ -177,14 +178,12 @@ let rec display_rules state is_ai =
     display_board state is_ai)
   else display_rules state is_ai
 
-let check_end_game state =
+let rec end_game state () =
   let player = State.get_turn state in
-  if State.game_over state then (
-    Sys.remove "game.json";
-    if player = Board.Black then
-      display_image "images/pages/black-wins.png" 0 0
-    else display_image "images/pages/white-wins.png" 0 0)
-  else ()
+  if player = Board.Black then
+    display_image "images/pages/black-wins.png" 0 0
+  else display_image "images/pages/white-wins.png" 0 0;
+  end_game state ()
 
 let is_end_game state = if State.game_over state then true else false
 
@@ -220,7 +219,9 @@ and listen_for_button_clicks x y state is_ai =
     then get_hint state is_ai
     else ()
   else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then
-    forfeit_game state is_ai
+    if (is_ai && State.get_turn state = Board.White) || is_ai = false
+    then forfeit_game state is_ai
+    else ()
   else ()
 
 and forfeit_game state is_ai =
@@ -236,13 +237,11 @@ and get_hint state is_ai =
   next_move ai_state is_ai
 
 and next_move state is_ai =
-  check_end_game state;
   if is_end_game state = false then (
     Yojson.Basic.to_file "game.json" (State.state_to_json state);
     display_board state is_ai;
     let color = State.get_turn state in
     let player = State.player_turn state in
-
     if player = "black" && is_ai then (
       display_image "images/ai-thinking.png" error_x error_y;
       let new_state = Ai.ai_next_move color state ai_level in
@@ -255,7 +254,8 @@ and next_move state is_ai =
       let command = "move " ^ start_pos ^ " " ^ end_pos in
       print_endline command;
       display_errors state command is_ai)
-  else ()
+  else Sys.remove "game.json";
+  end_game state ()
 
 and display_errors state command is_ai =
   match State.update_state state (Command.parse command) true with
