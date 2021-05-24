@@ -180,10 +180,11 @@ let rec display_rules state is_ai =
 
 let check_end_game state =
   let player = State.get_turn state in
-  if State.game_over state then
+  if State.game_over state then (
+    Sys.remove "game.json";
     if player = Board.Black then
       display_image "images/pages/black-wins.png" 0 0
-    else display_image "images/pages/white-wins.png" 0 0
+    else display_image "images/pages/white-wins.png" 0 0)
   else ()
 
 let is_end_game state = if State.game_over state then true else false
@@ -222,9 +223,7 @@ let rec get_mouse_click state is_ai start =
 
 and forfeit_game state is_ai =
   match State.update_state state (Command.parse "forfeit") true with
-  | state ->
-      next_move state is_ai;
-      Sys.remove "game.json"
+  | state -> next_move state is_ai
   | exception _ -> failwith "F"
 
 and get_hint state is_ai =
