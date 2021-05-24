@@ -138,6 +138,20 @@ let highlight_selected state x y board =
       in
       display_image image lower_x lower_y
 
+let rec print_board x y = function
+  | [] -> ()
+  | sq_lst :: remaining_rows ->
+      let rec print_row x y = function
+        | [] -> print_board x_margin (y + square_offset) remaining_rows
+        | sq :: remaining_sqs ->
+            (let piece = Board.get_occupant sq in
+             match piece with
+             | None -> display_image "images/empty-square.png" x y
+             | Some p -> display_piece sq x y);
+            print_row (x + square_offset) y remaining_sqs
+      in
+      print_row x y sq_lst
+
 let display_board state is_ai =
   display_turn state is_ai;
   let b = State.get_board state in
@@ -146,21 +160,6 @@ let display_board state is_ai =
   let board = Board.get_board b in
   let displayed_board =
     if State.get_turn state = Board.Black then List.rev board else board
-  in
-  let rec print_board x y = function
-    | [] -> ()
-    | sq_lst :: remaining_rows ->
-        let rec print_row x y = function
-          | [] ->
-              print_board x_margin (y + square_offset) remaining_rows
-          | sq :: remaining_sqs ->
-              (let piece = Board.get_occupant sq in
-               match piece with
-               | None -> display_image "images/empty-square.png" x y
-               | Some p -> display_piece sq x y);
-              print_row (x + square_offset) y remaining_sqs
-        in
-        print_row x y sq_lst
   in
   print_board x_margin y_margin displayed_board;
   highlight_jump state b;
@@ -180,10 +179,11 @@ let rec display_rules state is_ai =
 
 let check_end_game state =
   let player = State.get_turn state in
-  if State.game_over state then
+  if State.game_over state then (
+    Sys.remove "game.json";
     if player = Board.Black then
       display_image "images/pages/black-wins.png" 0 0
-    else display_image "images/pages/white-wins.png" 0 0
+    else display_image "images/pages/white-wins.png" 0 0)
   else ()
 
 let is_end_game state = if State.game_over state then true else false
@@ -198,15 +198,7 @@ let rec get_mouse_click state is_ai start =
   let event = wait_next_event [ Button_down ] in
   let x = event.mouse_x in
   let y = event.mouse_y in
-  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
-    display_rules state is_ai
-  else if x >= 870 && x <= 970 && y >= 20 && y <= 80 then
-    if (is_ai && State.get_turn state = Board.White) || is_ai = false
-    then get_hint state is_ai
-    else ()
-  else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then
-    forfeit_game state is_ai
-  else ();
+  listen_for_button_clicks x y state is_ai;
   if get_x_pos x = -1 || get_y_pos state y = -1 then
     get_mouse_click state is_ai start
   else if start = true then (
@@ -220,11 +212,20 @@ let rec get_mouse_click state is_ai start =
     highlight_selected state x y b;
     get_board_pos state x y)
 
+and listen_for_button_clicks x y state is_ai =
+  if x >= 0 && x <= 50 && y >= 0 && y <= 50 then
+    display_rules state is_ai
+  else if x >= 870 && x <= 970 && y >= 20 && y <= 80 then
+    if (is_ai && State.get_turn state = Board.White) || is_ai = false
+    then get_hint state is_ai
+    else ()
+  else if x >= 980 && x <= 1080 && y >= 20 && y <= 80 then
+    forfeit_game state is_ai
+  else ()
+
 and forfeit_game state is_ai =
   match State.update_state state (Command.parse "forfeit") true with
-  | state ->
-      next_move state is_ai;
-      Sys.remove "game.json"
+  | state -> next_move state is_ai
   | exception _ -> failwith "F"
 
 and get_hint state is_ai =
