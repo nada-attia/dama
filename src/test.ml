@@ -351,11 +351,11 @@ let b1 = Board.game_init 8
 
 let st1 = State.init_state b1
 
-let st2 = State.update_state st1 (Move (('a', 3), ('a', 4)))
+let st2 = State.update_state st1 (Move (('a', 3), ('a', 4))) true
 
 let st3 = State.copy_state st2
 
-let st3 = State.update_state st3 (Move (('b', 6), ('b', 5)))
+let st3 = State.update_state st3 (Move (('b', 6), ('b', 5))) true
 
 let t2 =
   "| . | . | . | . | . | . | . | . |1\n\
